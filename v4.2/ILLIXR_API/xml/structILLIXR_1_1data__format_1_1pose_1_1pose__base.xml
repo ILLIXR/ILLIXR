@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1pose_1_1pose__base" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::pose::pose_base</compoundname>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1openxr__eye__view" prot="public" virt="non-virtual">ILLIXR::data_format::openxr_eye_view</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data" prot="public" virt="non-virtual">ILLIXR::data_format::pose::head_pose_data</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1quest__controller__pose" prot="public" virt="non-virtual">ILLIXR::data_format::quest_controller_pose</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1stereo__render__view" prot="public" virt="non-virtual">ILLIXR::data_format::stereo_render_view</derivedcompoundref>
+    <includes refid="poses_2pose__base_8hpp" local="no">pose_base.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" prot="public" static="no" mutable="no">
+        <type>Eigen::Vector3f</type>
+        <definition>Eigen::Vector3f ILLIXR::data_format::pose::pose_base::position</definition>
+        <argsstring></argsstring>
+        <name>position</name>
+        <qualifiedname>ILLIXR::data_format::pose::pose_base::position</qualifiedname>
+        <briefdescription>
+<para>Translation component of the pose (x, y, z) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" line="44" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" prot="public" static="no" mutable="no">
+        <type>Eigen::Quaternionf</type>
+        <definition>Eigen::Quaternionf ILLIXR::data_format::pose::pose_base::orientation</definition>
+        <argsstring></argsstring>
+        <name>orientation</name>
+        <qualifiedname>ILLIXR::data_format::pose::pose_base::orientation</qualifiedname>
+        <briefdescription>
+<para>Rotation component of the pose as a unit quaternion. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" line="45" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a9b80e3d93ddc6cbd7f3da881c2eaa9e1" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::pose::pose_base::confidence</definition>
+        <argsstring></argsstring>
+        <name>confidence</name>
+        <qualifiedname>ILLIXR::data_format::pose::pose_base::confidence</qualifiedname>
+        <briefdescription>
+<para>Confidence in the pose estimate in [0, 1], where 1 is highest confidence. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" line="46" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1ab7511efb54fbb7835cfb69d95c2b2d87" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::pose::pose_base::valid</definition>
+        <argsstring></argsstring>
+        <name>valid</name>
+        <qualifiedname>ILLIXR::data_format::pose::pose_base::valid</qualifiedname>
+        <briefdescription>
+<para>Whether this pose contains valid, usable data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" line="47" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a14436a8d00a4b0dcb980c11b336ee309" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::pose_base::pose_base</definition>
+        <argsstring>()</argsstring>
+        <name>pose_base</name>
+        <qualifiedname>ILLIXR::data_format::pose::pose_base::pose_base</qualifiedname>
+        <briefdescription>
+<para>Default constructor. Produces an invalid, zero-translation, identity-rotation pose. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" line="67" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" bodystart="67" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a40db7332956eb7aba9c1a0c145acb8f1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::pose_base::pose_base</definition>
+        <argsstring>(Eigen::Vector3f position_, Eigen::Quaternionf orientation_, float confidence_=0.f, bool valid_=true)</argsstring>
+        <name>pose_base</name>
+        <qualifiedname>ILLIXR::data_format::pose::pose_base::pose_base</qualifiedname>
+        <param>
+          <type>Eigen::Vector3f</type>
+          <declname>position_</declname>
+        </param>
+        <param>
+          <type>Eigen::Quaternionf</type>
+          <declname>orientation_</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>confidence_</declname>
+          <defval>0.<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">f</ref></defval>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>valid_</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">true</ref></defval>
+        </param>
+        <briefdescription>
+<para>Construct a pose from explicit components. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>position_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Translation component of the pose </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>orientation_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rotation component of the pose (must be unit quaternion) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>confidence_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Confidence value in [0, 1], defaults to 0 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>valid_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether the pose is valid, defaults to true </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" line="81" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" bodystart="81" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1aea4c9c210ee8b52c1e0326b662553f4d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::data_format::pose::pose_base::update</definition>
+        <argsstring>(Eigen::Vector3f position_, Eigen::Quaternionf orientation_)</argsstring>
+        <name>update</name>
+        <qualifiedname>ILLIXR::data_format::pose::pose_base::update</qualifiedname>
+        <param>
+          <type>Eigen::Vector3f</type>
+          <declname>position_</declname>
+        </param>
+        <param>
+          <type>Eigen::Quaternionf</type>
+          <declname>orientation_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" line="95" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" bodystart="95" bodyend="98"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base struct for all pose types in <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Captures the common 6-DOF pose fields (position, orientation) together with the metadata that every derived pose needs: confidence, and validity. Derived structs should inherit from this type rather than duplicating these fields. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::data_format::openxr_eye_view</label>
+        <link refid="structILLIXR_1_1data__format_1_1openxr__eye__view"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::data_format::pose::head_pose_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::data_format::pose::head_pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+      <node id="5">
+        <label>ILLIXR::data_format::quest_controller_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__pose"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>ILLIXR::data_format::stereo_render_view</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__render__view"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" line="43" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/pose_base.hpp" bodystart="43" bodyend="100"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a9b80e3d93ddc6cbd7f3da881c2eaa9e1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::pose_base</scope><name>confidence</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::pose_base</scope><name>orientation</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a14436a8d00a4b0dcb980c11b336ee309" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::pose_base</scope><name>pose_base</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a40db7332956eb7aba9c1a0c145acb8f1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::pose_base</scope><name>pose_base</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::pose_base</scope><name>position</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1aea4c9c210ee8b52c1e0326b662553f4d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::pose_base</scope><name>update</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1ab7511efb54fbb7835cfb69d95c2b2d87" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::pose_base</scope><name>valid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

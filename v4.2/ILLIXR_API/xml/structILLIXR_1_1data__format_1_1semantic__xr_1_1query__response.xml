@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::semantic_xr::query_response</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <includes refid="query__response_8hpp" local="no">query_response.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1ac5ed3cba409a94b87a122e594392aad3" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+        <definition>uint64_t ILLIXR::data_format::semantic_xr::query_response::query_id</definition>
+        <argsstring></argsstring>
+        <name>query_id</name>
+        <qualifiedname>ILLIXR::data_format::semantic_xr::query_response::query_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" line="18" column="64" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1a5ec280189b59ce76a8367e5cd456d715" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1point__cloud" kindref="compound">ILLIXR::data_format::semantic_xr::point_cloud</ref> &gt;</type>
+        <definition>std::vector&lt;ILLIXR::data_format::semantic_xr::point_cloud&gt; ILLIXR::data_format::semantic_xr::query_response::point_clouds</definition>
+        <argsstring></argsstring>
+        <name>point_clouds</name>
+        <qualifiedname>ILLIXR::data_format::semantic_xr::query_response::point_clouds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" line="19" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1a278351ca446728b4f772e84d775acbc9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> &gt;</type>
+        <definition>std::vector&lt;float&gt; ILLIXR::data_format::semantic_xr::query_response::colors</definition>
+        <argsstring></argsstring>
+        <name>colors</name>
+        <qualifiedname>ILLIXR::data_format::semantic_xr::query_response::colors</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" line="20" column="57" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1ad246dab8b9111e2677373d8c6b1f93ad" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></type>
+        <definition>int32_t ILLIXR::data_format::semantic_xr::query_response::num_point_clouds</definition>
+        <argsstring></argsstring>
+        <name>num_point_clouds</name>
+        <qualifiedname>ILLIXR::data_format::semantic_xr::query_response::num_point_clouds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" line="21" column="64" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1af8050437622bb85417199bee56f499f9" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::semantic_xr::query_response::server_query_processing</definition>
+        <argsstring></argsstring>
+        <name>server_query_processing</name>
+        <qualifiedname>ILLIXR::data_format::semantic_xr::query_response::server_query_processing</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" line="22" column="64" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1a9d90a3c99e45abfc61e042d9d467d512" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::data_format::semantic_xr::query_response::text_query</definition>
+        <argsstring></argsstring>
+        <name>text_query</name>
+        <qualifiedname>ILLIXR::data_format::semantic_xr::query_response::text_query</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" line="23" column="64" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1a65bd403304ce42bdb39de39579e74478" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::semantic_xr::query_response::query_response</definition>
+        <argsstring>()=default</argsstring>
+        <name>query_response</name>
+        <qualifiedname>ILLIXR::data_format::semantic_xr::query_response::query_response</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" line="25" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::semantic_xr::query_response</label>
+        <link refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::semantic_xr::query_response</label>
+        <link refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" line="17" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/query_response.hpp" bodystart="17" bodyend="26"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1a278351ca446728b4f772e84d775acbc9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>colors</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1ad246dab8b9111e2677373d8c6b1f93ad" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>num_point_clouds</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1a5ec280189b59ce76a8367e5cd456d715" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>point_clouds</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1ac5ed3cba409a94b87a122e594392aad3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>query_id</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1a65bd403304ce42bdb39de39579e74478" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>query_response</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1af8050437622bb85417199bee56f499f9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>server_query_processing</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response_1a9d90a3c99e45abfc61e042d9d467d512" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>text_query</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::semantic_xr::query_response</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

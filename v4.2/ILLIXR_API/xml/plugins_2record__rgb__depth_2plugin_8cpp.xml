@@ -1,0 +1,389 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2record__rgb__depth_2plugin_8cpp" kind="file" language="C++">
+    <compoundname>plugin.cpp</compoundname>
+    <includes refid="plugins_2record__rgb__depth_2plugin_8hpp" local="yes">plugin.hpp</includes>
+    <includes local="no">opencv2/imgcodecs.hpp</includes>
+    <incdepgraph>
+      <node id="3">
+        <label>illixr/data_format/opencv_data_types.hpp</label>
+        <link refid="opencv__data__types_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="7">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>illixr/plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/record_rgb_depth/plugin.cpp</label>
+        <link refid="plugins_2record__rgb__depth_2plugin_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>plugin.hpp</label>
+        <link refid="plugins_2record__rgb__depth_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>any</label>
+      </node>
+      <node id="8">
+        <label>atomic</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="47">
+        <label>boost/filesystem.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="9">
+        <label>cassert</label>
+      </node>
+      <node id="24">
+        <label>chrono</label>
+      </node>
+      <node id="5">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="32">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="39">
+        <label>fstream</label>
+      </node>
+      <node id="10">
+        <label>functional</label>
+      </node>
+      <node id="16">
+        <label>iostream</label>
+      </node>
+      <node id="33">
+        <label>list</label>
+      </node>
+      <node id="40">
+        <label>map</label>
+      </node>
+      <node id="17">
+        <label>memory</label>
+      </node>
+      <node id="18">
+        <label>mutex</label>
+      </node>
+      <node id="41">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="48">
+        <label>opencv2/imgcodecs.hpp</label>
+      </node>
+      <node id="25">
+        <label>optional</label>
+      </node>
+      <node id="19">
+        <label>shared_mutex</label>
+      </node>
+      <node id="43">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="44">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="45">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="22">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="30">
+        <label>sstream</label>
+      </node>
+      <node id="11">
+        <label>stdexcept</label>
+      </node>
+      <node id="29">
+        <label>string</label>
+      </node>
+      <node id="12">
+        <label>thread</label>
+      </node>
+      <node id="20">
+        <label>typeindex</label>
+      </node>
+      <node id="46">
+        <label>typeinfo</label>
+      </node>
+      <node id="21">
+        <label>unordered_map</label>
+      </node>
+      <node id="13">
+        <label>utility</label>
+      </node>
+      <node id="26">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="plugins_2zed_2plugin_8hpp" kindref="compound">plugin.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;opencv2/imgcodecs.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format" kindref="compound">ILLIXR::data_format</ref>;</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal">[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="classILLIXR_1_1record__rgb__depth_1ab4aaf9d979c3b11c793e6851fe28c735" kindref="member">record_rgb_depth::record_rgb_depth</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref>{name,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>}</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>switchboard_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>&gt;()}</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>record_data_{get_record_data_path()}</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>rgb_data_dir_{record_data_<sp/>/<sp/></highlight><highlight class="stringliteral">&quot;rgb&quot;</highlight><highlight class="normal"><sp/>/<sp/></highlight><highlight class="stringliteral">&quot;data&quot;</highlight><highlight class="normal">}</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>depth_data_dir_{record_data_<sp/>/<sp/></highlight><highlight class="stringliteral">&quot;depth&quot;</highlight><highlight class="normal"><sp/>/<sp/></highlight><highlight class="stringliteral">&quot;data&quot;</highlight><highlight class="normal">}<sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>check<sp/>folder<sp/>exist,<sp/>if<sp/>exist<sp/>delete<sp/>it</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::filesystem::remove_all(record_data_);</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>create<sp/>cam0<sp/>directory</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::filesystem::create_directories(rgb_data_dir_);</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam0_file</ref><sp/>=<sp/>(record_data_<sp/>/<sp/></highlight><highlight class="stringliteral">&quot;rgb&quot;</highlight><highlight class="normal"><sp/>/<sp/></highlight><highlight class="stringliteral">&quot;data.csv&quot;</highlight><highlight class="normal">).</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">();</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>rgb_wt_file_.open(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam0_file</ref>,<sp/>std::ofstream::out);</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>rgb_wt_file_<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;#timestamp<sp/>[ns],filename&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>create<sp/>cam1<sp/>directory</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::filesystem::create_directories(depth_data_dir_);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam1_file</ref><sp/>=<sp/>(record_data_<sp/>/<sp/></highlight><highlight class="stringliteral">&quot;depth&quot;</highlight><highlight class="normal"><sp/>/<sp/></highlight><highlight class="stringliteral">&quot;data.csv&quot;</highlight><highlight class="normal">).</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">();</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>depth_wt_file_.open(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam1_file</ref>,<sp/>std::ofstream::out);</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>depth_wt_file_<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;#timestamp<sp/>[ns],filename&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>switchboard_-&gt;schedule&lt;<ref refid="structILLIXR_1_1data__format_1_1rgb__depth__type" kindref="compound">rgb_depth_type</ref>&gt;(id_,<sp/></highlight><highlight class="stringliteral">&quot;rgb_depth&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[&amp;](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const rgb_depth_type&gt;</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>,<sp/>std::size_t)<sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;dump_data(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1record__rgb__depth_1a18464e482e9d15a89389e45a6adf22ff" kindref="member">record_rgb_depth::dump_data</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const rgb_depth_type&gt;</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>)</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>timestamp<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;<ref refid="structILLIXR_1_1data__format_1_1cam__base__type_1a38c6d85c01e35357fd04f9f7d1c5e9eb" kindref="member">time</ref>.<ref refid="classILLIXR_1_1time__point_1a31da6e8c02d5cc79de6a4983cce63f19" kindref="member">time_since_epoch</ref>().count();</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>write<sp/>rgb<sp/>and<sp/>depth</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rgb_img</ref><sp/><sp/><sp/>=<sp/><ref refid="classILLIXR_1_1record__rgb__depth_1ae4bd6118de966b39c7a89e8676f2af66" kindref="member">rgb_data_dir_</ref>.string()<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;/&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(timestamp)<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;.png&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">depth_img</ref><sp/>=<sp/><ref refid="classILLIXR_1_1record__rgb__depth_1a21f161fb44f8c7d88c7839161c88b0eb" kindref="member">depth_data_dir_</ref>.string()<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;/&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(timestamp)<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;.png&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1record__rgb__depth_1a81660672e17bd9c2ec3ef59d486ce9fb" kindref="member">rgb_wt_file_</ref><sp/>&lt;&lt;<sp/>timestamp<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;,&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>timestamp<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;.png<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::imwrite(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rgb_img</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;at(<ref refid="namespaceILLIXR_1_1data__format_1_1image_1a6284c0d0ee6d8d9e30eeb4ae8cbe4e67a53fee1cf81a960b62ce34e7979354c4b" kindref="member">image::RGB</ref>));</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1record__rgb__depth_1adab8b9fa7989f7521124e4fe29e30b97" kindref="member">depth_wt_file_</ref><sp/>&lt;&lt;<sp/>timestamp<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;,&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>timestamp<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;.png<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::imwrite(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">depth_img</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;at(<ref refid="namespaceILLIXR_1_1data__format_1_1image_1a6284c0d0ee6d8d9e30eeb4ae8cbe4e67aab15b22567fb85641bfe38885131d5dd" kindref="member">image::DEPTH</ref>));</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><ref refid="classILLIXR_1_1record__rgb__depth_1a52b5711f018e9d223dffff500e058642" kindref="member">record_rgb_depth::~record_rgb_depth</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1record__rgb__depth_1a81660672e17bd9c2ec3ef59d486ce9fb" kindref="member">rgb_wt_file_</ref>.close();</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1record__rgb__depth_1adab8b9fa7989f7521124e4fe29e30b97" kindref="member">depth_wt_file_</ref>.close();</highlight></codeline>
+<codeline lineno="52"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO:<sp/>This<sp/>should<sp/>come<sp/>from<sp/>a<sp/>yaml<sp/>file</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal">boost::filesystem::path<sp/><ref refid="classILLIXR_1_1record__rgb__depth_1a84e4ccedc162490140ff010b8576ca9d" kindref="member">record_rgb_depth::get_record_data_path</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::filesystem::path<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ILLIXR_DIR</ref><sp/>=<sp/>boost::filesystem::current_path();</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ILLIXR_DIR</ref><sp/>/<sp/></highlight><highlight class="stringliteral">&quot;data_rgbd_record&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>line<sp/>makes<sp/>the<sp/>plugin<sp/>importable<sp/>by<sp/>Spindle</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><ref refid="include_2illixr_2plugin_8hpp_1aa29023b17f5259cc4186f4627e1d9b5c" kindref="member">PLUGIN_MAIN</ref>(<ref refid="classILLIXR_1_1record__rgb__depth" kindref="compound">record_rgb_depth</ref>)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/record_rgb_depth/plugin.cpp"/>
+  </compounddef>
+</doxygen>

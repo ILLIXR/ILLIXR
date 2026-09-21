@@ -1,0 +1,372 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1display_1_1x11__direct" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::display::x11_direct</compoundname>
+    <basecompoundref refid="classILLIXR_1_1display_1_1display__backend" prot="public" virt="non-virtual">ILLIXR::display::display_backend</basecompoundref>
+    <includes refid="x11__direct_8hpp" local="no">x11_direct.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1x11__direct_1a4f3807e9c245ed13917ddb7d432a6da9" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDisplayKHR</ref></type>
+        <definition>VkDisplayKHR ILLIXR::display::x11_direct::display_</definition>
+        <argsstring></argsstring>
+        <name>display_</name>
+        <qualifiedname>ILLIXR::display::x11_direct::display_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="28" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1x11__direct_1a53564ebb98da1f4ace5c2d3c8e8529b0" prot="public" static="no" mutable="no">
+        <type>std::atomic&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref> &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::display::x11_direct::display_timings_event_registered_</definition>
+        <argsstring></argsstring>
+        <name>display_timings_event_registered_</name>
+        <qualifiedname>ILLIXR::display::x11_direct::display_timings_event_registered_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="29" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1x11__direct_1a6b3220c01994f00c50dca205003e6d5c" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref></type>
+        <definition>VkDevice ILLIXR::display::x11_direct::vk_device_</definition>
+        <argsstring></argsstring>
+        <name>vk_device_</name>
+        <qualifiedname>ILLIXR::display::x11_direct::vk_device_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="30" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1x11__direct_1a7bd3ff499c756181d909b8404a67fe40" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDisplayModePropertiesKHR</ref></type>
+        <definition>VkDisplayModePropertiesKHR ILLIXR::display::x11_direct::selected_mode_</definition>
+        <argsstring></argsstring>
+        <name>selected_mode_</name>
+        <qualifiedname>ILLIXR::display::x11_direct::selected_mode_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="31" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1x11__direct_1aa840185406afc46b40f2d80ef7ada245" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;relative_clock&gt; ILLIXR::display::x11_direct::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::display::x11_direct::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="34" column="49" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1x11__direct_1ab348136a697e6cb6e095bb71d5d00019" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; <ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref> &gt; &gt;</type>
+        <definition>switchboard::writer&lt;switchboard::event_wrapper&lt;time_point&gt; &gt; ILLIXR::display::x11_direct::vsync_topic_</definition>
+        <argsstring></argsstring>
+        <name>vsync_topic_</name>
+        <qualifiedname>ILLIXR::display::x11_direct::vsync_topic_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="35" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1x11__direct_1ae8bdd4e8f321696f2806eea08846faec" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFence</ref></type>
+        <definition>VkFence ILLIXR::display::x11_direct::display_event_fence_</definition>
+        <argsstring></argsstring>
+        <name>display_event_fence_</name>
+        <qualifiedname>ILLIXR::display::x11_direct::display_event_fence_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="36" column="65" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1x11__direct_1a0374b8d3174c8a2c3df4b9d8dfee0ea8" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref></type>
+        <definition>VkPhysicalDevice ILLIXR::display::x11_direct::vk_physical_device_</definition>
+        <argsstring></argsstring>
+        <name>vk_physical_device_</name>
+        <qualifiedname>ILLIXR::display::x11_direct::vk_physical_device_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="37" column="65" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a0bdbcab948a2966f7bdc0c601788002f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::display::x11_direct::x11_direct</definition>
+        <argsstring>(std::shared_ptr&lt; relative_clock &gt; _rc, switchboard::writer&lt; switchboard::event_wrapper&lt; time_point &gt; &gt; _vsync_topic)</argsstring>
+        <name>x11_direct</name>
+        <qualifiedname>ILLIXR::display::x11_direct::x11_direct</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+          <declname>_rc</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; <ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref> &gt; &gt;</type>
+          <declname>_vsync_topic</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="14" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="14" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a6955333f7456ddbd0f88470c885acf0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void x11_direct::setup_display</definition>
+        <argsstring>(const std::shared_ptr&lt; switchboard &gt; sb, VkInstance vk_instance, VkPhysicalDevice vk_physical_device_) override</argsstring>
+        <name>setup_display</name>
+        <qualifiedname>ILLIXR::display::x11_direct::setup_display</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a48c4d9d8e7e5599793b02b1f5c18a38d">setup_display</reimplements>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+          <declname>sb</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkInstance</ref></type>
+          <declname>vk_instance</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref></type>
+          <declname>vk_physical_device_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="17" column="39" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="14" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a83559f921c4213a40dee46238ef3eb37" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSurfaceKHR</ref></type>
+        <definition>VkSurfaceKHR x11_direct::create_surface</definition>
+        <argsstring>() override</argsstring>
+        <name>create_surface</name>
+        <qualifiedname>ILLIXR::display::x11_direct::create_surface</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a21ebfd9665eab3dc93446909015dc017">create_surface</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="19" column="39" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="67" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1acf60f79b43a29767af350a62ed3c61ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void x11_direct::cleanup</definition>
+        <argsstring>() override</argsstring>
+        <name>cleanup</name>
+        <qualifiedname>ILLIXR::display::x11_direct::cleanup</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1adcf23384a18793748608eee0feeb10cf">cleanup</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="20" column="39" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="116" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a913950f567ee25fd5fabe21f1b136075" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::set&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> * &gt;</type>
+        <definition>std::set&lt; const char * &gt; x11_direct::get_required_instance_extensions</definition>
+        <argsstring>() override</argsstring>
+        <name>get_required_instance_extensions</name>
+        <qualifiedname>ILLIXR::display::x11_direct::get_required_instance_extensions</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a1ae5a1dc1e63a5e920d97a1235b88b0e">get_required_instance_extensions</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="21" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="118" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a6b235efa5c59bc15d666c2146af19f53" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::set&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> * &gt;</type>
+        <definition>std::set&lt; const char * &gt; x11_direct::get_required_device_extensions</definition>
+        <argsstring>() override</argsstring>
+        <name>get_required_device_extensions</name>
+        <qualifiedname>ILLIXR::display::x11_direct::get_required_device_extensions</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a94ed86254b25408d365d7a1c99a20513">get_required_device_extensions</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="22" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="183" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a92902d02a3aa0c6b920889b7308851db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void x11_direct::tick</definition>
+        <argsstring>()</argsstring>
+        <name>tick</name>
+        <qualifiedname>ILLIXR::display::x11_direct::tick</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="24" column="39" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="142" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a6e2151f56feb330d2604bd940305f8bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool x11_direct::register_display_timings_event</definition>
+        <argsstring>(VkDevice vk_device_)</argsstring>
+        <name>register_display_timings_event</name>
+        <qualifiedname>ILLIXR::display::x11_direct::register_display_timings_event</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref></type>
+          <declname>vk_device_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="25" column="39" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="159" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a29597e2c2c96d3e894eadb175a7ada43" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35" kindref="member">display_backend_type</ref></type>
+        <definition>display_backend::display_backend_type x11_direct::get_type</definition>
+        <argsstring>() override</argsstring>
+        <name>get_type</name>
+        <qualifiedname>ILLIXR::display::x11_direct::get_type</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a6cd6989ffad3a129ffe9f687d490861c">get_type</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="26" column="39" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="189" bodyend="191"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1x11__direct_1a8c5a0464dab26e58a1a35f87a34df20e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDisplayModePropertiesKHR</ref></type>
+        <definition>VkDisplayModePropertiesKHR x11_direct::select_display_mode</definition>
+        <argsstring>(std::vector&lt; VkDisplayModePropertiesKHR &gt; modes)</argsstring>
+        <name>select_display_mode</name>
+        <qualifiedname>ILLIXR::display::x11_direct::select_display_mode</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDisplayModePropertiesKHR</ref> &gt;</type>
+          <declname>modes</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="23" column="39" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.cpp" bodystart="128" bodyend="140"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::display::display_backend</label>
+        <link refid="classILLIXR_1_1display_1_1display__backend"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::display::x11_direct</label>
+        <link refid="classILLIXR_1_1display_1_1x11__direct"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::display::display_backend</label>
+        <link refid="classILLIXR_1_1display_1_1display__backend"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::display::x11_direct</label>
+        <link refid="classILLIXR_1_1display_1_1x11__direct"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>vsync_topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::switchboard::topic</label>
+        <link refid="classILLIXR_1_1switchboard_1_1topic"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::switchboard::writer&lt; ILLIXR::switchboard::event_wrapper&lt; ILLIXR::time_point &gt; &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" line="12" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" bodystart="12" bodyend="38"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1acf60f79b43a29767af350a62ed3c61ee" prot="public" virt="virtual"><scope>ILLIXR::display::x11_direct</scope><name>cleanup</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1aa840185406afc46b40f2d80ef7ada245" prot="private" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a83559f921c4213a40dee46238ef3eb37" prot="public" virt="virtual"><scope>ILLIXR::display::x11_direct</scope><name>create_surface</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a4f3807e9c245ed13917ddb7d432a6da9" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>display_</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>display_backend_type</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1ae8bdd4e8f321696f2806eea08846faec" prot="private" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>display_event_fence_</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a53564ebb98da1f4ace5c2d3c8e8529b0" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>display_timings_event_registered_</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a6b235efa5c59bc15d666c2146af19f53" prot="public" virt="virtual"><scope>ILLIXR::display::x11_direct</scope><name>get_required_device_extensions</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a913950f567ee25fd5fabe21f1b136075" prot="public" virt="virtual"><scope>ILLIXR::display::x11_direct</scope><name>get_required_instance_extensions</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a29597e2c2c96d3e894eadb175a7ada43" prot="public" virt="virtual"><scope>ILLIXR::display::x11_direct</scope><name>get_type</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a6c22ae7cd43cc6c85dc63463f39b30b3" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>GLFW</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a9d4de65feff923a0f7da4d0c8b8cd878" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>HEADLESS</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a6e2151f56feb330d2604bd940305f8bb" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>register_display_timings_event</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a8c5a0464dab26e58a1a35f87a34df20e" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>select_display_mode</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a7bd3ff499c756181d909b8404a67fe40" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>selected_mode_</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a6955333f7456ddbd0f88470c885acf0a" prot="public" virt="virtual"><scope>ILLIXR::display::x11_direct</scope><name>setup_display</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a92902d02a3aa0c6b920889b7308851db" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>tick</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a6b3220c01994f00c50dca205003e6d5c" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>vk_device_</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a9ea10d97922d75ec50123c500e456e58" prot="protected" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>vk_instance_</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a0374b8d3174c8a2c3df4b9d8dfee0ea8" prot="private" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>vk_physical_device_</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1ab348136a697e6cb6e095bb71d5d00019" prot="private" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>vsync_topic_</name></member>
+      <member refid="classILLIXR_1_1display_1_1x11__direct_1a0bdbcab948a2966f7bdc0c601788002f" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>x11_direct</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a76bb4a005202c52102006cef21d0ee35" prot="public" virt="non-virtual"><scope>ILLIXR::display::x11_direct</scope><name>X11_DIRECT</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

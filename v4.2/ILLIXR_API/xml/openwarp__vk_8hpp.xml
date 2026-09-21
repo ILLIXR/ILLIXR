@@ -1,0 +1,792 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="openwarp__vk_8hpp" kind="file" language="C++">
+    <compoundname>openwarp_vk.hpp</compoundname>
+    <includes refid="pose__prediction_8hpp" local="yes">illixr/data_format/pose_prediction.hpp</includes>
+    <includes refid="hmd_8hpp" local="yes">illixr/hmd.hpp</includes>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includes refid="display__provider_8hpp" local="yes">illixr/vk/display_provider.hpp</includes>
+    <includes refid="render__pass_8hpp" local="yes">illixr/vk/render_pass.hpp</includes>
+    <includes local="no">glm/glm.hpp</includes>
+    <includes local="no">glm/gtc/matrix_transform.hpp</includes>
+    <includes local="no">glm/gtx/hash.hpp</includes>
+    <includes local="no">mutex</includes>
+    <includes local="no">stack</includes>
+    <includedby refid="openwarp__vk_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.cpp</includedby>
+    <includedby refid="plugins_2openwarp__vk_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/plugin.hpp</includedby>
+    <incdepgraph>
+      <node id="58">
+        <label>illixr/data_format/misc.hpp</label>
+        <link refid="misc_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>illixr/data_format/pose_prediction.hpp</label>
+        <link refid="pose__prediction_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/poses/head_pose.hpp</label>
+        <link refid="poses_2head__pose_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="48">
+        <label>illixr/global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp"/>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>headset_fov.hpp</label>
+        <link refid="headset__fov_8hpp"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>illixr/hmd.hpp</label>
+        <link refid="hmd_8hpp"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>illixr/relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>illixr/vk/display_provider.hpp</label>
+        <link refid="display__provider_8hpp"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+      </node>
+      <node id="57">
+        <label>illixr/vk/render_pass.hpp</label>
+        <link refid="render__pass_8hpp"/>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="60">
+        <label>vulkan_objects.hpp</label>
+        <link refid="vulkan__objects_8hpp"/>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>vulkan_utils.hpp</label>
+        <link refid="vulkan__utils_8hpp"/>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp</label>
+        <link refid="openwarp__vk_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+      </node>
+      <node id="59">
+        <label>GL/glu.h</label>
+      </node>
+      <node id="62">
+        <label>GLFW/glfw3.h</label>
+      </node>
+      <node id="50">
+        <label>algorithm</label>
+      </node>
+      <node id="31">
+        <label>any</label>
+      </node>
+      <node id="45">
+        <label>array</label>
+      </node>
+      <node id="12">
+        <label>atomic</label>
+      </node>
+      <node id="37">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="39">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="41">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="13">
+        <label>cassert</label>
+      </node>
+      <node id="27">
+        <label>chrono</label>
+      </node>
+      <node id="51">
+        <label>cmath</label>
+      </node>
+      <node id="9">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="56">
+        <label>cstdint</label>
+      </node>
+      <node id="46">
+        <label>cstdlib</label>
+      </node>
+      <node id="34">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="6">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="35">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="53">
+        <label>fstream</label>
+      </node>
+      <node id="14">
+        <label>functional</label>
+      </node>
+      <node id="63">
+        <label>glm/glm.hpp</label>
+      </node>
+      <node id="64">
+        <label>glm/gtc/matrix_transform.hpp</label>
+      </node>
+      <node id="65">
+        <label>glm/gtx/hash.hpp</label>
+      </node>
+      <node id="61">
+        <label>illixr/vk/third_party/vk_mem_alloc.h</label>
+      </node>
+      <node id="19">
+        <label>iostream</label>
+      </node>
+      <node id="36">
+        <label>list</label>
+      </node>
+      <node id="5">
+        <label>map</label>
+      </node>
+      <node id="20">
+        <label>memory</label>
+      </node>
+      <node id="21">
+        <label>mutex</label>
+      </node>
+      <node id="28">
+        <label>optional</label>
+      </node>
+      <node id="43">
+        <label>ratio</label>
+      </node>
+      <node id="54">
+        <label>set</label>
+      </node>
+      <node id="22">
+        <label>shared_mutex</label>
+      </node>
+      <node id="25">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="33">
+        <label>sstream</label>
+      </node>
+      <node id="66">
+        <label>stack</label>
+      </node>
+      <node id="15">
+        <label>stdexcept</label>
+      </node>
+      <node id="32">
+        <label>string</label>
+      </node>
+      <node id="16">
+        <label>thread</label>
+      </node>
+      <node id="23">
+        <label>typeindex</label>
+      </node>
+      <node id="24">
+        <label>unordered_map</label>
+      </node>
+      <node id="7">
+        <label>utility</label>
+      </node>
+      <node id="29">
+        <label>vector</label>
+      </node>
+      <node id="55">
+        <label>vulkan/vulkan.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.cpp</label>
+        <link refid="openwarp__vk_8cpp"/>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp</label>
+        <link refid="openwarp__vk_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/plugin.cpp</label>
+        <link refid="plugins_2openwarp__vk_2plugin_8cpp"/>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/plugin.hpp</label>
+        <link refid="plugins_2openwarp__vk_2plugin_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1DistortionCorrectionVertex" prot="public">ILLIXR::DistortionCorrectionVertex</innerclass>
+    <innerclass refid="structILLIXR_1_1OpenWarpVertex" prot="public">ILLIXR::OpenWarpVertex</innerclass>
+    <innerclass refid="structILLIXR_1_1DistortionMatrix" prot="public">ILLIXR::DistortionMatrix</innerclass>
+    <innerclass refid="structILLIXR_1_1WarpMatrices" prot="public">ILLIXR::WarpMatrices</innerclass>
+    <innerclass refid="classILLIXR_1_1openwarp__vk" prot="public">ILLIXR::openwarp_vk</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="openwarp__vk_8hpp_1a816ab7d5c2ce1f0a01216042837beb93" prot="public" static="no">
+        <name>GLM_FORCE_RADIANS</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="14" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="openwarp__vk_8hpp_1aa53e0967978ad7a8792f6961156ec968" prot="public" static="no">
+        <name>GLM_FORCE_DEPTH_ZERO_TO_ONE</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="15" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="openwarp__vk_8hpp_1abd75661fe7969e19439052a5f69ba5d1" prot="public" static="no">
+        <name>GLM_ENABLE_EXPERIMENTAL</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="16" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="pose__prediction_8hpp" kindref="compound">illixr/data_format/pose_prediction.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="hmd_8hpp" kindref="compound">illixr/hmd.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="switchboard_8hpp" kindref="compound">illixr/switchboard.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#include<sp/>&quot;illixr/threadloop.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="display__provider_8hpp" kindref="compound">illixr/vk/display_provider.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="render__pass_8hpp" kindref="compound">illixr/vk/render_pass.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(_WIN32)<sp/>||<sp/>defined(_WIN64)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;windows.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="openwarp__vk_8hpp_1a816ab7d5c2ce1f0a01216042837beb93" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GLM_FORCE_RADIANS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="openwarp__vk_8hpp_1aa53e0967978ad7a8792f6961156ec968" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GLM_FORCE_DEPTH_ZERO_TO_ONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16" refid="openwarp__vk_8hpp_1abd75661fe7969e19439052a5f69ba5d1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GLM_ENABLE_EXPERIMENTAL</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;glm/glm.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;glm/gtc/matrix_transform.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;glm/gtx/hash.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;mutex&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stack&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25" refid="structILLIXR_1_1DistortionCorrectionVertex" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1DistortionCorrectionVertex" kindref="compound">DistortionCorrectionVertex</ref><sp/>{</highlight></codeline>
+<codeline lineno="26" refid="structILLIXR_1_1DistortionCorrectionVertex_1a8efe42605b3c84c42132ccf09a244661" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::vec3<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1a8efe42605b3c84c42132ccf09a244661" kindref="member">pos</ref>;</highlight></codeline>
+<codeline lineno="27" refid="structILLIXR_1_1DistortionCorrectionVertex_1a49835981caf037c170362fc582d6e2a1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::vec2<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1a49835981caf037c170362fc582d6e2a1" kindref="member">uv0</ref>;</highlight></codeline>
+<codeline lineno="28" refid="structILLIXR_1_1DistortionCorrectionVertex_1a3f71a899745beea2013c7b7e4c2692ea" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::vec2<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1a3f71a899745beea2013c7b7e4c2692ea" kindref="member">uv1</ref>;</highlight></codeline>
+<codeline lineno="29" refid="structILLIXR_1_1DistortionCorrectionVertex_1ad1993c2be74411c1ab45e7c5d1c8df52" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::vec2<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1ad1993c2be74411c1ab45e7c5d1c8df52" kindref="member">uv2</ref>;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="structILLIXR_1_1DistortionCorrectionVertex_1a949e4444ad18da6b678d457d0f4d2e72" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkVertexInputBindingDescription</ref><sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1a949e4444ad18da6b678d457d0f4d2e72" kindref="member">get_binding_description</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkVertexInputBindingDescription</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref><sp/>=<sp/>{};</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref>.binding<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>0;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>index<sp/>of<sp/>the<sp/>binding<sp/>in<sp/>the<sp/>array<sp/>of<sp/>bindings</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref>.stride<sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="structILLIXR_1_1DistortionCorrectionVertex" kindref="compound">DistortionCorrectionVertex</ref>);<sp/></highlight><highlight class="comment">//<sp/>number<sp/>of<sp/>bytes<sp/>from<sp/>one<sp/>entry<sp/>to<sp/>the<sp/>next</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref>.inputRate<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_VERTEX_INPUT_RATE_VERTEX</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>no<sp/>instancing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref>;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="structILLIXR_1_1DistortionCorrectionVertex_1a8a730191278a921b57868f0b85adda5a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::array&lt;VkVertexInputAttributeDescription,<sp/>4&gt;<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1a8a730191278a921b57868f0b85adda5a" kindref="member">get_attribute_descriptions</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::array&lt;VkVertexInputAttributeDescription,<sp/>4&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref><sp/>=<sp/>{};</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>position</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[0].binding<sp/><sp/>=<sp/>0;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>which<sp/>binding<sp/>the<sp/>per-vertex<sp/>data<sp/>comes<sp/>from</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[0].location<sp/>=<sp/>0;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>location<sp/>directive<sp/>of<sp/>the<sp/>input<sp/>in<sp/>the<sp/>vertex<sp/>shader</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[0].format<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_FORMAT_R32G32B32_SFLOAT</ref>;<sp/></highlight><highlight class="comment">//<sp/>format<sp/>of<sp/>the<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[0].offset<sp/>=</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offsetof</ref>(<ref refid="structILLIXR_1_1DistortionCorrectionVertex" kindref="compound">DistortionCorrectionVertex</ref>,<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1a8efe42605b3c84c42132ccf09a244661" kindref="member">pos</ref>);<sp/></highlight><highlight class="comment">//<sp/>number<sp/>of<sp/>bytes<sp/>since<sp/>the<sp/>start<sp/>of<sp/>the<sp/>per-vertex<sp/>data<sp/>to<sp/>read<sp/>from</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>uv0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[1].binding<sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[1].location<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[1].format<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_FORMAT_R32G32_SFLOAT</ref>;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[1].offset<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offsetof</ref>(<ref refid="structILLIXR_1_1DistortionCorrectionVertex" kindref="compound">DistortionCorrectionVertex</ref>,<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1a49835981caf037c170362fc582d6e2a1" kindref="member">uv0</ref>);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>uv1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[2].binding<sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[2].location<sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[2].format<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_FORMAT_R32G32_SFLOAT</ref>;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[2].offset<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offsetof</ref>(<ref refid="structILLIXR_1_1DistortionCorrectionVertex" kindref="compound">DistortionCorrectionVertex</ref>,<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1a3f71a899745beea2013c7b7e4c2692ea" kindref="member">uv1</ref>);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>uv2</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[3].binding<sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[3].location<sp/>=<sp/>3;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[3].format<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_FORMAT_R32G32_SFLOAT</ref>;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[3].offset<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offsetof</ref>(<ref refid="structILLIXR_1_1DistortionCorrectionVertex" kindref="compound">DistortionCorrectionVertex</ref>,<sp/><ref refid="structILLIXR_1_1DistortionCorrectionVertex_1ad1993c2be74411c1ab45e7c5d1c8df52" kindref="member">uv2</ref>);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="structILLIXR_1_1OpenWarpVertex" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1OpenWarpVertex" kindref="compound">OpenWarpVertex</ref><sp/>{</highlight></codeline>
+<codeline lineno="73" refid="structILLIXR_1_1OpenWarpVertex_1adb4074f1147c773ab189e6b0f11cf0c6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::vec3<sp/><ref refid="structILLIXR_1_1OpenWarpVertex_1adb4074f1147c773ab189e6b0f11cf0c6" kindref="member">pos</ref>;</highlight></codeline>
+<codeline lineno="74" refid="structILLIXR_1_1OpenWarpVertex_1a0f265a0146b4e8256393a0a9d7791e03" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::vec2<sp/><ref refid="structILLIXR_1_1OpenWarpVertex_1a0f265a0146b4e8256393a0a9d7791e03" kindref="member">uv</ref>;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76" refid="structILLIXR_1_1OpenWarpVertex_1a0c43a41fb821dd64202b5b3cd4d4f196" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkVertexInputBindingDescription</ref><sp/><ref refid="structILLIXR_1_1OpenWarpVertex_1a0c43a41fb821dd64202b5b3cd4d4f196" kindref="member">get_binding_description</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkVertexInputBindingDescription</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref><sp/>=<sp/>{};</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref>.binding<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>0;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>index<sp/>of<sp/>the<sp/>binding<sp/>in<sp/>the<sp/>array<sp/>of<sp/>bindings</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref>.stride<sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="structILLIXR_1_1OpenWarpVertex" kindref="compound">OpenWarpVertex</ref>);<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>number<sp/>of<sp/>bytes<sp/>from<sp/>one<sp/>entry<sp/>to<sp/>the<sp/>next</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref>.inputRate<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_VERTEX_INPUT_RATE_VERTEX</ref>;<sp/></highlight><highlight class="comment">//<sp/>no<sp/>instancing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">binding_description</ref>;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85" refid="structILLIXR_1_1OpenWarpVertex_1af507759ee6d3aa9ea5939b31d4f18fa9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::array&lt;VkVertexInputAttributeDescription,<sp/>2&gt;<sp/><ref refid="structILLIXR_1_1OpenWarpVertex_1af507759ee6d3aa9ea5939b31d4f18fa9" kindref="member">get_attribute_descriptions</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::array&lt;VkVertexInputAttributeDescription,<sp/>2&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref><sp/>=<sp/>{};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>position</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[0].binding<sp/><sp/>=<sp/>0;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>which<sp/>binding<sp/>the<sp/>per-vertex<sp/>data<sp/>comes<sp/>from</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[0].location<sp/>=<sp/>0;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>location<sp/>directive<sp/>of<sp/>the<sp/>input<sp/>in<sp/>the<sp/>vertex<sp/>shader</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[0].format<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_FORMAT_R32G32B32_SFLOAT</ref>;<sp/></highlight><highlight class="comment">//<sp/>format<sp/>of<sp/>the<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[0].offset<sp/>=</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offsetof</ref>(<ref refid="structILLIXR_1_1OpenWarpVertex" kindref="compound">OpenWarpVertex</ref>,<sp/><ref refid="structILLIXR_1_1OpenWarpVertex_1adb4074f1147c773ab189e6b0f11cf0c6" kindref="member">pos</ref>);<sp/></highlight><highlight class="comment">//<sp/>number<sp/>of<sp/>bytes<sp/>since<sp/>the<sp/>start<sp/>of<sp/>the<sp/>per-vertex<sp/>data<sp/>to<sp/>read<sp/>from</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>uv</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[1].binding<sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[1].location<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[1].format<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_FORMAT_R32G32_SFLOAT</ref>;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>[1].offset<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offsetof</ref>(<ref refid="structILLIXR_1_1OpenWarpVertex" kindref="compound">OpenWarpVertex</ref>,<sp/><ref refid="structILLIXR_1_1OpenWarpVertex_1a0f265a0146b4e8256393a0a9d7791e03" kindref="member">uv</ref>);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">attribute_descriptions</ref>;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105" refid="structILLIXR_1_1DistortionMatrix" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1DistortionMatrix" kindref="compound">DistortionMatrix</ref><sp/>{</highlight></codeline>
+<codeline lineno="106" refid="structILLIXR_1_1DistortionMatrix_1aee528a0fcac31d52a5260fe1e5d31d7c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::mat4<sp/><ref refid="structILLIXR_1_1DistortionMatrix_1aee528a0fcac31d52a5260fe1e5d31d7c" kindref="member">transform</ref>;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109" refid="structILLIXR_1_1WarpMatrices" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1WarpMatrices" kindref="compound">WarpMatrices</ref><sp/>{</highlight></codeline>
+<codeline lineno="110" refid="structILLIXR_1_1WarpMatrices_1a46af72b6a8cc1b608749176fb5d97944" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::mat4<sp/><ref refid="structILLIXR_1_1WarpMatrices_1a46af72b6a8cc1b608749176fb5d97944" kindref="member">render_inv_projection</ref>[2];</highlight></codeline>
+<codeline lineno="111" refid="structILLIXR_1_1WarpMatrices_1a9216708a1cfb7f666b387cf55f23830a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::mat4<sp/><ref refid="structILLIXR_1_1WarpMatrices_1a9216708a1cfb7f666b387cf55f23830a" kindref="member">render_inv_view</ref>[2];</highlight></codeline>
+<codeline lineno="112" refid="structILLIXR_1_1WarpMatrices_1a29947960e22c918fc124530bd52369f0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>glm::mat4<sp/><ref refid="structILLIXR_1_1WarpMatrices_1a29947960e22c918fc124530bd52369f0" kindref="member">warp_view_projection</ref>[2];</highlight></codeline>
+<codeline lineno="113"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115" refid="classILLIXR_1_1openwarp__vk" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1openwarp__vk" kindref="compound">openwarp_vk</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1vulkan_1_1timewarp" kindref="compound">vulkan::timewarp</ref><sp/>{</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk" kindref="compound">openwarp_vk</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a0843c4d7a46450360a5486b1d0ad0eb5" kindref="member">initialize</ref>();</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1af85ea32e3483dfdd4753fae1427eb044" kindref="member">setup</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref><sp/>render_pass,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">subpass</ref>,</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;<ref refid="structILLIXR_1_1vulkan_1_1buffer__pool" kindref="compound">vulkan::buffer_pool&lt;data_format::pose::fast_head_pose_type&gt;</ref>&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a6062004a8516e8fe26bf4c94247c9beb" kindref="member">buffer_pool_</ref>,</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1aea01e0c1a7acf66a0458067dc5369075" kindref="member">input_texture_external_</ref>,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">illixr_framebuffer</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">framebuffer_array</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkExtent2D</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">extent</ref>)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ad8c494635a7106733da6fe3478fc0f04" kindref="member">partial_destroy</ref>();</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a535d7715c7fced9f5429fd0fc7170d68" kindref="member">update_uniforms</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">data_format::pose::fast_head_pose_type</ref>&amp;<sp/>render_pose)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a972e4b1288ac2088a887347597ab907d" kindref="member">record_command_buffer</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandBuffer</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">commandBuffer</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFramebuffer</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">framebuffer</ref>,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer_ind</ref>,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>left)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a961cba73bc7145d996e118caff35e9ba" kindref="member">is_external</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a9dcd927a058bb147ebcd6f1886c50301" kindref="member">destroy</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a159ecacb7dcca2145b9c57e477f41f09" kindref="member">create_offscreen_images</ref>();</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a9471caebf00e7cf01437b2a0aa02c5d4" kindref="member">create_vertex_buffers</ref>();</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1aad409ba855e176c50a2ece62175a8577" kindref="member">create_index_buffers</ref>();</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a594e8accfd155ac589dfe168d596a6a1" kindref="member">generate_distortion_data</ref>();</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ab3663e2b4718c2da398a74fe2ad47b4d" kindref="member">generate_openwarp_mesh</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>width,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>height);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a64e729b51c3e0ca3728c7ad684f4413f" kindref="member">create_texture_sampler</ref>();</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a77f70e91335317b21c7ae7dae563c5c8" kindref="member">create_descriptor_set_layouts</ref>();</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a7dec2a66f410fcacc00dea872b22219e" kindref="member">create_uniform_buffers</ref>();</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a79bf0646d8fdf78de3cf685095cde811" kindref="member">create_descriptor_pool</ref>();</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a70b824d478fa8ec6b25f798e64f092fe" kindref="member">create_descriptor_sets</ref>();</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1af0c0d49a06cf4dd398f565094eb5a541" kindref="member">create_openwarp_pipeline</ref>();</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a41bcd0fe38124d34dc1f78fe1c6c294b" kindref="member">create_distortion_correction_pipeline</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref><sp/>render_pass,<sp/>[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">subpass</ref>);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Eigen::Matrix4f<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a48260c166c77c7f5fe12b9bc1c09fff7" kindref="member">create_camera_matrix</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref>&amp;<sp/>pose,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">eye</ref>);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Eigen::Matrix4f<sp/><ref refid="classILLIXR_1_1openwarp__vk_1ad17017beeec93575993da3b477e56a03" kindref="member">calculate_distortion_transform</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Matrix4f&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">projection_matrix</ref>);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144" refid="classILLIXR_1_1openwarp__vk_1af74b85c12d4a89a8dab61c03b2fb757e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1af74b85c12d4a89a8dab61c03b2fb757e" kindref="member">phonebook_</ref>;</highlight></codeline>
+<codeline lineno="145" refid="classILLIXR_1_1openwarp__vk_1a03c9759f7eb8b37b4cec64808742361a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;switchboard&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a03c9759f7eb8b37b4cec64808742361a" kindref="member">switchboard_</ref>;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147" refid="classILLIXR_1_1openwarp__vk_1a52668c081a34c7ea3d3a0a30f756397f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;data_format::pose_prediction&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a52668c081a34c7ea3d3a0a30f756397f" kindref="member">pose_prediction_</ref>;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149" refid="classILLIXR_1_1openwarp__vk_1a59aa750c0bcdc434098504d47c9a221c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a59aa750c0bcdc434098504d47c9a221c" kindref="member">disable_warp_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="150" refid="classILLIXR_1_1openwarp__vk_1adb6cb01b07cbe05f4ab981552c20020c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;vulkan::display_provider&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1adb6cb01b07cbe05f4ab981552c20020c" kindref="member">display_provider_</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="151" refid="classILLIXR_1_1openwarp__vk_1ae00405f0ce16d716ba855f34ea5313d6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::mutex<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ae00405f0ce16d716ba855f34ea5313d6" kindref="member">setup_mutex_</ref>;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153" refid="classILLIXR_1_1openwarp__vk_1a84b740ba61528adb2a03a19f7d55747f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a84b740ba61528adb2a03a19f7d55747f" kindref="member">initialized_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="154" refid="classILLIXR_1_1openwarp__vk_1aea01e0c1a7acf66a0458067dc5369075" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1aea01e0c1a7acf66a0458067dc5369075" kindref="member">input_texture_external_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156" refid="classILLIXR_1_1openwarp__vk_1a7caf9ab23f7dd5a45f9d8dc8bfeece8e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a7caf9ab23f7dd5a45f9d8dc8bfeece8e" kindref="member">using_godot_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="157" refid="classILLIXR_1_1openwarp__vk_1a187e7ca701e27324bfc04aa3c8ef9297" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a187e7ca701e27324bfc04aa3c8ef9297" kindref="member">offloaded_rendering_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight></codeline>
+<codeline lineno="159" refid="classILLIXR_1_1openwarp__vk_1afe8e6bf563234b42db49ebfa8ffb8874" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1afe8e6bf563234b42db49ebfa8ffb8874" kindref="member">frame_count_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Vulkan<sp/>resources</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162" refid="classILLIXR_1_1openwarp__vk_1ad29612335d2004d30b18cd1c201da42a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::stack&lt;std::function&lt;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1ad29612335d2004d30b18cd1c201da42a" kindref="member">deletion_queue_</ref>;</highlight></codeline>
+<codeline lineno="163" refid="classILLIXR_1_1openwarp__vk_1a34711da88173095a388cd9fb71cceef5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocator</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a34711da88173095a388cd9fb71cceef5" kindref="member">vma_allocator_</ref>{};</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Note<sp/>that<sp/>each<sp/>frame<sp/>occupies<sp/>2<sp/>elements<sp/>in<sp/>the<sp/>buffer<sp/>pool:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>i<sp/>for<sp/>the<sp/>image<sp/>itself,<sp/>and<sp/>i<sp/>+<sp/>1<sp/>for<sp/>the<sp/>depth<sp/>image.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167" refid="classILLIXR_1_1openwarp__vk_1ab253899f422af76262556b78f8fb825c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ab253899f422af76262556b78f8fb825c" kindref="member">swapchain_width_</ref>{};</highlight></codeline>
+<codeline lineno="168" refid="classILLIXR_1_1openwarp__vk_1a731da9f2e3530fa9acdda3f0456dec44" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a731da9f2e3530fa9acdda3f0456dec44" kindref="member">swapchain_height_</ref>{};</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="170" refid="classILLIXR_1_1openwarp__vk_1a6062004a8516e8fe26bf4c94247c9beb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;vulkan::buffer_pool&lt;data_format::pose::fast_head_pose_type&gt;&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a6062004a8516e8fe26bf4c94247c9beb" kindref="member">buffer_pool_</ref>;</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172" refid="classILLIXR_1_1openwarp__vk_1a133e92ee35e7f3c0654d77caabb4eb9a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSampler</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a133e92ee35e7f3c0654d77caabb4eb9a" kindref="member">fb_sampler_</ref>{};</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174" refid="classILLIXR_1_1openwarp__vk_1a68a7caf77bd3d198b9e8c485f739944e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorPool</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a68a7caf77bd3d198b9e8c485f739944e" kindref="member">descriptor_pool_</ref>{};</highlight></codeline>
+<codeline lineno="175" refid="classILLIXR_1_1openwarp__vk_1a9977d01865347e4df1a40030dcfafef7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandPool</ref><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a9977d01865347e4df1a40030dcfafef7" kindref="member">command_pool_</ref>{};</highlight></codeline>
+<codeline lineno="176" refid="classILLIXR_1_1openwarp__vk_1a62b2cad30d3e89f957c57cb8b5208ee9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandBuffer</ref><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a62b2cad30d3e89f957c57cb8b5208ee9" kindref="member">command_buffer_</ref>{};</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>offscreen<sp/>image<sp/>used<sp/>as<sp/>an<sp/>intermediate<sp/>render<sp/>target</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179" refid="classILLIXR_1_1openwarp__vk_1a48a74380b81a3e0a8d8dc438ae701a00" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkImage,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a48a74380b81a3e0a8d8dc438ae701a00" kindref="member">offscreen_images_</ref>{};</highlight></codeline>
+<codeline lineno="180" refid="classILLIXR_1_1openwarp__vk_1a04bc577a5c4452313e6deeb441cc404e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkImageView,<sp/>2&gt;<sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a04bc577a5c4452313e6deeb441cc404e" kindref="member">offscreen_image_views_</ref>{};</highlight></codeline>
+<codeline lineno="181" refid="classILLIXR_1_1openwarp__vk_1adb490be2a95f3d51f1652f85936e0104" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VmaAllocation,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1adb490be2a95f3d51f1652f85936e0104" kindref="member">offscreen_image_allocs_</ref>{};</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183" refid="classILLIXR_1_1openwarp__vk_1aa38867cbd9f41456a48acb3f5b9e24dc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkImage,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1aa38867cbd9f41456a48acb3f5b9e24dc" kindref="member">offscreen_depths_</ref>{};</highlight></codeline>
+<codeline lineno="184" refid="classILLIXR_1_1openwarp__vk_1adfe613b6e5105bfa982679b11869ef07" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkImageView,<sp/>2&gt;<sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1adfe613b6e5105bfa982679b11869ef07" kindref="member">offscreen_depth_views_</ref>{};</highlight></codeline>
+<codeline lineno="185" refid="classILLIXR_1_1openwarp__vk_1ad95737a783b5925d383da17958fc0efe" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VmaAllocation,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1ad95737a783b5925d383da17958fc0efe" kindref="member">offscreen_depth_allocs_</ref>{};</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187" refid="classILLIXR_1_1openwarp__vk_1a26b2562afabd85360c57d616e3f1b67e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkFramebuffer,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a26b2562afabd85360c57d616e3f1b67e" kindref="member">offscreen_framebuffers_</ref>{};</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>openwarp<sp/>mesh</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190" refid="classILLIXR_1_1openwarp__vk_1a93d852b49d80ca3fd90345428e63cedc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a93d852b49d80ca3fd90345428e63cedc" kindref="member">ow_pipeline_layout_</ref>{};</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192" refid="classILLIXR_1_1openwarp__vk_1aef06f4defe8f1f09bc81e5afa5e39739" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBuffer</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1aef06f4defe8f1f09bc81e5afa5e39739" kindref="member">ow_matrices_uniform_buffer_</ref>{};</highlight></codeline>
+<codeline lineno="193" refid="classILLIXR_1_1openwarp__vk_1ac5bbf1b200c58d10b0478aa1fbf5e21d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocation</ref><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ac5bbf1b200c58d10b0478aa1fbf5e21d" kindref="member">ow_matrices_uniform_alloc_</ref>{};</highlight></codeline>
+<codeline lineno="194" refid="classILLIXR_1_1openwarp__vk_1abd348f5eeaa918c64ea40389bd401939" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocationInfo</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1abd348f5eeaa918c64ea40389bd401939" kindref="member">ow_matrices_uniform_alloc_info_</ref>{};</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196" refid="classILLIXR_1_1openwarp__vk_1a6eb5cc581cb88b5b3eb917a59a01a364" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a6eb5cc581cb88b5b3eb917a59a01a364" kindref="member">ow_descriptor_set_layout_</ref>{};</highlight></codeline>
+<codeline lineno="197" refid="classILLIXR_1_1openwarp__vk_1a8bb3fdd972e0cd1bf4d448ae8c368729" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;std::vector&lt;VkDescriptorSet&gt;,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a8bb3fdd972e0cd1bf4d448ae8c368729" kindref="member">ow_descriptor_sets_</ref>;</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199" refid="classILLIXR_1_1openwarp__vk_1a92b6414d276376fe6f43fb48244e9d31" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a92b6414d276376fe6f43fb48244e9d31" kindref="member">num_openwarp_vertices_</ref>{};</highlight></codeline>
+<codeline lineno="200" refid="classILLIXR_1_1openwarp__vk_1ae9ddc5af300207a87e387fa03ff7fedf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ae9ddc5af300207a87e387fa03ff7fedf" kindref="member">num_openwarp_indices_</ref>{};</highlight></codeline>
+<codeline lineno="201" refid="classILLIXR_1_1openwarp__vk_1a1971a93c97173fb6e14c4d660dcacf72" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;OpenWarpVertex&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a1971a93c97173fb6e14c4d660dcacf72" kindref="member">openwarp_vertices_</ref>;</highlight></codeline>
+<codeline lineno="202" refid="classILLIXR_1_1openwarp__vk_1ac6414030ea8c0c345b299f4ffc558673" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint32_t&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ac6414030ea8c0c345b299f4ffc558673" kindref="member">openwarp_indices_</ref>;</highlight></codeline>
+<codeline lineno="203" refid="classILLIXR_1_1openwarp__vk_1a56022eb8a134b60b1bd11adae9f5d6cc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a56022eb8a134b60b1bd11adae9f5d6cc" kindref="member">openwarp_width_</ref><sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="204" refid="classILLIXR_1_1openwarp__vk_1aac66f1a73a33d9c3d87febe77555f109" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1aac66f1a73a33d9c3d87febe77555f109" kindref="member">openwarp_height_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206" refid="classILLIXR_1_1openwarp__vk_1a0917e40ab6fb6a3acd3c7531109b4270" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBuffer</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a0917e40ab6fb6a3acd3c7531109b4270" kindref="member">ow_vertex_buffer_</ref>{};</highlight></codeline>
+<codeline lineno="207" refid="classILLIXR_1_1openwarp__vk_1a0780eb8c7f2416f7342e9b2f319887f4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocation</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a0780eb8c7f2416f7342e9b2f319887f4" kindref="member">ow_vertex_alloc_</ref>{};</highlight></codeline>
+<codeline lineno="208" refid="classILLIXR_1_1openwarp__vk_1a3e00a9bdd7c871a3be0b509017ab10f0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBuffer</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a3e00a9bdd7c871a3be0b509017ab10f0" kindref="member">ow_index_buffer_</ref>{};</highlight></codeline>
+<codeline lineno="209" refid="classILLIXR_1_1openwarp__vk_1ab59bdbdb5f9b07c2ce0608803c4da1d7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocation</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ab59bdbdb5f9b07c2ce0608803c4da1d7" kindref="member">ow_index_alloc_</ref>{};</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211" refid="classILLIXR_1_1openwarp__vk_1af8e4350a9f4005a2bcdc5cb2b0dadf51" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1af8e4350a9f4005a2bcdc5cb2b0dadf51" kindref="member">openwarp_render_pass_</ref>{};</highlight></codeline>
+<codeline lineno="212" refid="classILLIXR_1_1openwarp__vk_1ab799718b900b3fc2ec98a4d800a8d354" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ab799718b900b3fc2ec98a4d800a8d354" kindref="member">openwarp_pipeline_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>distortion<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="215" refid="classILLIXR_1_1openwarp__vk_1a82b8816c000fc002fa46c612164a33d6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t" kindref="compound">HMD::hmd_info_t</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a82b8816c000fc002fa46c612164a33d6" kindref="member">hmd_info_</ref>{};</highlight></codeline>
+<codeline lineno="216" refid="classILLIXR_1_1openwarp__vk_1a3231532373cf8a702a3c34440d73543d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Matrix4f<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a3231532373cf8a702a3c34440d73543d" kindref="member">basic_projection_</ref>[2];</highlight></codeline>
+<codeline lineno="217" refid="classILLIXR_1_1openwarp__vk_1a3311afa60b01ebec0c0f8d5b07558e24" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Matrix4f<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a3311afa60b01ebec0c0f8d5b07558e24" kindref="member">inverse_projection_</ref>[2];</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219" refid="classILLIXR_1_1openwarp__vk_1ad2feadaf650619964c477488eda6283d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ad2feadaf650619964c477488eda6283d" kindref="member">dp_pipeline_layout_</ref>{};</highlight></codeline>
+<codeline lineno="220" refid="classILLIXR_1_1openwarp__vk_1aa91983b238a252046d698d824748c159" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBuffer</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1aa91983b238a252046d698d824748c159" kindref="member">dp_uniform_buffer_</ref>{};</highlight></codeline>
+<codeline lineno="221" refid="classILLIXR_1_1openwarp__vk_1a3cf6302785d7b4ecc6f0040183bc0d36" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocation</ref><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a3cf6302785d7b4ecc6f0040183bc0d36" kindref="member">dp_uniform_alloc_</ref>{};</highlight></codeline>
+<codeline lineno="222" refid="classILLIXR_1_1openwarp__vk_1a95f6fbe384deb8dfde434e3721e7fc06" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocationInfo</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a95f6fbe384deb8dfde434e3721e7fc06" kindref="member">dp_uniform_alloc_info_</ref>{};</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="224" refid="classILLIXR_1_1openwarp__vk_1a85c50f7ae7069cf105ebf2c4cb06a762" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a85c50f7ae7069cf105ebf2c4cb06a762" kindref="member">dp_descriptor_set_layout_</ref>{};</highlight></codeline>
+<codeline lineno="225" refid="classILLIXR_1_1openwarp__vk_1a6f9219b0034c94eddc9a9d78c8022029" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;std::vector&lt;VkDescriptorSet&gt;,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a6f9219b0034c94eddc9a9d78c8022029" kindref="member">dp_descriptor_sets_</ref>;</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"></highlight></codeline>
+<codeline lineno="227" refid="classILLIXR_1_1openwarp__vk_1a4775f203e05971c440ccab1044925e61" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a4775f203e05971c440ccab1044925e61" kindref="member">num_distortion_vertices_</ref>{};</highlight></codeline>
+<codeline lineno="228" refid="classILLIXR_1_1openwarp__vk_1adcac132eeb8720539466dec29a2aaf87" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1adcac132eeb8720539466dec29a2aaf87" kindref="member">num_distortion_indices_</ref>{};</highlight></codeline>
+<codeline lineno="229" refid="classILLIXR_1_1openwarp__vk_1a0667d0e561b87bb7c85075f019642325" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;DistortionCorrectionVertex&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a0667d0e561b87bb7c85075f019642325" kindref="member">distortion_vertices_</ref>;</highlight></codeline>
+<codeline lineno="230" refid="classILLIXR_1_1openwarp__vk_1ab5ba73bdfbf7ea7494ca45cf387368b4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint32_t&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ab5ba73bdfbf7ea7494ca45cf387368b4" kindref="member">distortion_indices_</ref>;</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232" refid="classILLIXR_1_1openwarp__vk_1ae4abe5c5ef08b3f9601ff967121346ed" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ae4abe5c5ef08b3f9601ff967121346ed" kindref="member">distortion_correction_render_pass_</ref>{};</highlight></codeline>
+<codeline lineno="233" refid="classILLIXR_1_1openwarp__vk_1ac33ce8d58e468c748e0b699b9bc63ec5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBuffer</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1ac33ce8d58e468c748e0b699b9bc63ec5" kindref="member">dc_vertex_buffer_</ref>{};</highlight></codeline>
+<codeline lineno="234" refid="classILLIXR_1_1openwarp__vk_1abc1aca7cf7968996fcef3d92676e66db" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocation</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1abc1aca7cf7968996fcef3d92676e66db" kindref="member">dc_vertex_alloc_</ref>{};</highlight></codeline>
+<codeline lineno="235" refid="classILLIXR_1_1openwarp__vk_1a23cf5d9a77b095b7fb3f9bb18a06d3aa" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBuffer</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a23cf5d9a77b095b7fb3f9bb18a06d3aa" kindref="member">dc_index_buffer_</ref>{};</highlight></codeline>
+<codeline lineno="236" refid="classILLIXR_1_1openwarp__vk_1a25bac687525d0c2cd6c4fcc647cd9a0b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VmaAllocation</ref><sp/><ref refid="classILLIXR_1_1openwarp__vk_1a25bac687525d0c2cd6c4fcc647cd9a0b" kindref="member">dc_index_alloc_</ref>{};</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>metrics</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="239" refid="classILLIXR_1_1openwarp__vk_1afa061ec4032d75feca4d8d6288ef899f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::atomic&lt;uint32_t&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1afa061ec4032d75feca4d8d6288ef899f" kindref="member">num_record_calls_</ref>{0};</highlight></codeline>
+<codeline lineno="240" refid="classILLIXR_1_1openwarp__vk_1a55f7f0fbf94fb7aad153272c8dbdbb47" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::atomic&lt;uint32_t&gt;<sp/><ref refid="classILLIXR_1_1openwarp__vk_1a55f7f0fbf94fb7aad153272c8dbdbb47" kindref="member">num_update_uniforms_calls_</ref>{0};</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"></highlight></codeline>
+<codeline lineno="242" refid="classILLIXR_1_1openwarp__vk_1a0b01b61c1225352bd3f204a2f5c61977" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1openwarp__vk__plugin" kindref="compound">openwarp_vk_plugin</ref>;</highlight></codeline>
+<codeline lineno="243"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp"/>
+  </compounddef>
+</doxygen>

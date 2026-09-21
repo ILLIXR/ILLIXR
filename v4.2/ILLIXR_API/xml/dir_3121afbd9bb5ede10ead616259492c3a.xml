@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_3121afbd9bb5ede10ead616259492c3a" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3</compoundname>
+    <innerdir refid="dir_2c97d453b88dace56ddb9ff367f75a04">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller</innerdir>
+    <innerdir refid="dir_b894c4dd8434cddede8459e059e77cb4">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/"/>
+  </compounddef>
+</doxygen>

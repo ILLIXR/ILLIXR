@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR_1_1decode" kind="namespace" language="C++">
+    <compoundname>ILLIXR::decode</compoundname>
+    <innerclass refid="classILLIXR_1_1decode_1_1decoded__frame__cache" prot="public">ILLIXR::decode::decoded_frame_cache</innerclass>
+    <innerclass refid="classILLIXR_1_1decode_1_1semantic__metadata__cache" prot="public">ILLIXR::decode::semantic_metadata_cache</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" line="13" column="1"/>
+  </compounddef>
+</doxygen>

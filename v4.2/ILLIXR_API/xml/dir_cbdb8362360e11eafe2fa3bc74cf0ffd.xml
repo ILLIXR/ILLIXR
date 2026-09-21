@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_cbdb8362360e11eafe2fa3bc74cf0ffd" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils</compoundname>
+    <innerfile refid="egl__context__manager_8cpp">egl_context_manager.cpp</innerfile>
+    <innerfile refid="hmd_8cpp">hmd.cpp</innerfile>
+    <innerfile refid="utils_2video__decoder_8cpp">video_decoder.cpp</innerfile>
+    <innerfile refid="utils_2video__encoder_8cpp">video_encoder.cpp</innerfile>
+    <innerfile refid="vulkan__utils_8cpp">vulkan_utils.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils/"/>
+  </compounddef>
+</doxygen>

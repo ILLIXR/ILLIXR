@@ -1,0 +1,270 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="misc_8hpp" kind="file" language="C++">
+    <compoundname>misc.hpp</compoundname>
+    <includes local="yes">illixr/relative_clock.hpp</includes>
+    <includes local="yes">illixr/switchboard.hpp</includes>
+    <includes local="no">boost/serialization/binary_object.hpp</includes>
+    <includes local="no">boost/serialization/export.hpp</includes>
+    <includes local="yes">xrt/xrt_defines.h</includes>
+    <includes local="no">boost/serialization/array.hpp</includes>
+    <includes local="no">boost/serialization/map.hpp</includes>
+    <includedby refid="frame_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp</includedby>
+    <includedby refid="serialization_2head__pose_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/head_pose.hpp</includedby>
+    <includedby refid="latency_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/latency.hpp</includedby>
+    <includedby refid="openxr_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr.hpp</includedby>
+    <includedby refid="openxr__view__frame_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr_view_frame.hpp</includedby>
+    <includedby refid="serialization_2pose__base_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/pose_base.hpp</includedby>
+    <includedby refid="quest__controller_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp</label>
+        <link refid="misc_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>boost/serialization/array.hpp</label>
+      </node>
+      <node id="4">
+        <label>boost/serialization/binary_object.hpp</label>
+      </node>
+      <node id="5">
+        <label>boost/serialization/export.hpp</label>
+      </node>
+      <node id="8">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="2">
+        <label>illixr/relative_clock.hpp</label>
+      </node>
+      <node id="3">
+        <label>illixr/switchboard.hpp</label>
+      </node>
+      <node id="6">
+        <label>xrt/xrt_defines.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/combined_pose.hpp</label>
+        <link refid="serialization_2combined__pose_8hpp"/>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp</label>
+        <link refid="frame_8hpp"/>
+      </node>
+      <node id="8">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_interaction_pose.hpp</label>
+        <link refid="serialization_2hand__interaction__pose_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp</label>
+        <link refid="serialization_2hand__pose_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/head_pose.hpp</label>
+        <link refid="serialization_2head__pose_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/latency.hpp</label>
+        <link refid="latency_8hpp"/>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp</label>
+        <link refid="misc_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr.hpp</label>
+        <link refid="openxr_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr_view_frame.hpp</label>
+        <link refid="openxr__view__frame_8hpp"/>
+      </node>
+      <node id="10">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/palm_pose.hpp</label>
+        <link refid="serialization_2palm__pose_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/pose_base.hpp</label>
+        <link refid="serialization_2pose__base_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp</label>
+        <link refid="quest__controller_8hpp"/>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespaceboost">boost</innernamespace>
+    <innernamespace refid="namespaceboost_1_1serialization">boost::serialization</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="misc_8hpp_1a3009dd8f782315d678015f5083093989" prot="public" static="no">
+        <name>THREE_VECTOR_TYPE</name>
+        <initializer>xrt_vec3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" line="12" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="misc_8hpp_1a8bc3bac5757609822e568dc98245afcb" prot="public" static="no">
+        <name>QUATERNION_TYPE</name>
+        <initializer>xrt_quat</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" line="13" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="misc_8hpp_1a1cae93df20d80cb3499cb1b3108fb93f" prot="public" static="no">
+        <name>POSE_BASE_TYPE</name>
+        <initializer>xrt_space_relation</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" line="14" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="misc_8hpp_1a246d10afc6639c6f3325ec9c697b2c82" prot="public" static="no">
+        <name>HAND_JOINT_SET</name>
+        <initializer>xrt_hand_joint_set</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" line="15" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="misc_8hpp_1a50b00946d19a39dd3171b6b4fe923c69" prot="public" static="no">
+        <name>HAND_JOINT_TYPE</name>
+        <initializer>xrt_hand_joint_value</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" line="16" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="misc_8hpp_1a58e86e2f8fc4ca9aa28a39cc0617dbee" prot="public" static="no">
+        <name>POSE_DATA_TYPE</name>
+        <initializer>xrt_pose</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" line="17" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/relative_clock.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/switchboard.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/binary_object.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/export.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>USING_OPENXR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>ENABLE_MONADO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&quot;xrt/xrt_defines.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12" refid="misc_8hpp_1a3009dd8f782315d678015f5083093989" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>THREE_VECTOR_TYPE<sp/>xrt_vec3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13" refid="misc_8hpp_1a8bc3bac5757609822e568dc98245afcb" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>QUATERNION_TYPE<sp/><sp/><sp/>xrt_quat</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="misc_8hpp_1a1cae93df20d80cb3499cb1b3108fb93f" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>POSE_BASE_TYPE<sp/><sp/><sp/><sp/>xrt_space_relation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="misc_8hpp_1a246d10afc6639c6f3325ec9c697b2c82" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>HAND_JOINT_SET<sp/><sp/><sp/><sp/>xrt_hand_joint_set</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16" refid="misc_8hpp_1a50b00946d19a39dd3171b6b4fe923c69" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>HAND_JOINT_TYPE<sp/><sp/><sp/>xrt_hand_joint_value</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="misc_8hpp_1a58e86e2f8fc4ca9aa28a39cc0617dbee" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>POSE_DATA_TYPE<sp/><sp/><sp/><sp/>xrt_pose</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;openxr/openxr.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>THREE_VECTOR_TYPE<sp/>XrVector3f</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>QUATERNION_TYPE<sp/><sp/><sp/>XrQuaternionf</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>POSE_BASE_TYPE<sp/><sp/><sp/><sp/>ILLIXR::data_format::pose::xrt_space_relation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>HAND_JOINT_SET<sp/><sp/><sp/><sp/>ILLIXR::data_format::pose::hand_joint_poses</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>HAND_JOINT_TYPE<sp/><sp/><sp/>ILLIXR::data_format::pose::hand_joint_pose</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>POSE_DATA_TYPE<sp/><sp/><sp/><sp/>XrPosef</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;boost/serialization/array.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;boost/serialization/map.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceboost_1_1serialization" kindref="compound">boost::serialization</ref><sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="33" refid="namespaceboost_1_1serialization_1a7569e70d7812ba39e64bbe555c931fb9" refkind="member"><highlight class="normal">[[maybe_unused]]<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceboost_1_1serialization_1ad190099ace7813108c601872bfa3d086" kindref="member">serialize</ref>(Archive&amp;<sp/>ar,<sp/>ILLIXR::time_point&amp;<sp/>tp,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>(void)<sp/>version;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(Archive::is_saving::value)<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Save:<sp/>convert<sp/>time_point<sp/>to<sp/>int64_t<sp/>nanoseconds<sp/>since<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>ns_since_epoch<sp/>=<sp/>std::chrono::duration_cast&lt;std::chrono::nanoseconds&gt;(tp.time_since_epoch()).count();</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>ns_since_epoch;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Load:<sp/>convert<sp/>int64_t<sp/>nanoseconds<sp/>back<sp/>to<sp/>time_point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>ns_since_epoch;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>ns_since_epoch;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tp<sp/>=<sp/>ILLIXR::time_point(std::chrono::nanoseconds(ns_since_epoch));</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>boost::serialization</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal">BOOST_CLASS_EXPORT_KEY(ILLIXR::switchboard::event)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp"/>
+  </compounddef>
+</doxygen>

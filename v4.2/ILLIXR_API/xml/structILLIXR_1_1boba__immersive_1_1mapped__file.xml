@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1boba__immersive_1_1mapped__file" kind="struct" language="C++" prot="private">
+    <compoundname>ILLIXR::boba_immersive::mapped_file</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1boba__immersive_1_1mapped__file_1a91dce3ab69a1aa7ce09f420df153a8ff" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::boba_immersive::mapped_file::fd</definition>
+        <argsstring></argsstring>
+        <name>fd</name>
+        <qualifiedname>ILLIXR::boba_immersive::mapped_file::fd</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="51" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1boba__immersive_1_1mapped__file_1a2b7212a1676187835f4a0a4018c3105d" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::uint8_t *</type>
+        <definition>const std::uint8_t* ILLIXR::boba_immersive::mapped_file::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>ILLIXR::boba_immersive::mapped_file::data</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="52" column="28" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1boba__immersive_1_1mapped__file_1af8735bbf06ce9a2c04359ae47f325ba5" prot="public" static="no" mutable="no">
+        <type>std::size_t</type>
+        <definition>std::size_t ILLIXR::boba_immersive::mapped_file::size</definition>
+        <argsstring></argsstring>
+        <name>size</name>
+        <qualifiedname>ILLIXR::boba_immersive::mapped_file::size</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="53" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" bodystart="53" bodyend="53"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1boba__immersive_1_1mapped__file_1a0b9d82447cada607dfc5a419939c4705" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::boba_immersive::mapped_file::mapped_file</definition>
+        <argsstring>()=default</argsstring>
+        <name>mapped_file</name>
+        <qualifiedname>ILLIXR::boba_immersive::mapped_file::mapped_file</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="55" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1boba__immersive_1_1mapped__file_1ac5c56ff9e14a96983fdc0ea657100a2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::boba_immersive::mapped_file::mapped_file</definition>
+        <argsstring>(const mapped_file &amp;)=delete</argsstring>
+        <name>mapped_file</name>
+        <qualifiedname>ILLIXR::boba_immersive::mapped_file::mapped_file</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="56" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1boba__immersive_1_1mapped__file_1a9ee66902a6d372658e8280d3c3eb7dbd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref> &amp;</type>
+        <definition>mapped_file &amp; ILLIXR::boba_immersive::mapped_file::operator=</definition>
+        <argsstring>(const mapped_file &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>ILLIXR::boba_immersive::mapped_file::operator=</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="57" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1boba__immersive_1_1mapped__file_1aad40b367ebc95015e2209f86e50a9dc9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::boba_immersive::mapped_file::~mapped_file</definition>
+        <argsstring>()</argsstring>
+        <name>~mapped_file</name>
+        <qualifiedname>ILLIXR::boba_immersive::mapped_file::~mapped_file</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="58" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.cpp" bodystart="330" bodyend="332"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1boba__immersive_1_1mapped__file_1ac6333e5d8c3f1c1139cdd91746394d0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::boba_immersive::mapped_file::reset</definition>
+        <argsstring>()</argsstring>
+        <name>reset</name>
+        <qualifiedname>ILLIXR::boba_immersive::mapped_file::reset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Unmap the current region and close its file descriptor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="61" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.cpp" bodystart="334" bodyend="344"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Read-only RAII mapping for one producer-owned Boba ring file. </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" line="50" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp" bodystart="50" bodyend="62"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a2b7212a1676187835f4a0a4018c3105d" prot="public" virt="non-virtual"><scope>ILLIXR::boba_immersive::mapped_file</scope><name>data</name></member>
+      <member refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a91dce3ab69a1aa7ce09f420df153a8ff" prot="public" virt="non-virtual"><scope>ILLIXR::boba_immersive::mapped_file</scope><name>fd</name></member>
+      <member refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a0b9d82447cada607dfc5a419939c4705" prot="public" virt="non-virtual"><scope>ILLIXR::boba_immersive::mapped_file</scope><name>mapped_file</name></member>
+      <member refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1ac5c56ff9e14a96983fdc0ea657100a2b" prot="public" virt="non-virtual"><scope>ILLIXR::boba_immersive::mapped_file</scope><name>mapped_file</name></member>
+      <member refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a9ee66902a6d372658e8280d3c3eb7dbd" prot="public" virt="non-virtual"><scope>ILLIXR::boba_immersive::mapped_file</scope><name>operator=</name></member>
+      <member refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1ac6333e5d8c3f1c1139cdd91746394d0f" prot="public" virt="non-virtual"><scope>ILLIXR::boba_immersive::mapped_file</scope><name>reset</name></member>
+      <member refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1af8735bbf06ce9a2c04359ae47f325ba5" prot="public" virt="non-virtual"><scope>ILLIXR::boba_immersive::mapped_file</scope><name>size</name></member>
+      <member refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1aad40b367ebc95015e2209f86e50a9dc9" prot="public" virt="non-virtual"><scope>ILLIXR::boba_immersive::mapped_file</scope><name>~mapped_file</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

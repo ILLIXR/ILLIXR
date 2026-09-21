@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2quest3_2controller_2CMakeLists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2quest3_2controller_2CMakeLists_8txt_1a9ee2a67586b3b33bd424816b2df3e65d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>if</definition>
+        <argsstring>(NOT CMAKE_SYSTEM_NAME STREQUAL &quot;Linux&quot;) message(WARNING &quot;quest3.controller is currently available only on Linux/X11&quot;) set(USE_QUEST3.CONTROLLER OFF PARENT_SCOPE) return() endif() find_package(OpenXR CONFIG REQUIRED PATHS/usr/lib/$</argsstring>
+        <name>if</name>
+        <param>
+          <type>NOT CMAKE_SYSTEM_NAME STREQUAL &quot;Linux&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/CMakeLists.txt" line="3" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/CMakeLists.txt" bodystart="3" bodyend="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#<sp/>This<sp/>desktop<sp/>OpenXR<sp/>session<sp/>serves<sp/>the<sp/>ALVR/SteamVR<sp/>path.<sp/>Native<sp/>Quest<sp/>input</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>is<sp/>handled<sp/>by<sp/>the<sp/>Android<sp/>openxr_interface<sp/>plugin.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(NOT<sp/>CMAKE_SYSTEM_NAME<sp/>STREQUAL<sp/></highlight><highlight class="stringliteral">&quot;Linux&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"><sp/><sp/><sp/><sp/>message(WARNING<sp/></highlight><highlight class="stringliteral">&quot;quest3.controller<sp/>is<sp/>currently<sp/>available<sp/>only<sp/>on<sp/>Linux/X11&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(USE_QUEST3.CONTROLLER<sp/>OFF<sp/>PARENT_SCOPE)</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>Conda-based<sp/>ILLIXR<sp/>builds<sp/>may<sp/>set<sp/>CMAKE_PREFIX_PATH<sp/>to<sp/>the<sp/>environment<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>consequently<sp/>miss<sp/>the<sp/>distro<sp/>OpenXR<sp/>loader<sp/>package.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><ref refid="plugins_2zed_2capture_2CMakeLists_8txt_1a08ebbc1c0ad7f3cedb877f38bfda207e" kindref="member">find_package</ref>(OpenXR<sp/>CONFIG<sp/>REQUIRED</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PATHS</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/openxr</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/usr/local/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/openxr</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/usr/lib/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu/cmake/openxr</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/usr/local/lib/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu/cmake/openxr</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/usr/lib/cmake/openxr</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/usr/local/lib/cmake/openxr)</highlight></codeline>
+<codeline lineno="18"><highlight class="normal">find_path(OPENXR_HEADER_DIR</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NAMES<sp/>openxr.h</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PATH_SUFFIXES<sp/>openxr</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>REQUIRED)</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(PLUGIN_NAME<sp/>plugin.quest3.controller${ILLIXR_BUILD_SUFFIX})</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1a01a41021f28d6a6f1f0894dc5a7bc38a" kindref="member">add_library</ref>(${PLUGIN_NAME}<sp/>SHARED</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plugin.cpp</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plugin.hpp</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/openxr_view_frame.hpp</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/quest_controller.hpp</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/stereo_frame.hpp</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">#<sp/>Match<sp/>the<sp/>Boba<sp/>producer</highlight><highlight class="stringliteral">&apos;s<sp/>pose<sp/>layout<sp/>for<sp/>shared<sp/>view<sp/>and<sp/>stereo_frame<sp/>events.</highlight></codeline>
+<codeline lineno="38"><highlight class="stringliteral">target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE<sp/>USING_OPENXR)</highlight></codeline>
+<codeline lineno="39"><highlight class="stringliteral">target_include_directories(${PLUGIN_NAME}<sp/>PRIVATE</highlight></codeline>
+<codeline lineno="40"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${OPENXR_HEADER_DIR}</highlight></codeline>
+<codeline lineno="41"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${gl_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="42"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${X11_INCLUDE_DIR}</highlight></codeline>
+<codeline lineno="43"><highlight class="stringliteral">)</highlight></codeline>
+<codeline lineno="44"><highlight class="stringliteral">target_link_libraries(${PLUGIN_NAME}<sp/>PRIVATE</highlight></codeline>
+<codeline lineno="45"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>OpenXR::openxr_loader</highlight></codeline>
+<codeline lineno="46"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen3::Eigen</highlight></codeline>
+<codeline lineno="47"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Threads::Threads</highlight></codeline>
+<codeline lineno="48"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>glfw</highlight></codeline>
+<codeline lineno="49"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${gl_LIBRARIES}</highlight></codeline>
+<codeline lineno="50"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${X11_LIBRARIES}</highlight></codeline>
+<codeline lineno="51"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::spdlog</highlight></codeline>
+<codeline lineno="52"><highlight class="stringliteral">)</highlight></codeline>
+<codeline lineno="53"><highlight class="stringliteral">target_compile_features(${PLUGIN_NAME}<sp/>PRIVATE<sp/>cxx_std_17)</highlight></codeline>
+<codeline lineno="54"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="55"><highlight class="stringliteral">install(TARGETS<sp/>${PLUGIN_NAME}<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

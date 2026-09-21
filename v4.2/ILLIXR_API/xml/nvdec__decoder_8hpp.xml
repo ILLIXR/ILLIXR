@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="nvdec__decoder_8hpp" kind="file" language="C++">
+    <compoundname>nvdec_decoder.hpp</compoundname>
+    <includes local="yes">nv12_to_rgb.cuh</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">cuda.h</includes>
+    <includes local="no">cuda_runtime.h</includes>
+    <includes local="no">NvDecoder/NvDecoder.h</includes>
+    <includes local="no">stdexcept</includes>
+    <includes local="no">string</includes>
+    <includedby refid="nvdec__decoder_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp</includedby>
+    <includedby refid="plugins_2semantic__python_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp</includedby>
+    <includedby refid="plugins_2semantic__python_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp</label>
+        <link refid="nvdec__decoder_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>NvDecoder/NvDecoder.h</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>cuda.h</label>
+      </node>
+      <node id="5">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="2">
+        <label>nv12_to_rgb.cuh</label>
+      </node>
+      <node id="7">
+        <label>stdexcept</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp</label>
+        <link refid="nvdec__decoder_8cpp"/>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp</label>
+        <link refid="nvdec__decoder_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp</label>
+        <link refid="plugins_2semantic__python_2plugin_8cpp"/>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp</label>
+        <link refid="plugins_2semantic__python_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp</label>
+        <link refid="switchboard__bindings_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1nvdec__decoder" prot="public">ILLIXR::nvdec_decoder</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <briefdescription>
+<para>NVDEC hardware H.265 decoder for the semantic_python plugin. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Wraps the NVIDIA Video Codec SDK NvDecoder sample class. Decoded NV12 frames are converted to packed RGB uint8 on the GPU via nv12_to_rgb.cu, then copied to a pre-allocated pinned host buffer. The pinned buffer is exposed to Python as a zero-copy numpy array via a pybind11 capsule.</para>
+<para>Output: shape (height, width, 3), dtype uint8, channel order RGB.</para>
+<para>Supports SDK 12.x and 13.x. AV1 decode is conditionally compiled when NVDEC_HAS_AV1 is defined (requires Ada Lovelace or newer GPU).</para>
+<para>NvDecoder&apos;s parser buffers pictures internally for reordering (see ulMaxDisplayDelay in the SDK&apos;s NvDecoder.cpp), so the picture returned by a given decode() call is not necessarily the picture submitted by that same call. decode() threads the caller&apos;s frame number through as the NVDEC picture timestamp so the caller can recover which picture was actually returned.</para>
+<para>Thread safety: not thread-safe. All calls must come from the same thread (the switchboard decode callback thread). </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;nv12_to_rgb.cuh&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cuda.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cuda_runtime.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;NvDecoder/NvDecoder.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdexcept&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="classILLIXR_1_1nvdec__decoder" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cudaVideoCodec</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">codec</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cudaVideoCodec_HEVC</ref>);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a190386836071ed8bb62619c5930edea1" kindref="member">~nvdec_decoder</ref>();</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Non-copyable,<sp/>non-movable<sp/>-<sp/>owns<sp/>CUDA<sp/>context</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="classILLIXR_1_1nvdec__decoder_1a13b53c3e0dff726dbee71961ee5c378a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a13b53c3e0dff726dbee71961ee5c378a" kindref="member">nvdec_decoder</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref>&amp;)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="47" refid="classILLIXR_1_1nvdec__decoder_1a109928c5ee97076af794b3aebf82d492" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref>&amp;<sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a109928c5ee97076af794b3aebf82d492" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref>*<sp/><ref refid="classILLIXR_1_1nvdec__decoder_1aeb8e64d41c32bfcf2e9a54dd04e0dbfc" kindref="member">decode</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref>*<sp/>data,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int64_t</ref><sp/>frame_number,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int64_t</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">out_frame_number</ref>);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="classILLIXR_1_1nvdec__decoder_1a36ea92e653bc12c0957bb4d1c120ad89" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a36ea92e653bc12c0957bb4d1c120ad89" kindref="member">width</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a46e29aa3f1ee38700d554d9db7331165" kindref="member">width_</ref>;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81" refid="classILLIXR_1_1nvdec__decoder_1a1363542e72decc4eec4aa053b69786c9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a1363542e72decc4eec4aa053b69786c9" kindref="member">height</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a44b6bd496b64326b76e2dbd3200ef692" kindref="member">height_</ref>;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a160ab7ddf26b0d1c837400393b2a0ae1" kindref="member">ensure_buffers</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">h</ref>);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1aa52af23013545babab1297d48fd434fd" kindref="member">free_pinned</ref>();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90" refid="classILLIXR_1_1nvdec__decoder_1a891a55e438197a88ff809ed34bb778eb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cudaVideoCodec</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a891a55e438197a88ff809ed34bb778eb" kindref="member">codec_</ref>;</highlight></codeline>
+<codeline lineno="91" refid="classILLIXR_1_1nvdec__decoder_1ac73b9406c32e265bf05bb3864d656b6b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">CUcontext</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1ac73b9406c32e265bf05bb3864d656b6b" kindref="member">cuda_ctx_</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="92" refid="classILLIXR_1_1nvdec__decoder_1abe00a2f1f56dcebd5c27ccfd3758ea52" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;NvDecoder&gt;<sp/><ref refid="classILLIXR_1_1nvdec__decoder_1abe00a2f1f56dcebd5c27ccfd3758ea52" kindref="member">decoder_</ref>;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="classILLIXR_1_1nvdec__decoder_1a7878ca0510a237a8388b155aeec5599f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref>*<sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a7878ca0510a237a8388b155aeec5599f" kindref="member">pinned_rgb_</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>pinned<sp/>host<sp/>buffer,<sp/>H*W*3<sp/>bytes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classILLIXR_1_1nvdec__decoder_1a7da001cf8ac8674c849e7ed9047fb094" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref>*<sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a7da001cf8ac8674c849e7ed9047fb094" kindref="member">device_rgb_</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>device<sp/>buffer<sp/>for<sp/>GPU<sp/>RGB<sp/>conversion</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96" refid="classILLIXR_1_1nvdec__decoder_1a5324fac63058916a623badb0c0e75c26" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cudaStream_t</ref><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a5324fac63058916a623badb0c0e75c26" kindref="member">stream_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="97" refid="classILLIXR_1_1nvdec__decoder_1a46e29aa3f1ee38700d554d9db7331165" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a46e29aa3f1ee38700d554d9db7331165" kindref="member">width_</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="98" refid="classILLIXR_1_1nvdec__decoder_1a44b6bd496b64326b76e2dbd3200ef692" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1nvdec__decoder_1a44b6bd496b64326b76e2dbd3200ef692" kindref="member">height_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp"/>
+  </compounddef>
+</doxygen>

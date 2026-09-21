@@ -1,0 +1,17 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/head_pose.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/head_pose.hpp">
+<area shape="rect" id="Node000001" title="Definitions of head poses." alt="" coords="203,5,387,89"/>
+<area shape="rect" id="Node000002" href="$poses_2pose__base_8hpp.html" title=" " alt="" coords="25,137,190,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="225,92,154,133,151,128,222,87"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="23,225,74,251"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="204,53,153,61,101,77,53,102,33,119,15,139,8,157,11,176,20,196,32,213,27,216,15,198,6,178,3,156,10,136,29,115,50,98,99,72,152,56,203,48"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="214,145,377,170"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="298,90,298,131,293,131,293,90"/>
+<area shape="rect" id="Node000006" href="$openxr__defines_8hpp.html" title=" " alt="" coords="401,145,552,170"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="366,87,447,135,444,140,363,92"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="576,145,636,170"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="389,74,566,135,570,137,569,142,564,140,387,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="95,179,68,216,64,212,91,176"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="101,225,231,251"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="124,176,151,212,147,216,119,179"/>
+<area shape="poly" id="edge6_Node000006_Node000004" title=" " alt="" coords="432,173,225,225,224,219,431,167"/>
+</map>

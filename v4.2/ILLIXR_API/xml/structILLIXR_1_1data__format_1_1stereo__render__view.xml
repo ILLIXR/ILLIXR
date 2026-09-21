@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1stereo__render__view" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::stereo_render_view</compoundname>
+    <basecompoundref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base" prot="public" virt="non-virtual">ILLIXR::data_format::pose::pose_base</basecompoundref>
+    <includes refid="stereo__frame_8hpp" local="no">stereo_frame.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__render__view_1ae8ceef66eee0e086442c95d76dcf05ba" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::stereo_render_view::angle_left</definition>
+        <argsstring></argsstring>
+        <name>angle_left</name>
+        <qualifiedname>ILLIXR::data_format::stereo_render_view::angle_left</qualifiedname>
+        <initializer>{0.0F}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Asymmetric FOV used by Boba when this eye image was rendered. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="47" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="47" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__render__view_1a0033060ac6890d266b0cf2d0d045c194" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::stereo_render_view::angle_right</definition>
+        <argsstring></argsstring>
+        <name>angle_right</name>
+        <qualifiedname>ILLIXR::data_format::stereo_render_view::angle_right</qualifiedname>
+        <initializer>{0.0F}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="48" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__render__view_1a01e77b0964c39dcb9442c624f11e84fc" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::stereo_render_view::angle_up</definition>
+        <argsstring></argsstring>
+        <name>angle_up</name>
+        <qualifiedname>ILLIXR::data_format::stereo_render_view::angle_up</qualifiedname>
+        <initializer>{0.0F}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="49" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="49" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__render__view_1a4878839f55b59c87a05ef5f10259b7cc" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::stereo_render_view::angle_down</definition>
+        <argsstring></argsstring>
+        <name>angle_down</name>
+        <qualifiedname>ILLIXR::data_format::stereo_render_view::angle_down</qualifiedname>
+        <initializer>{0.0F}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="50" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="50" bodyend="50"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Eye pose/FOV used when the producer rendered the corresponding image. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::stereo_render_view</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__render__view"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::stereo_render_view</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__render__view"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="38" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="38" bodyend="56"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a4878839f55b59c87a05ef5f10259b7cc" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>angle_down</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__render__view_1ae8ceef66eee0e086442c95d76dcf05ba" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>angle_left</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a0033060ac6890d266b0cf2d0d045c194" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>angle_right</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a01e77b0964c39dcb9442c624f11e84fc" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>angle_up</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a9b80e3d93ddc6cbd7f3da881c2eaa9e1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>confidence</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>orientation</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a14436a8d00a4b0dcb980c11b336ee309" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>pose_base</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a40db7332956eb7aba9c1a0c145acb8f1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>pose_base</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>position</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1aea4c9c210ee8b52c1e0326b662553f4d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>update</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1ab7511efb54fbb7835cfb69d95c2b2d87" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_render_view</scope><name>valid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

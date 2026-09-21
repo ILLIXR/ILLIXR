@@ -1,0 +1,347 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1network__latency__tx" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::network_latency_tx</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <includes refid="plugins_2network__latency_2tx_2plugin_8hpp" local="no">plugin.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1network__latency__tx_1a92bafc42fc8f0421af21aafa8cf5f48c" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::network_latency_tx::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::network_latency_tx::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="67" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1network__latency__tx_1afb44eba2f75b7082d205668dbec0f02c" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1latency__ping" kindref="compound">data_format::latency_ping</ref> &gt;</type>
+        <definition>switchboard::network_writer&lt;data_format::latency_ping&gt; ILLIXR::network_latency_tx::ping_writer_</definition>
+        <argsstring></argsstring>
+        <name>ping_writer_</name>
+        <qualifiedname>ILLIXR::network_latency_tx::ping_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="70" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1network__latency__tx_1acec9a6d64d623a0383d978500c2aac7e" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">network_latency_pong_rx</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;network_latency_pong_rx&gt; ILLIXR::network_latency_tx::pong_rx_</definition>
+        <argsstring></argsstring>
+        <name>pong_rx_</name>
+        <qualifiedname>ILLIXR::network_latency_tx::pong_rx_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="72" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1network__latency__tx_1a2ff6e2940b2519e7cbbe6babe349543a" prot="private" static="no" mutable="no">
+        <type>std::chrono::milliseconds</type>
+        <definition>std::chrono::milliseconds ILLIXR::network_latency_tx::ping_interval_</definition>
+        <argsstring></argsstring>
+        <name>ping_interval_</name>
+        <qualifiedname>ILLIXR::network_latency_tx::ping_interval_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="75" column="31" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1network__latency__tx_1a3210f5a1607c10d50f4ad9bcc4aa2d2e" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref> &gt;</type>
+        <definition>std::atomic&lt;uint64_t&gt; ILLIXR::network_latency_tx::sequence_number_</definition>
+        <argsstring></argsstring>
+        <name>sequence_number_</name>
+        <qualifiedname>ILLIXR::network_latency_tx::sequence_number_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="78" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1network__latency__tx_1a3a0cbcbcf51ebeb05c1525e3abec61a2" prot="private" static="no" mutable="no">
+        <type>std::chrono::steady_clock::time_point</type>
+        <definition>std::chrono::steady_clock::time_point ILLIXR::network_latency_tx::last_ping_time_</definition>
+        <argsstring></argsstring>
+        <name>last_ping_time_</name>
+        <qualifiedname>ILLIXR::network_latency_tx::last_ping_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="79" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" bodystart="79" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1network__latency__tx_1a7f35bec950dbfc768b2d45885c4982fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>network_latency_tx::network_latency_tx</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>network_latency_tx</name>
+        <qualifiedname>ILLIXR::network_latency_tx::network_latency_tx</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+<para>Construct the network latency client plugin. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Plugin name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pb_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Phonebook pointer for accessing services </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="42" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.cpp" bodystart="15" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network__latency__tx_1af8daf563f788f9c0b3ac49f547ace418" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void network_latency_tx::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::network_latency_tx::start</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc">start</reimplements>
+        <briefdescription>
+<para>A method which Spindle calls when it starts the component. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is necessary because a constructor can&apos;t call derived virtual methods (due to structure of C++). See <computeroutput>threadloop</computeroutput> for an example of this use-case. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="44" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.cpp" bodystart="29" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network__latency__tx_1a127c266530093a28a8dfda71b48c5d9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void network_latency_tx::stop</definition>
+        <argsstring>() override</argsstring>
+        <name>stop</name>
+        <qualifiedname>ILLIXR::network_latency_tx::stop</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4">stop</reimplements>
+        <briefdescription>
+<para>A method which Spindle calls when it stops the component. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is necessary because the parent class might define some actions that need to be taken prior to destructing the derived class. For example, threadloop must halt and join the thread before the derived class can be safely destructed. However, the derived class&apos;s destructor is called before its parent (threadloop), so threadloop doesn&apos;t get a chance to join the thread before the derived class is destroyed, and the thread accesses freed memory. Instead, we call plugin-&gt;stop manually before destroying anything.</para>
+<para>Concrete plugins are responsible for initializing their specific logger and sinks. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="45" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.cpp" bodystart="34" bodyend="37"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1network__latency__tx_1a15f2eab8e7d25bc4449286dbe96d8fcf" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">skip_option</ref></type>
+        <definition>threadloop::skip_option network_latency_tx::_p_should_skip</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_should_skip</name>
+        <qualifiedname>ILLIXR::network_latency_tx::_p_should_skip</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a">_p_should_skip</reimplements>
+        <briefdescription>
+<para>Determines if the iteration should be skipped. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>skip_option indicating whether to run or skip </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="52" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.cpp" bodystart="39" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network__latency__tx_1a9dd314bd843529dfa7ec520071189496" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void network_latency_tx::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::network_latency_tx::_p_one_iteration</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be">_p_one_iteration</reimplements>
+        <briefdescription>
+<para>Main iteration - sends ping and processes any received pongs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="57" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.cpp" bodystart="50" bodyend="59"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1network__latency__tx_1a3f501d7c3c230897c51dd553ec04a1ab" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+        <definition>uint64_t network_latency_tx::get_timestamp_ns</definition>
+        <argsstring>()</argsstring>
+        <name>get_timestamp_ns</name>
+        <qualifiedname>ILLIXR::network_latency_tx::get_timestamp_ns</qualifiedname>
+        <briefdescription>
+<para>Get current timestamp in nanoseconds. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Current time in nanoseconds since epoch </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="64" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.cpp" bodystart="61" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Network latency measurement client plugin (TX side). </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This plugin sends ping packets to a server and receives pong responses via the pong_rx subplugin. The pong_rx plugin calculates round-trip network latency and clock offset, publishing results to the switchboard for other plugins to consume.</para>
+<para>The <ref refid="classILLIXR_1_1tcp__network__backend" kindref="compound">tcp_network_backend</ref> plugin handles the actual network transport. This plugin publishes pings to a switchboard topic (which <ref refid="classILLIXR_1_1tcp__network__backend" kindref="compound">tcp_network_backend</ref> transmits over the network) and reads pongs from another topic (which <ref refid="classILLIXR_1_1tcp__network__backend" kindref="compound">tcp_network_backend</ref> populates from network data).</para>
+<para>Environment Variables:<itemizedlist>
+<listitem><para>NETWORK_LATENCY_INTERVAL_MS: Interval between pings in milliseconds (default: 100) </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::network_latency_tx</label>
+        <link refid="classILLIXR_1_1network__latency__tx"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="8">
+        <label>ILLIXR::network::topic_config</label>
+        <link refid="structILLIXR_1_1network_1_1topic__config"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::network_latency_tx</label>
+        <link refid="classILLIXR_1_1network__latency__tx"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ping_writer_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>ILLIXR::switchboard::topic</label>
+        <link refid="classILLIXR_1_1switchboard_1_1topic"/>
+      </node>
+      <node id="6">
+        <label>ILLIXR::switchboard::writer&lt; Specific_event &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::switchboard::network_writer&lt; ILLIXR::data_format::latency_ping &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1network__writer"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" line="35" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp" bodystart="35" bodyend="80"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1network__latency__tx_1a9dd314bd843529dfa7ec520071189496" prot="protected" virt="virtual"><scope>ILLIXR::network_latency_tx</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1a15f2eab8e7d25bc4449286dbe96d8fcf" prot="protected" virt="virtual"><scope>ILLIXR::network_latency_tx</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" virt="virtual"><scope>ILLIXR::network_latency_tx</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1a3f501d7c3c230897c51dd553ec04a1ab" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>get_timestamp_ns</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::network_latency_tx</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1addfbade169288512c9be438f4ae9bc07" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>internal_stop_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1a3a0cbcbcf51ebeb05c1525e3abec61a2" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>last_ping_time_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1a7f35bec950dbfc768b2d45885c4982fc" prot="public" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>network_latency_tx</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1a2ff6e2940b2519e7cbbe6babe349543a" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>ping_interval_</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1afb44eba2f75b7082d205668dbec0f02c" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>ping_writer_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1acec9a6d64d623a0383d978500c2aac7e" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>pong_rx_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1a3210f5a1607c10d50f4ad9bcc4aa2d2e" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>sequence_number_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1af8daf563f788f9c0b3ac49f547ace418" prot="public" virt="virtual"><scope>ILLIXR::network_latency_tx</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1a127c266530093a28a8dfda71b48c5d9d" prot="public" virt="virtual"><scope>ILLIXR::network_latency_tx</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a2390e3eff6ab0c0cc11f061f34cf7b39" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>stoplight_</name></member>
+      <member refid="classILLIXR_1_1network__latency__tx_1a92bafc42fc8f0421af21aafa8cf5f48c" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a468309a771ef1d60c4cc107cf2e9cab2" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>thread_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1ace62d94a271fd7a253eb1ee71589da61" prot="private" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>thread_main</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::network_latency_tx</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::network_latency_tx</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

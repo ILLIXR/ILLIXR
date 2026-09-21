@@ -1,0 +1,23 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="461,5,663,75"/>
+<area shape="rect" id="Node000002" href="$nvdec__decoder_8hpp.html" title="NVDEC hardware H.265 decoder for the semantic_python plugin." alt="" coords="328,123,476,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="506,77,435,118,432,113,503,72"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="501,123,623,148"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="565,75,565,109,559,109,559,75"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="648,123,772,148"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="617,73,681,113,678,117,614,77"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,196,135,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="349,151,138,196,136,190,348,145"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="159,196,226,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="369,151,240,194,238,189,368,145"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="251,196,316,221"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="384,150,316,191,313,186,382,146"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="341,196,463,221"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="405,148,405,182,399,182,399,148"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="488,196,671,221"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="431,146,539,188,537,193,430,150"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="695,196,781,221"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="457,145,682,193,681,198,455,151"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="806,196,865,221"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="477,144,640,168,793,193,792,199,639,173,476,150"/>
+</map>

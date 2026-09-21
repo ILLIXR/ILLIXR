@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1openxr__eye__view" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::openxr_eye_view</compoundname>
+    <basecompoundref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base" prot="public" virt="non-virtual">ILLIXR::data_format::pose::pose_base</basecompoundref>
+    <includes refid="openxr__view__frame_8hpp" local="no">openxr_view_frame.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1openxr__eye__view_1ac33e62114b314c975f3aeaa4b16bd654" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::openxr_eye_view::angle_left</definition>
+        <argsstring></argsstring>
+        <name>angle_left</name>
+        <qualifiedname>ILLIXR::data_format::openxr_eye_view::angle_left</qualifiedname>
+        <initializer>{0.0F}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Asymmetric projection angles in radians, following XrFovf semantics. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" line="23" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" bodystart="23" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1openxr__eye__view_1a61a84b149f3d7e1a443382f766bf06b9" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::openxr_eye_view::angle_right</definition>
+        <argsstring></argsstring>
+        <name>angle_right</name>
+        <qualifiedname>ILLIXR::data_format::openxr_eye_view::angle_right</qualifiedname>
+        <initializer>{0.0F}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" line="24" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" bodystart="24" bodyend="24"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1openxr__eye__view_1abb8fd927eec658da49f919c3da5026ed" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::openxr_eye_view::angle_up</definition>
+        <argsstring></argsstring>
+        <name>angle_up</name>
+        <qualifiedname>ILLIXR::data_format::openxr_eye_view::angle_up</qualifiedname>
+        <initializer>{0.0F}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" line="25" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" bodystart="25" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1openxr__eye__view_1a867a0248e7d714beb11ddb9d14da51a3" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::openxr_eye_view::angle_down</definition>
+        <argsstring></argsstring>
+        <name>angle_down</name>
+        <qualifiedname>ILLIXR::data_format::openxr_eye_view::angle_down</qualifiedname>
+        <initializer>{0.0F}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" line="26" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" bodystart="26" bodyend="26"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1openxr__eye__view_1a409a8d32bd626af3adc3f7534d5673db" prot="public" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::data_format::openxr_eye_view::recommended_width</definition>
+        <argsstring></argsstring>
+        <name>recommended_width</name>
+        <qualifiedname>ILLIXR::data_format::openxr_eye_view::recommended_width</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Runtime-recommended swapchain extent for this eye. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" line="29" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" bodystart="29" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1openxr__eye__view_1a33968baa9180549b271437d04a4f95a2" prot="public" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::data_format::openxr_eye_view::recommended_height</definition>
+        <argsstring></argsstring>
+        <name>recommended_height</name>
+        <qualifiedname>ILLIXR::data_format::openxr_eye_view::recommended_height</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" line="30" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1openxr__eye__view_1a004854f870ce9cc6cad1fd090ace28b0" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::openxr_eye_view::pose_tracked</definition>
+        <argsstring></argsstring>
+        <name>pose_tracked</name>
+        <qualifiedname>ILLIXR::data_format::openxr_eye_view::pose_tracked</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Distinguishes live tracking from inference; validity alone permits use. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" line="37" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" bodystart="37" bodyend="37"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Per-eye view sampled from an OpenXR PRIMARY_STEREO view configuration. The inherited eye pose is in the OpenXR LOCAL reference space. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::openxr_eye_view</label>
+        <link refid="structILLIXR_1_1data__format_1_1openxr__eye__view"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::openxr_eye_view</label>
+        <link refid="structILLIXR_1_1data__format_1_1openxr__eye__view"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" line="14" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/openxr_view_frame.hpp" bodystart="14" bodyend="38"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1openxr__eye__view_1a867a0248e7d714beb11ddb9d14da51a3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>angle_down</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1openxr__eye__view_1ac33e62114b314c975f3aeaa4b16bd654" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>angle_left</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1openxr__eye__view_1a61a84b149f3d7e1a443382f766bf06b9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>angle_right</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1openxr__eye__view_1abb8fd927eec658da49f919c3da5026ed" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>angle_up</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a9b80e3d93ddc6cbd7f3da881c2eaa9e1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>confidence</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>orientation</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a14436a8d00a4b0dcb980c11b336ee309" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>pose_base</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a40db7332956eb7aba9c1a0c145acb8f1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>pose_base</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1openxr__eye__view_1a004854f870ce9cc6cad1fd090ace28b0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>pose_tracked</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>position</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1openxr__eye__view_1a33968baa9180549b271437d04a4f95a2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>recommended_height</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1openxr__eye__view_1a409a8d32bd626af3adc3f7534d5673db" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>recommended_width</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1aea4c9c210ee8b52c1e0326b662553f4d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>update</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1ab7511efb54fbb7835cfb69d95c2b2d87" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::openxr_eye_view</scope><name>valid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

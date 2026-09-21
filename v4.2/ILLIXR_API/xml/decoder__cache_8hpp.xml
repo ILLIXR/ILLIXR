@@ -1,0 +1,454 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="decoder__cache_8hpp" kind="file" language="C++">
+    <compoundname>decoder_cache.hpp</compoundname>
+    <includes refid="semantics_8hpp" local="yes">illixr/data_format/semantics.hpp</includes>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includes local="no">array</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">cstring</includes>
+    <includes local="no">mutex</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">vector</includes>
+    <includedby refid="plugins_2semantic__python_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>illixr/data_format/semantics.hpp</label>
+        <link refid="semantics_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="6">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp</label>
+        <link refid="decoder__cache_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>any</label>
+      </node>
+      <node id="39">
+        <label>array</label>
+      </node>
+      <node id="7">
+        <label>atomic</label>
+      </node>
+      <node id="33">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="8">
+        <label>cassert</label>
+      </node>
+      <node id="23">
+        <label>chrono</label>
+      </node>
+      <node id="4">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="38">
+        <label>cstdint</label>
+      </node>
+      <node id="40">
+        <label>cstring</label>
+      </node>
+      <node id="30">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="9">
+        <label>functional</label>
+      </node>
+      <node id="15">
+        <label>iostream</label>
+      </node>
+      <node id="32">
+        <label>list</label>
+      </node>
+      <node id="16">
+        <label>memory</label>
+      </node>
+      <node id="17">
+        <label>mutex</label>
+      </node>
+      <node id="24">
+        <label>optional</label>
+      </node>
+      <node id="18">
+        <label>shared_mutex</label>
+      </node>
+      <node id="21">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="29">
+        <label>sstream</label>
+      </node>
+      <node id="10">
+        <label>stdexcept</label>
+      </node>
+      <node id="28">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>thread</label>
+      </node>
+      <node id="19">
+        <label>typeindex</label>
+      </node>
+      <node id="20">
+        <label>unordered_map</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="25">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp</label>
+        <link refid="decoder__cache_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp</label>
+        <link refid="plugins_2semantic__python_2plugin_8cpp"/>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp</label>
+        <link refid="plugins_2semantic__python_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp</label>
+        <link refid="switchboard__bindings_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1decode_1_1decoded__frame__cache" prot="public">ILLIXR::decode::decoded_frame_cache</innerclass>
+    <innerclass refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry" prot="public">ILLIXR::decode::decoded_frame_cache::Entry</innerclass>
+    <innerclass refid="classILLIXR_1_1decode_1_1semantic__metadata__cache" prot="public">ILLIXR::decode::semantic_metadata_cache</innerclass>
+    <innerclass refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry" prot="public">ILLIXR::decode::semantic_metadata_cache::Entry</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1decode">ILLIXR::decode</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="semantics_8hpp" kindref="compound">illixr/data_format/semantics.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="switchboard_8hpp" kindref="compound">illixr/switchboard.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;mutex&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13" refid="namespaceILLIXR_1_1decode" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1decode" kindref="compound">ILLIXR::decode</ref><sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>decoded_frame_cache</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Ring<sp/>buffer<sp/>storing<sp/>decoded<sp/>RGB<sp/>frames<sp/>alongside<sp/>their<sp/>frame<sp/>numbers.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Sized<sp/>to<sp/>match<sp/>the<sp/>switchboard<sp/>topic<sp/>history<sp/>depth<sp/>(256).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Written<sp/>by<sp/>the<sp/>decode<sp/>callback<sp/>(switchboard<sp/>thread).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Read<sp/>by<sp/>latest()<sp/>(Python<sp/>thread).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Protected<sp/>by<sp/>a<sp/>mutex.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Each<sp/>slot<sp/>owns<sp/>a<sp/>std::vector&lt;uint8_t&gt;<sp/>that<sp/>holds<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>pinned</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">//<sp/>host<sp/>RGB<sp/>buffer.<sp/>The<sp/>copy<sp/>is<sp/>necessary<sp/>because<sp/>NvdecDecoder<sp/>reuses<sp/>its</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">//<sp/>pinned<sp/>buffer<sp/>on<sp/>each<sp/>decode()<sp/>call.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="classILLIXR_1_1decode_1_1decoded__frame__cache" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache" kindref="compound">decoded_frame_cache</ref><sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="31" refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a73075aeab1650d1e67d6078c89a1e197" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a73075aeab1650d1e67d6078c89a1e197" kindref="member">CAPACITY</ref><sp/>=<sp/>256;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry" kindref="compound">Entry</ref><sp/>{</highlight></codeline>
+<codeline lineno="34" refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1a09ee0b3e867bf912635da90d9d3e3b8e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/><ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1a09ee0b3e867bf912635da90d9d3e3b8e" kindref="member">rgb</ref>;<sp/></highlight><highlight class="comment">//<sp/>packed<sp/>RGB<sp/>uint8,<sp/>H*W*3<sp/>bytes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1a44837d3dca0081f6af045eeb99c90dfa" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1a44837d3dca0081f6af045eeb99c90dfa" kindref="member">frame_number</ref><sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="36" refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1aa432b5f6a84198097c9d0de152c2c750" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1aa432b5f6a84198097c9d0de152c2c750" kindref="member">width</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="37" refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1a28a3879f8c7bcc40ac7c5211b47276a3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1a28a3879f8c7bcc40ac7c5211b47276a3" kindref="member">height</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="38" refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1ad6eccbfa219f49ddfb153bd0c4e4d178" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1ad6eccbfa219f49ddfb153bd0c4e4d178" kindref="member">valid</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Store<sp/>a<sp/>decoded<sp/>RGB<sp/>frame.<sp/>Copies<sp/>from<sp/>the<sp/>pinned<sp/>host<sp/>pointer.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1aeb5b80473a1fa1cd6713ce165d8d32b9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1aeb5b80473a1fa1cd6713ce165d8d32b9" kindref="member">store</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/>frame_number,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">w</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">h</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rgb_data</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>(<ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a81abee8412dbea92d34465e5a6c9be15" kindref="member">mutex_</ref>);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry" kindref="compound">Entry</ref>&amp;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref><sp/>=<sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1ac4a258dc0633f98168cf4bdb24a20cf1" kindref="member">entries_</ref>[<ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a6ec0324d72f9f5fa92bc64d35fb2a695" kindref="member">next_slot_</ref>];</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.<ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1a44837d3dca0081f6af045eeb99c90dfa" kindref="member">frame_number</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>frame_number;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.width<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">w</ref>;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.height<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">h</ref>;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nbytes</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">w</ref><sp/>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">h</ref><sp/>*<sp/>3);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.rgb.resize(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nbytes</ref>);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::memcpy(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.rgb.data(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rgb_data</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nbytes</ref>);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.valid<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a6ec0324d72f9f5fa92bc64d35fb2a695" kindref="member">next_slot_</ref><sp/>=<sp/>(<ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a6ec0324d72f9f5fa92bc64d35fb2a695" kindref="member">next_slot_</ref><sp/>+<sp/>1)<sp/>%<sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a73075aeab1650d1e67d6078c89a1e197" kindref="member">CAPACITY</ref>;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Return<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>most<sp/>recently<sp/>stored<sp/>entry,<sp/>taken<sp/>under<sp/>the<sp/>lock.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Returns<sp/>nullopt<sp/>if<sp/>no<sp/>frame<sp/>has<sp/>been<sp/>stored<sp/>yet.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1adb33b2ad8035c3cd72e3db2263d03d64" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;Entry&gt;<sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1adb33b2ad8035c3cd72e3db2263d03d64" kindref="member">latest</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>(<ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a81abee8412dbea92d34465e5a6c9be15" kindref="member">mutex_</ref>);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">best_fn</ref><sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry" kindref="compound">Entry</ref>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">best</ref><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref><sp/>:<sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1ac4a258dc0633f98168cf4bdb24a20cf1" kindref="member">entries_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref>.valid<sp/>&amp;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref>.frame_number<sp/>&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">best_fn</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">best_fn</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref>.<ref refid="structILLIXR_1_1decode_1_1decoded__frame__cache_1_1Entry_1a44837d3dca0081f6af045eeb99c90dfa" kindref="member">frame_number</ref>;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">best</ref><sp/><sp/><sp/><sp/>=<sp/>&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref>;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">best</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::nullopt;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">best</ref>;<sp/></highlight><highlight class="comment">//<sp/>copy<sp/>made<sp/>while<sp/>lock<sp/>is<sp/>held</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="73" refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a81abee8412dbea92d34465e5a6c9be15" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>std::mutex<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a81abee8412dbea92d34465e5a6c9be15" kindref="member">mutex_</ref>;</highlight></codeline>
+<codeline lineno="74" refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1ac4a258dc0633f98168cf4bdb24a20cf1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;Entry,<sp/>CAPACITY&gt;<sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1ac4a258dc0633f98168cf4bdb24a20cf1" kindref="member">entries_</ref>;</highlight></codeline>
+<codeline lineno="75" refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a6ec0324d72f9f5fa92bc64d35fb2a695" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache_1a6ec0324d72f9f5fa92bc64d35fb2a695" kindref="member">next_slot_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment">//<sp/>semantic_metadata_cache</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Ring<sp/>buffer<sp/>storing<sp/>each<sp/>semantic_frame<sp/>(depth,<sp/>poses,<sp/>intrinsics,<sp/>etc.),</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment">//<sp/>keyed<sp/>by<sp/>frame_number.<sp/>Holds<sp/>a<sp/>switchboard::ptr<sp/>to<sp/>the<sp/>frame<sp/>itself<sp/>rather</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment">//<sp/>than<sp/>copying<sp/>individual<sp/>fields<sp/>out,<sp/>so<sp/>the<sp/>frame&apos;s<sp/>other<sp/>data<sp/>stays<sp/>alive</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="comment">//<sp/>and<sp/>zero-copy-accessible<sp/>for<sp/>as<sp/>long<sp/>as<sp/>the<sp/>slot<sp/>is<sp/>valid.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="comment">//<sp/>decode<sp/>lags<sp/>arrival<sp/>by<sp/>a<sp/>variable<sp/>amount<sp/>(see<sp/>nvdec_decoder::decode),<sp/>so</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>frame<sp/>most<sp/>recently<sp/>decoded<sp/>is<sp/>not<sp/>the<sp/>frame<sp/>most<sp/>recently<sp/>arrived.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>cache<sp/>lets<sp/>get()<sp/>look<sp/>up<sp/>the<sp/>arrival-time<sp/>data<sp/>(depth/pose/etc.)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment">//<sp/>for<sp/>whichever<sp/>frame_number<sp/>the<sp/>decoder<sp/>actually<sp/>finished<sp/>decoding,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment">//<sp/>rather<sp/>than<sp/>assuming<sp/>the<sp/>two<sp/>arrive<sp/>together.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Written<sp/>by<sp/>on_semantic_data()<sp/>(switchboard<sp/>thread),<sp/>at<sp/>arrival,<sp/>before</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>decode<sp/>call.<sp/>Read<sp/>by<sp/>find()<sp/>(Python<sp/>thread).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Protected<sp/>by<sp/>a<sp/>mutex.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96" refid="classILLIXR_1_1decode_1_1semantic__metadata__cache" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache" kindref="compound">semantic_metadata_cache</ref><sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="98" refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a8b398cfb17352416ca7df15ace9d26a4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a8b398cfb17352416ca7df15ace9d26a4" kindref="member">CAPACITY</ref><sp/>=<sp/>256;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100" refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry" kindref="compound">Entry</ref><sp/>{</highlight></codeline>
+<codeline lineno="101" refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry_1a9d4430ab9730c818f0782205afd46473" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const data_format::semantic_frame&gt;</ref><sp/><ref refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry_1a9d4430ab9730c818f0782205afd46473" kindref="member">data</ref>;</highlight></codeline>
+<codeline lineno="102" refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry_1a1e8385e2f9ccadba7bf96bfc4d66ec70" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry_1a1e8385e2f9ccadba7bf96bfc4d66ec70" kindref="member">frame_number</ref><sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="103" refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry_1a473ca5599fab2e43a76faf45a0ddf72e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry_1a473ca5599fab2e43a76faf45a0ddf72e" kindref="member">valid</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Store<sp/>a<sp/>frame&apos;s<sp/>metadata,<sp/>keyed<sp/>by<sp/>frame_number.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aaee79f977aa5b7c87cd7d6d787a85071" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aaee79f977aa5b7c87cd7d6d787a85071" kindref="member">store</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/>frame_number,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const data_format::semantic_frame&gt;</ref>&amp;<sp/>frame)<sp/>{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>(<ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a271401effbba3d2cdccd4c3d57a37319" kindref="member">mutex_</ref>);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry" kindref="compound">Entry</ref>&amp;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref><sp/>=<sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1ac27791b9e2b17202cc705b2ed7d7d4b3" kindref="member">entries_</ref>[<ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aced366f8ce96f4d80ecb19b5670ac3e3" kindref="member">next_slot_</ref>];</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.<ref refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry_1a9d4430ab9730c818f0782205afd46473" kindref="member">data</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>frame;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.frame_number<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>frame_number;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slot</ref>.valid<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aced366f8ce96f4d80ecb19b5670ac3e3" kindref="member">next_slot_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>(<ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aced366f8ce96f4d80ecb19b5670ac3e3" kindref="member">next_slot_</ref><sp/>+<sp/>1)<sp/>%<sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a8b398cfb17352416ca7df15ace9d26a4" kindref="member">CAPACITY</ref>;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Return<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>entry<sp/>matching<sp/>frame_number,<sp/>taken<sp/>under<sp/>the<sp/>lock.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Returns<sp/>nullopt<sp/>if<sp/>not<sp/>found<sp/>(evicted<sp/>or<sp/>not<sp/>yet<sp/>arrived).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118" refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a2df7ba3c22fd0ad2e64ce747aa522975" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;Entry&gt;<sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a2df7ba3c22fd0ad2e64ce747aa522975" kindref="member">find</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/>frame_number)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>(<ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a271401effbba3d2cdccd4c3d57a37319" kindref="member">mutex_</ref>);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref><sp/>:<sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1ac27791b9e2b17202cc705b2ed7d7d4b3" kindref="member">entries_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref>.valid<sp/>&amp;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref>.frame_number<sp/>==<sp/>frame_number)</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e</ref>;<sp/></highlight><highlight class="comment">//<sp/>copy<sp/>made<sp/>while<sp/>lock<sp/>is<sp/>held</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::nullopt;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="128" refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a271401effbba3d2cdccd4c3d57a37319" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>std::mutex<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a271401effbba3d2cdccd4c3d57a37319" kindref="member">mutex_</ref>;</highlight></codeline>
+<codeline lineno="129" refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1ac27791b9e2b17202cc705b2ed7d7d4b3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;Entry,<sp/>CAPACITY&gt;<sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1ac27791b9e2b17202cc705b2ed7d7d4b3" kindref="member">entries_</ref>;</highlight></codeline>
+<codeline lineno="130" refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aced366f8ce96f4d80ecb19b5670ac3e3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aced366f8ce96f4d80ecb19b5670ac3e3" kindref="member">next_slot_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::decode</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp"/>
+  </compounddef>
+</doxygen>

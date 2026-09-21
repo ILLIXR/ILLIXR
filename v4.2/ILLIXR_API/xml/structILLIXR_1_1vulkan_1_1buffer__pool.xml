@@ -1,0 +1,275 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1vulkan_1_1buffer__pool" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::vulkan::buffer_pool</compoundname>
+    <includes refid="vulkan__objects_8hpp" local="no">vulkan_objects.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">typename</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref></type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236" prot="public" static="no" strong="no">
+        <type></type>
+        <name>image_state</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::image_state</qualifiedname>
+        <enumvalue id="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236a1010da633e708cbb77e5a890fd6f2727" prot="public">
+          <name>FREE</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236a239bc755cf9243cd25f2ae6541b89411" prot="public">
+          <name>SRC_IN_FLIGHT</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236a959e3cdb93cde8ca2c79b5da8ed2b404" prot="public">
+          <name>AVAILABLE</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236ad9c1afe14225f340ff0bbbcae24c402a" prot="public">
+          <name>POST_PROCESSING_IN_FLIGHT</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="26" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="26" bodyend="26"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a962bc4bc6a54865116f8e7b4ebd2e2f2" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; <ref refid="structILLIXR_1_1vulkan_1_1vk__image" kindref="compound">vk_image</ref>, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;vk_image, 2&gt; &gt; ILLIXR::vulkan::buffer_pool&lt; T &gt;::image_pool</definition>
+        <argsstring></argsstring>
+        <name>image_pool</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::image_pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="28" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1buffer__pool_1ad423bf2684ef6b41dee832d23e96143b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; <ref refid="structILLIXR_1_1vulkan_1_1vk__image" kindref="compound">vk_image</ref>, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;vk_image, 2&gt; &gt; ILLIXR::vulkan::buffer_pool&lt; T &gt;::depth_image_pool</definition>
+        <argsstring></argsstring>
+        <name>depth_image_pool</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::depth_image_pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="29" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1buffer__pool_1ab1bd8a0bdda8bc6dbc0b570eaae5a634" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236" kindref="member">image_state</ref> &gt;</type>
+        <definition>std::vector&lt;image_state&gt; ILLIXR::vulkan::buffer_pool&lt; T &gt;::image_states</definition>
+        <argsstring></argsstring>
+        <name>image_states</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::image_states</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="31" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="31" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a0a27f45c46803d5e7d97593576aa1731" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref> &gt;</type>
+        <definition>std::vector&lt;T&gt; ILLIXR::vulkan::buffer_pool&lt; T &gt;::image_data</definition>
+        <argsstring></argsstring>
+        <name>image_data</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::image_data</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="32" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a4bcbf3a01602ed7aca418f9cd12495b5" prot="public" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::vulkan::buffer_pool&lt; T &gt;::image_state_mutex</definition>
+        <argsstring></argsstring>
+        <name>image_state_mutex</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::image_state_mutex</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="33" column="30" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a5455c5636b51a0ca3dbfc286929581aa" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1_1vulkan_1a09887bcc26a4e939600f1d34e6256bc0" kindref="member">image_index_t</ref></type>
+        <definition>image_index_t ILLIXR::vulkan::buffer_pool&lt; T &gt;::latest_decoded_image</definition>
+        <argsstring></argsstring>
+        <name>latest_decoded_image</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::latest_decoded_image</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="35" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a44afd1ed4e4508ce93271b44bb22ea43" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::vulkan::buffer_pool&lt; T &gt;::buffer_pool</definition>
+        <argsstring>(const std::vector&lt; std::array&lt; vk_image, 2 &gt; &gt; &amp;image_pool, const std::vector&lt; std::array&lt; vk_image, 2 &gt; &gt; &amp;depth_image_pool)</argsstring>
+        <name>buffer_pool</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::buffer_pool</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::vector&lt; std::array&lt; <ref refid="structILLIXR_1_1vulkan_1_1vk__image" kindref="compound">vk_image</ref>, 2 &gt; &gt; &amp;</type>
+          <declname>image_pool</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::vector&lt; std::array&lt; <ref refid="structILLIXR_1_1vulkan_1_1vk__image" kindref="compound">vk_image</ref>, 2 &gt; &gt; &amp;</type>
+          <declname>depth_image_pool</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="37" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="37" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a6b35227b543304ce96403c0dd1847bf3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1_1vulkan_1a09887bcc26a4e939600f1d34e6256bc0" kindref="member">image_index_t</ref></type>
+        <definition>image_index_t ILLIXR::vulkan::buffer_pool&lt; T &gt;::src_acquire_image</definition>
+        <argsstring>()</argsstring>
+        <name>src_acquire_image</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::src_acquire_image</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="45" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="45" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a53688b4088def56b8f1f0d74bb025160" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::vulkan::buffer_pool&lt; T &gt;::src_release_image</definition>
+        <argsstring>(image_index_t image_index, T &amp;&amp;data)</argsstring>
+        <name>src_release_image</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::src_release_image</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1_1vulkan_1a09887bcc26a4e939600f1d34e6256bc0" kindref="member">image_index_t</ref></type>
+          <declname>image_index</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref> &amp;&amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Release the image after it has been decoded. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>It is the caller&apos;s responsibility to ensure that the image is in the DECODE_IN_FLIGHT state. Images must be released in order. If an image is released out of order, the previous images will be marked as free. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>image_index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the image to release. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="66" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="66" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a2c9255f8da274952308e1dafc8502794" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::pair&lt; <ref refid="namespaceILLIXR_1_1vulkan_1a09887bcc26a4e939600f1d34e6256bc0" kindref="member">image_index_t</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref> &gt;</type>
+        <definition>std::pair&lt; image_index_t, T &gt; ILLIXR::vulkan::buffer_pool&lt; T &gt;::post_processing_acquire_image</definition>
+        <argsstring>(image_index_t last_image_index=-1)</argsstring>
+        <name>post_processing_acquire_image</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::post_processing_acquire_image</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1_1vulkan_1a09887bcc26a4e939600f1d34e6256bc0" kindref="member">image_index_t</ref></type>
+          <declname>last_image_index</declname>
+          <defval>-1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="82" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="82" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1buffer__pool_1a159dc8bcb4fbdb5578605db661ccc67f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::vulkan::buffer_pool&lt; T &gt;::post_processing_release_image</definition>
+        <argsstring>(image_index_t image_index)</argsstring>
+        <name>post_processing_release_image</name>
+        <qualifiedname>ILLIXR::vulkan::buffer_pool::post_processing_release_image</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1_1vulkan_1a09887bcc26a4e939600f1d34e6256bc0" kindref="member">image_index_t</ref></type>
+          <declname>image_index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="98" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="98" bodyend="108"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="25" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="25" bodyend="109"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236a959e3cdb93cde8ca2c79b5da8ed2b404" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>AVAILABLE</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a44afd1ed4e4508ce93271b44bb22ea43" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>buffer_pool</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1ad423bf2684ef6b41dee832d23e96143b" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>depth_image_pool</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236a1010da633e708cbb77e5a890fd6f2727" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>FREE</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a0a27f45c46803d5e7d97593576aa1731" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>image_data</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a962bc4bc6a54865116f8e7b4ebd2e2f2" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>image_pool</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>image_state</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a4bcbf3a01602ed7aca418f9cd12495b5" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>image_state_mutex</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1ab1bd8a0bdda8bc6dbc0b570eaae5a634" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>image_states</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a5455c5636b51a0ca3dbfc286929581aa" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>latest_decoded_image</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a2c9255f8da274952308e1dafc8502794" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>post_processing_acquire_image</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236ad9c1afe14225f340ff0bbbcae24c402a" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>POST_PROCESSING_IN_FLIGHT</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a159dc8bcb4fbdb5578605db661ccc67f" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>post_processing_release_image</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a6b35227b543304ce96403c0dd1847bf3" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>src_acquire_image</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1abb5c3307908428495d349626635b1236a239bc755cf9243cd25f2ae6541b89411" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>SRC_IN_FLIGHT</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1buffer__pool_1a53688b4088def56b8f1f0d74bb025160" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::buffer_pool</scope><name>src_release_image</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

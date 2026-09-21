@@ -1,0 +1,641 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1threadloop" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>ILLIXR::threadloop</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1boba__streaming__server" prot="public" virt="non-virtual">ILLIXR::boba_streaming_server</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1data__injection" prot="public" virt="non-virtual">ILLIXR::data_injection</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1debugview" prot="public" virt="non-virtual">ILLIXR::debugview</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1device__rx" prot="public" virt="non-virtual">ILLIXR::device_rx</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1device__tx" prot="public" virt="non-virtual">ILLIXR::device_tx</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1gldemo" prot="public" virt="non-virtual">ILLIXR::gldemo</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1lighthouse" prot="public" virt="non-virtual">ILLIXR::lighthouse</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1native__renderer" prot="public" virt="non-virtual">ILLIXR::native_renderer</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1network__latency__rx" prot="public" virt="non-virtual">ILLIXR::network_latency_rx</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1network__latency__tx" prot="public" virt="non-virtual">ILLIXR::network_latency_tx</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1offline__cam" prot="public" virt="non-virtual">ILLIXR::offline_cam</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1offline__imu" prot="public" virt="non-virtual">ILLIXR::offline_imu</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1offline__scannet" prot="public" virt="non-virtual">ILLIXR::offline_scannet</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1offload__reader" prot="public" virt="non-virtual">ILLIXR::offload_reader</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1offload__rendering__client" prot="public" virt="non-virtual">ILLIXR::offload_rendering_client</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1offload__rendering__server" prot="public" virt="non-virtual">ILLIXR::offload_rendering_server</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1offload__writer" prot="public" virt="non-virtual">ILLIXR::offload_writer</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1openni__plugin" prot="public" virt="non-virtual">ILLIXR::openni_plugin</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1openwarp__vk__plugin" prot="public" virt="non-virtual">ILLIXR::openwarp_vk_plugin</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1oxr__relay" prot="public" virt="non-virtual">ILLIXR::oxr_relay</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1pose__relay" prot="public" virt="non-virtual">ILLIXR::pose_relay</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1scene__management" prot="public" virt="non-virtual">ILLIXR::scene_management</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1server__reader" prot="public" virt="non-virtual">ILLIXR::server_reader</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1server__rx" prot="public" virt="non-virtual">ILLIXR::server_rx</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1timewarp__gl" prot="public" virt="non-virtual">ILLIXR::timewarp_gl</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1timewarp__vk__plugin" prot="public" virt="non-virtual">ILLIXR::timewarp_vk_plugin</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1webcam" prot="public" virt="non-virtual">ILLIXR::webcam</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1xr__sensor__capture" prot="public" virt="non-virtual">ILLIXR::xr_sensor_capture</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1zed__camera__thread" prot="public" virt="non-virtual">ILLIXR::zed_camera_thread</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1zed__imu__thread" prot="public" virt="non-virtual">ILLIXR::zed_imu_thread</derivedcompoundref>
+    <includes refid="threadloop_8hpp" local="no">threadloop.hpp</includes>
+    <sectiondef kind="protected-type">
+      <memberdef kind="enum" id="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" static="no" strong="yes">
+        <type></type>
+        <name>skip_option</name>
+        <qualifiedname>ILLIXR::threadloop::skip_option</qualifiedname>
+        <enumvalue id="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652aa53108f7543b75adbb34afc035d4cdf6" prot="protected">
+          <name>run</name>
+          <briefdescription>
+<para>Run iteration NOW. Only then does CPU timer begin counting. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652abe7430356a528e49af40fab3259b72b3" prot="protected">
+          <name>skip_and_spin</name>
+          <briefdescription>
+<para>AKA &quot;busy wait&quot;. Skip but try again very quickly. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652a9e4878510e4ed1c00058d61753440dcf" prot="protected">
+          <name>skip_and_yield</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Yielding gives up a scheduling quantum, which is determined by the OS, but usually on the order of 1-10ms. This is nicer to the other threads in the system. </para>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652aef399b2d446bb37b7c32ad2cc1b6045b" prot="protected">
+          <name>stop</name>
+          <briefdescription>
+<para>Calls stop. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="95" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="95" bodyend="108"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" static="no" mutable="no">
+        <type>std::size_t</type>
+        <definition>std::size_t ILLIXR::threadloop::iteration_no</definition>
+        <argsstring></argsstring>
+        <name>iteration_no</name>
+        <qualifiedname>ILLIXR::threadloop::iteration_no</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="138" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="138" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" static="no" mutable="no">
+        <type>std::size_t</type>
+        <definition>std::size_t ILLIXR::threadloop::skip_no</definition>
+        <argsstring></argsstring>
+        <name>skip_no</name>
+        <qualifiedname>ILLIXR::threadloop::skip_no</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="139" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="139" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1threadloop_1addfbade169288512c9be438f4ae9bc07" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref> &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::threadloop::internal_stop_</definition>
+        <argsstring></argsstring>
+        <name>internal_stop_</name>
+        <qualifiedname>ILLIXR::threadloop::internal_stop_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="195" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="195" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1threadloop_1a468309a771ef1d60c4cc107cf2e9cab2" prot="private" static="no" mutable="no">
+        <type>std::thread</type>
+        <definition>std::thread ILLIXR::threadloop::thread_</definition>
+        <argsstring></argsstring>
+        <name>thread_</name>
+        <qualifiedname>ILLIXR::threadloop::thread_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="196" column="38" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="196" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1threadloop_1a2390e3eff6ab0c0cc11f061f34cf7b39" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1stoplight" kindref="compound">stoplight</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;const stoplight&gt; ILLIXR::threadloop::stoplight_</definition>
+        <argsstring></argsstring>
+        <name>stoplight_</name>
+        <qualifiedname>ILLIXR::threadloop::stoplight_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="197" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="197" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::threadloop::threadloop</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>threadloop</name>
+        <qualifiedname>ILLIXR::threadloop::threadloop</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="41" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="41" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::threadloop::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::threadloop::start</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc">start</reimplements>
+        <reimplementedby refid="classILLIXR_1_1zed__imu__thread_1a348facd2a4ff9e84472d3a52a69a764f">start</reimplementedby>
+        <briefdescription>
+<para>Starts the thread. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This cannot go into the constructor because it starts a thread which calls <computeroutput><ref refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be" kindref="member">_p_one_iteration()</ref></computeroutput> which is virtual in the child class.</para>
+<para>Calling a virtual child method from the parent constructor will not work as expected <ulink url="https://stackoverflow.com/questions/962132/calling-virtual-functions-inside-constructors">1</ulink>. Instead, the ISO CPP FAQ recommends calling a <computeroutput><ref refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" kindref="member">start()</ref></computeroutput> method immediately after construction <ulink url="https://isocpp.org/wiki/faq/strange-inheritance#calling-virtuals-from-ctor-idiom">2</ulink>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="58" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="58" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::threadloop::stop</definition>
+        <argsstring>() override</argsstring>
+        <name>stop</name>
+        <qualifiedname>ILLIXR::threadloop::stop</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4">stop</reimplements>
+        <reimplementedby refid="classILLIXR_1_1zed__imu__thread_1a73e434180a9b4083a674afcdd9e83c27">stop</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1zed__camera__thread_1a34dada0263c2eb55f856841107b1e68b">stop</reimplementedby>
+        <briefdescription>
+<para>Joins the thread. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Must have already stopped the stoplight. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="72" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="72" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>virtual void ILLIXR::threadloop::internal_stop</definition>
+        <argsstring>()</argsstring>
+        <name>internal_stop</name>
+        <qualifiedname>ILLIXR::threadloop::internal_stop</qualifiedname>
+        <briefdescription>
+<para>Stops the thread. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A thread should call this if it wants to stop itself (due to out of data for example). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="85" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="85" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::threadloop::~threadloop</definition>
+        <argsstring>() override</argsstring>
+        <name>~threadloop</name>
+        <qualifiedname>ILLIXR::threadloop::~threadloop</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="89" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="89" bodyend="92"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">skip_option</ref></type>
+        <definition>virtual skip_option ILLIXR::threadloop::_p_should_skip</definition>
+        <argsstring>()</argsstring>
+        <name>_p_should_skip</name>
+        <qualifiedname>ILLIXR::threadloop::_p_should_skip</qualifiedname>
+        <reimplementedby refid="classILLIXR_1_1device__rx_1a36c1e67dbea26a0c78a769321fb5065a">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offline__scannet_1a634276f9a9e5a5947141e0de313899a0">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1scene__management_1acd09c024ed2e56ba2f82f36a566c9994">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1server__rx_1a2a6ff3f655dceecf78b788fec4fa51a8">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1boba__streaming__server_1a08fa729fd6b933882eb5d94e7c1ca443">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1lighthouse_1a815b5c7ff9ba442bfe5f9924a893e6b6">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1network__latency__rx_1a3a2bb282b0ce627d4e9d8af5abae61b1">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1network__latency__tx_1a15f2eab8e7d25bc4449286dbe96d8fcf">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offline__cam_1aa4bcc2a2ba5bed2a038894c70578a549">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offline__imu_1aea3fd028f407dc77f44f8058f2071d69">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__rendering__client_1aa3146f78437f89209d358d8ccbd9b046">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__rendering__server_1ac7bd94bd00f1621be4860916eede7d91">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1pose__relay_1a214a87fbffc46dd83f5f6df6e726184e">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__reader_1a87fa63ad67ec2a316a09b21d631cc708">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1server__reader_1a5d10c14c7f19ed2423f7b61a96e8946a">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1openni__plugin_1ac4716fe053ecc1ac49c46d3aabd41382">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1openwarp__vk__plugin_1ac7dbb475a70d43d4cffbf7e7691357c1">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1oxr__relay_1a20a79f9d31abbdbcf4173df7e81e8376">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1xr__sensor__capture_1ae1d6bd7bff27fe3b2ccd41cd8a296812">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1timewarp__gl_1a10bdd18279792bbb3c168689732dc311">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1timewarp__vk__plugin_1a7b0eb66e78297c6eb5b649531bc1b663">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1zed__imu__thread_1a67deaa363e6b91005b8e5804a87a1527">_p_should_skip</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1zed__camera__thread_1af87134148f3a92f5ca7368ee5a91d044">_p_should_skip</reimplementedby>
+        <briefdescription>
+<para>Gets called in a tight loop, to gate the invocation of <computeroutput><ref refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be" kindref="member">_p_one_iteration()</ref></computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="113" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="113" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>virtual void ILLIXR::threadloop::_p_thread_setup</definition>
+        <argsstring>()</argsstring>
+        <name>_p_thread_setup</name>
+        <qualifiedname>ILLIXR::threadloop::_p_thread_setup</qualifiedname>
+        <reimplementedby refid="classILLIXR_1_1debugview_1aa1e5b079256b5623ad3aab4ad711f043">_p_thread_setup</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1gldemo_1a3ecd4c9f14192e15ad3750751774a80a">_p_thread_setup</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1lighthouse_1a8ad0ccd16dee9d974b05100e1d93d739">_p_thread_setup</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1native__renderer_1a3ccf472436b773343830d30ff97434f8">_p_thread_setup</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__rendering__client_1aac21c52bdbce9265c657b79437cc3fb3">_p_thread_setup</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__rendering__server_1a79eb0321b2e77e6453a65a8c873b049e">_p_thread_setup</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__writer_1abfec12ec7d96dcf8682f5ebdbc12aa24">_p_thread_setup</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1timewarp__gl_1a63c612339cf3deddb04e4a5b59beb594">_p_thread_setup</reimplementedby>
+        <briefdescription>
+<para>Gets called at setup time, from the new thread. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="120" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="120" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>virtual void ILLIXR::threadloop::_p_one_iteration</definition>
+        <argsstring>()=0</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::threadloop::_p_one_iteration</qualifiedname>
+        <reimplementedby refid="classILLIXR_1_1device__rx_1a880bebb421095cf1790d712718786c3c">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1device__tx_1abe5ba8df72f23efff06140cbc67bb9d6">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offline__scannet_1a24f34baae1b8f30e15edffa9b0fb9013">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1scene__management_1a63581b7f356cb538878f2bea1b1517f5">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1server__rx_1aadc1a874c07ae1bdb6a841464c5da394">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1boba__streaming__server_1a21f27da940a375d5c6bfd18b600f6b77">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1debugview_1a3fd81c8630a48e1d1be1bbf64acc69a3">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1gldemo_1a16f8dd049e409d82656ff7da742660fa">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1lighthouse_1a0334b85954747f289c2eca44551692e3">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1native__renderer_1a2d1a342515d5bc57e7c58740098a531a">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1network__latency__rx_1a6759aa72eeac2969c4ff931fdb372580">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1network__latency__tx_1a9dd314bd843529dfa7ec520071189496">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offline__cam_1a6456db926f18699323bca53c0c101ed3">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offline__imu_1a8fa55149305dc10d3fb663ebef95edf0">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__rendering__client_1aa9f0efdeb4188070edc9ed0c648c3efe">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__rendering__server_1ae851a6d01f0d942885b4e9ec5a6245c4">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1pose__relay_1a002e1176425c0aeda1a9687d4cf2669f">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__reader_1ae6108d9f49a817d23e36b05a1c633e57">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1offload__writer_1a93f4ef31c83b710cb5d95636416aaa8f">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1server__reader_1ace174be935b2edb54568b3b831a8ba62">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1openni__plugin_1a2f440e09503d26a3a9b23fe8e1a101c2">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1openwarp__vk__plugin_1a7ad01ff605961561bafcd8fbd29d56b5">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1oxr__relay_1ac16ce8379479fbb2dc0ce6ba74cd3545">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1xr__sensor__capture_1a64d5b9e314c9c71e5a7d601c824be85b">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1timewarp__gl_1ae31605e64a3cc949c9b55f6794df42b9">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1timewarp__vk__plugin_1a599e9f98ebb7a4431f50ec5c7cd24d9e">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1webcam_1a11e367d31c5fd00435a755e40bdca348">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1data__injection_1a2aa9d6601efc1039c8bef0dd2eed6fdf">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1zed__imu__thread_1a7a91866d0b46f53edf531ad762726798">_p_one_iteration</reimplementedby>
+        <reimplementedby refid="classILLIXR_1_1zed__camera__thread_1a7c5f6910b6166c0db26c855b320e969e">_p_one_iteration</reimplementedby>
+        <briefdescription>
+<para>Override with the computation the thread does every loop. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This gets called in rapid succession. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="127" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::threadloop::should_terminate</definition>
+        <argsstring>()</argsstring>
+        <name>should_terminate</name>
+        <qualifiedname>ILLIXR::threadloop::should_terminate</qualifiedname>
+        <briefdescription>
+<para>Whether the thread has been asked to terminate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Check this before doing long-running computation; it makes termination more responsive. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="134" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="134" bodyend="136"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1threadloop_1ace62d94a271fd7a253eb1ee71589da61" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::threadloop::thread_main</definition>
+        <argsstring>()</argsstring>
+        <name>thread_main</name>
+        <qualifiedname>ILLIXR::threadloop::thread_main</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="142" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="142" bodyend="193"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A reusable threadloop for plugins. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The thread continuously runs <computeroutput><ref refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be" kindref="member">_p_one_iteration()</ref></computeroutput> and is stoppable by <computeroutput><ref refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" kindref="member">stop()</ref></computeroutput>.</para>
+<para>This factors out the common code I noticed in many different plugins. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>ILLIXR::boba_streaming_server</label>
+        <link refid="classILLIXR_1_1boba__streaming__server"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::data_injection</label>
+        <link refid="classILLIXR_1_1data__injection"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::debugview</label>
+        <link refid="classILLIXR_1_1debugview"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>ILLIXR::device_rx</label>
+        <link refid="classILLIXR_1_1device__rx"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>ILLIXR::device_tx</label>
+        <link refid="classILLIXR_1_1device__tx"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>ILLIXR::gldemo</label>
+        <link refid="classILLIXR_1_1gldemo"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>ILLIXR::lighthouse</label>
+        <link refid="classILLIXR_1_1lighthouse"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>ILLIXR::native_renderer</label>
+        <link refid="classILLIXR_1_1native__renderer"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>ILLIXR::network_latency_rx</label>
+        <link refid="classILLIXR_1_1network__latency__rx"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>ILLIXR::network_latency_tx</label>
+        <link refid="classILLIXR_1_1network__latency__tx"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>ILLIXR::offline_cam</label>
+        <link refid="classILLIXR_1_1offline__cam"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>ILLIXR::offline_imu</label>
+        <link refid="classILLIXR_1_1offline__imu"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>ILLIXR::offline_scannet</label>
+        <link refid="classILLIXR_1_1offline__scannet"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>ILLIXR::offload_reader</label>
+        <link refid="classILLIXR_1_1offload__reader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>ILLIXR::offload_rendering_client</label>
+        <link refid="classILLIXR_1_1offload__rendering__client"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>ILLIXR::offload_rendering_server</label>
+        <link refid="classILLIXR_1_1offload__rendering__server"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>ILLIXR::offload_writer</label>
+        <link refid="classILLIXR_1_1offload__writer"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>ILLIXR::openni_plugin</label>
+        <link refid="classILLIXR_1_1openni__plugin"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>ILLIXR::openwarp_vk_plugin</label>
+        <link refid="classILLIXR_1_1openwarp__vk__plugin"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>ILLIXR::oxr_relay</label>
+        <link refid="classILLIXR_1_1oxr__relay"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="23">
+        <label>ILLIXR::pose_relay</label>
+        <link refid="classILLIXR_1_1pose__relay"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>ILLIXR::scene_management</label>
+        <link refid="classILLIXR_1_1scene__management"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>ILLIXR::server_reader</label>
+        <link refid="classILLIXR_1_1server__reader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>ILLIXR::server_rx</label>
+        <link refid="classILLIXR_1_1server__rx"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>ILLIXR::timewarp_gl</label>
+        <link refid="classILLIXR_1_1timewarp__gl"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>ILLIXR::timewarp_vk_plugin</label>
+        <link refid="classILLIXR_1_1timewarp__vk__plugin"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>ILLIXR::webcam</label>
+        <link refid="classILLIXR_1_1webcam"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>ILLIXR::xr_sensor_capture</label>
+        <link refid="classILLIXR_1_1xr__sensor__capture"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>ILLIXR::zed_camera_thread</label>
+        <link refid="classILLIXR_1_1zed__camera__thread"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>ILLIXR::zed_imu_thread</label>
+        <link refid="classILLIXR_1_1zed__imu__thread"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" line="39" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/threadloop.hpp" bodystart="39" bodyend="198"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be" prot="protected" virt="pure-virtual"><scope>ILLIXR::threadloop</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a" prot="protected" virt="virtual"><scope>ILLIXR::threadloop</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" virt="virtual"><scope>ILLIXR::threadloop</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::threadloop</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1addfbade169288512c9be438f4ae9bc07" prot="private" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>internal_stop_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" prot="public" virt="virtual"><scope>ILLIXR::threadloop</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::threadloop</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a2390e3eff6ab0c0cc11f061f34cf7b39" prot="private" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>stoplight_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a468309a771ef1d60c4cc107cf2e9cab2" prot="private" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>thread_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1ace62d94a271fd7a253eb1ee71589da61" prot="private" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>thread_main</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::threadloop</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::threadloop</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1507 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1xr__sensor__capture" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::xr_sensor_capture</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <includes refid="plugins_2quest3_2unity_2plugin_8hpp" local="no">plugin.hpp</includes>
+    <innerclass refid="structILLIXR_1_1xr__sensor__capture_1_1capture__result" prot="public">ILLIXR::xr_sensor_capture::capture_result</innerclass>
+    <innerclass refid="structILLIXR_1_1xr__sensor__capture_1_1depth__frame__data" prot="private">ILLIXR::xr_sensor_capture::depth_frame_data</innerclass>
+    <innerclass refid="structILLIXR_1_1xr__sensor__capture_1_1latest__head__pose" prot="public">ILLIXR::xr_sensor_capture::latest_head_pose</innerclass>
+    <innerclass refid="structILLIXR_1_1xr__sensor__capture_1_1pending__readback" prot="private">ILLIXR::xr_sensor_capture::pending_readback</innerclass>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classILLIXR_1_1xr__sensor__capture_1a3ba79734901bbdf0eb089003d055a79a" prot="private" static="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrResult</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XRAPI_PTR</ref> *)(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrEnvironmentDepthProviderMETA</ref>)</type>
+        <definition>using ILLIXR::xr_sensor_capture::xr_release_depth_fn =  XrResult(XRAPI_PTR*)(XrEnvironmentDepthProviderMETA)</definition>
+        <argsstring></argsstring>
+        <name>xr_release_depth_fn</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_release_depth_fn</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="187" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="187" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a7375a3d89c5a614ee3109ffd87e23477" prot="public" static="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">IUnityInterfaces</ref> *</type>
+        <definition>IUnityInterfaces * xr_sensor_capture::s_unity_interfaces_</definition>
+        <argsstring></argsstring>
+        <name>s_unity_interfaces_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::s_unity_interfaces_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="103" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1accc9435d7e16b9222d454661ba75d56a" prot="public" static="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">IUnityGraphicsVulkan</ref> *</type>
+        <definition>IUnityGraphicsVulkan * xr_sensor_capture::s_vk_interface_</definition>
+        <argsstring></argsstring>
+        <name>s_vk_interface_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::s_vk_interface_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="104" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a82f637170d447aed353b4572e3e6c68d" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+        <definition>constexpr size_t ILLIXR::xr_sensor_capture::CAPTURE_RESULT_CACHE_SIZE</definition>
+        <argsstring></argsstring>
+        <name>CAPTURE_RESULT_CACHE_SIZE</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::CAPTURE_RESULT_CACHE_SIZE</qualifiedname>
+        <initializer>= 16</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="144" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="144" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a961e3e68f5a6f15f076266bdb8cb956f" prot="public" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::xr_sensor_capture::latest_head_pose_mutex_</definition>
+        <argsstring></argsstring>
+        <name>latest_head_pose_mutex_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::latest_head_pose_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="128" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1abb3a433703bc9117bb231aa6d12bc4ce" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1xr__sensor__capture_1_1latest__head__pose" kindref="compound">latest_head_pose</ref></type>
+        <definition>latest_head_pose ILLIXR::xr_sensor_capture::latest_head_pose_</definition>
+        <argsstring></argsstring>
+        <name>latest_head_pose_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::latest_head_pose_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="129" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a2fffca1388c7b8d9eb8944febe68c030" prot="public" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::xr_sensor_capture::capture_result_mutex_</definition>
+        <argsstring></argsstring>
+        <name>capture_result_mutex_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::capture_result_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="147" column="59" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a3fb31b6f5d423bd984b792fdfb2e14d5" prot="public" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="structILLIXR_1_1xr__sensor__capture_1_1capture__result" kindref="compound">capture_result</ref>, <ref refid="classILLIXR_1_1xr__sensor__capture_1a82f637170d447aed353b4572e3e6c68d" kindref="member">CAPTURE_RESULT_CACHE_SIZE</ref> &gt;</type>
+        <definition>std::array&lt;capture_result, CAPTURE_RESULT_CACHE_SIZE&gt; ILLIXR::xr_sensor_capture::capture_result_cache_</definition>
+        <argsstring></argsstring>
+        <name>capture_result_cache_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::capture_result_cache_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="148" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a20a1bc02bc5dd251411123e4fbc5d2f4" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+        <definition>size_t ILLIXR::xr_sensor_capture::capture_result_next_</definition>
+        <argsstring></argsstring>
+        <name>capture_result_next_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::capture_result_next_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="149" column="59" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1aee5dfbc9e9188a7dc89023fb016bce0d" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int64_t</ref></type>
+        <definition>int64_t ILLIXR::xr_sensor_capture::clock_offset_ns_</definition>
+        <argsstring></argsstring>
+        <name>clock_offset_ns_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::clock_offset_ns_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="153" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a95dc5450c63006e2855749f63c462678" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::xr_sensor_capture::ovr_time_offset_sec_</definition>
+        <argsstring></argsstring>
+        <name>ovr_time_offset_sec_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::ovr_time_offset_sec_</qualifiedname>
+        <initializer>= 0.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="154" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="154" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a4d7ca593992a51813f6efc056f373637" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::xr_sensor_capture::init_failed_</definition>
+        <argsstring></argsstring>
+        <name>init_failed_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::init_failed_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="163" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1afeff9dd6563052c5269890e156214a63" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int64_t</ref></type>
+        <definition>int64_t ILLIXR::xr_sensor_capture::tick_interval_ns_</definition>
+        <argsstring></argsstring>
+        <name>tick_interval_ns_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::tick_interval_ns_</qualifiedname>
+        <initializer>= 500&apos;000&apos;000LL</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="166" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ab08049c7d7fcbf4074cb3e767e2312fa" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int64_t</ref></type>
+        <definition>int64_t ILLIXR::xr_sensor_capture::last_tick_ns_</definition>
+        <argsstring></argsstring>
+        <name>last_tick_ns_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::last_tick_ns_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="167" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="167" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a84aad3dfa46e43b60c9e74371a914b81" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrInstance</ref></type>
+        <definition>XrInstance ILLIXR::xr_sensor_capture::xr_instance_</definition>
+        <argsstring></argsstring>
+        <name>xr_instance_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_instance_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="173" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1adca7635eda0947b8480cc93fa8f8a792" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSession</ref></type>
+        <definition>XrSession ILLIXR::xr_sensor_capture::xr_session_</definition>
+        <argsstring></argsstring>
+        <name>xr_session_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_session_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="174" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="174" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a2e94b75d6e6dad9db51d6d45db14c817" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+        <definition>XrSpace ILLIXR::xr_sensor_capture::local_space_</definition>
+        <argsstring></argsstring>
+        <name>local_space_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::local_space_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="175" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="175" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a73d77091b1b5b6b7ca21c7df4c643543" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::xr_sensor_capture::owns_xr_</definition>
+        <argsstring></argsstring>
+        <name>owns_xr_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::owns_xr_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="176" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="176" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a58c9fae5fa50bde5f2657dea85ed8c45" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrCreateEnvironmentDepthProviderMETA</ref></type>
+        <definition>PFN_xrCreateEnvironmentDepthProviderMETA ILLIXR::xr_sensor_capture::xr_create_depth_provider_</definition>
+        <argsstring></argsstring>
+        <name>xr_create_depth_provider_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_create_depth_provider_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="178" column="56" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="178" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a184a4648c3fa199c7ad189c453726d5d" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrDestroyEnvironmentDepthProviderMETA</ref></type>
+        <definition>PFN_xrDestroyEnvironmentDepthProviderMETA ILLIXR::xr_sensor_capture::xr_destroy_depth_provider_</definition>
+        <argsstring></argsstring>
+        <name>xr_destroy_depth_provider_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_destroy_depth_provider_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="179" column="56" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="179" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1af4b127d012c45331dc4f633186360f12" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrStartEnvironmentDepthProviderMETA</ref></type>
+        <definition>PFN_xrStartEnvironmentDepthProviderMETA ILLIXR::xr_sensor_capture::xr_start_depth_provider_</definition>
+        <argsstring></argsstring>
+        <name>xr_start_depth_provider_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_start_depth_provider_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="180" column="56" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="180" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1aea4ff3ce6211cd0d2ec39f41c08162eb" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrCreateEnvironmentDepthSwapchainMETA</ref></type>
+        <definition>PFN_xrCreateEnvironmentDepthSwapchainMETA ILLIXR::xr_sensor_capture::xr_create_depth_swapchain_</definition>
+        <argsstring></argsstring>
+        <name>xr_create_depth_swapchain_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_create_depth_swapchain_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="181" column="56" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="181" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a56621a146088711c5a0d316e512abdc8" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrDestroyEnvironmentDepthSwapchainMETA</ref></type>
+        <definition>PFN_xrDestroyEnvironmentDepthSwapchainMETA ILLIXR::xr_sensor_capture::xr_destroy_depth_swapchain_</definition>
+        <argsstring></argsstring>
+        <name>xr_destroy_depth_swapchain_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_destroy_depth_swapchain_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="182" column="56" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="182" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1acaa84c156c75cfaab0af382725066ab3" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrEnumerateEnvironmentDepthSwapchainImagesMETA</ref></type>
+        <definition>PFN_xrEnumerateEnvironmentDepthSwapchainImagesMETA ILLIXR::xr_sensor_capture::xr_enum_depth_images_</definition>
+        <argsstring></argsstring>
+        <name>xr_enum_depth_images_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_enum_depth_images_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="183" column="56" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="183" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a6f563c6edab9695fc3dc6e6edfd22377" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrGetEnvironmentDepthSwapchainStateMETA</ref></type>
+        <definition>PFN_xrGetEnvironmentDepthSwapchainStateMETA ILLIXR::xr_sensor_capture::xr_get_depth_state_</definition>
+        <argsstring></argsstring>
+        <name>xr_get_depth_state_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_get_depth_state_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="184" column="56" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="184" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a82bf13a55d749fe2b2f433771f9fe4f4" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrAcquireEnvironmentDepthImageMETA</ref></type>
+        <definition>PFN_xrAcquireEnvironmentDepthImageMETA ILLIXR::xr_sensor_capture::xr_acquire_depth_image_</definition>
+        <argsstring></argsstring>
+        <name>xr_acquire_depth_image_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_acquire_depth_image_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="185" column="56" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="185" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1afd6868feb78484a9e509e4123684b6ba" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1xr__sensor__capture_1a3ba79734901bbdf0eb089003d055a79a" kindref="member">xr_release_depth_fn</ref></type>
+        <definition>xr_release_depth_fn ILLIXR::xr_sensor_capture::xr_release_depth_image_</definition>
+        <argsstring></argsstring>
+        <name>xr_release_depth_image_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_release_depth_image_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="188" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ae98eefd14a78e3101bbe40cdcdc338a2" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::xr_sensor_capture::needs_depth_release_</definition>
+        <argsstring></argsstring>
+        <name>needs_depth_release_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::needs_depth_release_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="190" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="190" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a491926aa68b99a68a7b958ef1512fc2c" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrEnvironmentDepthProviderMETA</ref></type>
+        <definition>XrEnvironmentDepthProviderMETA ILLIXR::xr_sensor_capture::depth_provider_</definition>
+        <argsstring></argsstring>
+        <name>depth_provider_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_provider_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="192" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="192" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a4317cda067723b465f8dbfa5e8db74e0" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrEnvironmentDepthSwapchainMETA</ref></type>
+        <definition>XrEnvironmentDepthSwapchainMETA ILLIXR::xr_sensor_capture::depth_swapchain_</definition>
+        <argsstring></argsstring>
+        <name>depth_swapchain_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_swapchain_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="193" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a0bdf98ecb46d907fbf10e476978d29ee" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::xr_sensor_capture::depth_ext_available_</definition>
+        <argsstring></argsstring>
+        <name>depth_ext_available_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_ext_available_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="194" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="194" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1aa52a62a94a8c4baf5cc9082f3ff8dc18" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></type>
+        <definition>int32_t ILLIXR::xr_sensor_capture::depth_swapchain_width_</definition>
+        <argsstring></argsstring>
+        <name>depth_swapchain_width_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_swapchain_width_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="195" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="195" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1aecd9410eb32c02b0dfe638a484d57b5f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></type>
+        <definition>int32_t ILLIXR::xr_sensor_capture::depth_swapchain_height_</definition>
+        <argsstring></argsstring>
+        <name>depth_swapchain_height_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_swapchain_height_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="196" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="196" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1acbb1a3d9811ea11381d7a386b67e91e5" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref> &gt;</type>
+        <definition>std::vector&lt;VkImage&gt; ILLIXR::xr_sensor_capture::depth_vk_images_</definition>
+        <argsstring></argsstring>
+        <name>depth_vk_images_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_vk_images_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="199" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ad914a313b0abecb6ffb5460786a0f81f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref></type>
+        <definition>VkDevice ILLIXR::xr_sensor_capture::vk_device_</definition>
+        <argsstring></argsstring>
+        <name>vk_device_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_device_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="201" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ad39337280207e267423a6f942a756291" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref></type>
+        <definition>VkPhysicalDevice ILLIXR::xr_sensor_capture::vk_physical_</definition>
+        <argsstring></argsstring>
+        <name>vk_physical_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_physical_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="202" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ad533005a908e7de7e52d1bc125f91f2e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkQueue</ref></type>
+        <definition>VkQueue ILLIXR::xr_sensor_capture::vk_queue_</definition>
+        <argsstring></argsstring>
+        <name>vk_queue_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_queue_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="203" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ad9abd3a97bcaefd9b8e87099d961fdd0" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+        <definition>uint32_t ILLIXR::xr_sensor_capture::vk_queue_family_</definition>
+        <argsstring></argsstring>
+        <name>vk_queue_family_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_queue_family_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="204" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a9fbb7f9f5bb1cb93e0f78dea430d0bbd" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandPool</ref></type>
+        <definition>VkCommandPool ILLIXR::xr_sensor_capture::vk_cmd_pool_</definition>
+        <argsstring></argsstring>
+        <name>vk_cmd_pool_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_cmd_pool_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="205" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a5a8c15e71c9f52a2a6a1f9647348c1cc" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandBuffer</ref></type>
+        <definition>VkCommandBuffer ILLIXR::xr_sensor_capture::vk_cmd_buf_</definition>
+        <argsstring></argsstring>
+        <name>vk_cmd_buf_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_cmd_buf_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="206" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a03eb7a7b8599cb83dbb9db2f9a0464ae" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFence</ref></type>
+        <definition>VkFence ILLIXR::xr_sensor_capture::vk_fence_</definition>
+        <argsstring></argsstring>
+        <name>vk_fence_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_fence_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="207" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a675c33e2c62cdb504eb0ab210691ae69" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBuffer</ref></type>
+        <definition>VkBuffer ILLIXR::xr_sensor_capture::vk_staging_buf_</definition>
+        <argsstring></argsstring>
+        <name>vk_staging_buf_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_staging_buf_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="210" column="20" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ae86588fe5145daee914ca72d876e32f5" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDeviceMemory</ref></type>
+        <definition>VkDeviceMemory ILLIXR::xr_sensor_capture::vk_staging_mem_</definition>
+        <argsstring></argsstring>
+        <name>vk_staging_mem_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_staging_mem_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="211" column="20" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a9a821fcb6eb67dd92cfcef3b09d836c6" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDeviceSize</ref></type>
+        <definition>VkDeviceSize ILLIXR::xr_sensor_capture::vk_staging_size_</definition>
+        <argsstring></argsstring>
+        <name>vk_staging_size_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::vk_staging_size_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="212" column="20" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="212" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a8b24f257c3117278b6e0d2c7930675d1" prot="private" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::xr_sensor_capture::depth_mutex_</definition>
+        <argsstring></argsstring>
+        <name>depth_mutex_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="240" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="240" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ae192074d54a2635c0ed80b46eec0b974" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="structILLIXR_1_1xr__sensor__capture_1_1depth__frame__data" kindref="compound">depth_frame_data</ref>, <ref refid="classILLIXR_1_1xr__sensor__capture_1a0ef88563a27f9f37bd90fe76206bba14" kindref="member">DEPTH_CACHE_SIZE</ref> &gt;</type>
+        <definition>std::array&lt;depth_frame_data, DEPTH_CACHE_SIZE&gt; ILLIXR::xr_sensor_capture::depth_cache_</definition>
+        <argsstring></argsstring>
+        <name>depth_cache_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_cache_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="241" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="241" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a49bb24dabeca5647b5a9dad820fda982" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+        <definition>size_t ILLIXR::xr_sensor_capture::depth_cache_next_</definition>
+        <argsstring></argsstring>
+        <name>depth_cache_next_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_cache_next_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="242" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="242" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a2e5cc32dc922dd7d3f2172bfa16beb18" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::xr_sensor_capture::depth_acquire_counter_</definition>
+        <argsstring></argsstring>
+        <name>depth_acquire_counter_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::depth_acquire_counter_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="243" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="243" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a21d9514624739b45587fd0dd5c901127" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::xr_sensor_capture::pending_readback_mutex_</definition>
+        <argsstring></argsstring>
+        <name>pending_readback_mutex_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::pending_readback_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="259" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="259" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1aaa705072fd5f6dd7f39bc697249ae065" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1xr__sensor__capture_1_1pending__readback" kindref="compound">pending_readback</ref></type>
+        <definition>pending_readback ILLIXR::xr_sensor_capture::pending_readback_</definition>
+        <argsstring></argsstring>
+        <name>pending_readback_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::pending_readback_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="260" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="260" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a72d85d39982385b7028ad98ed375eb37" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ACameraManager</ref> *</type>
+        <definition>ACameraManager* ILLIXR::xr_sensor_capture::camera_mgr_</definition>
+        <argsstring></argsstring>
+        <name>camera_mgr_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::camera_mgr_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="266" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="266" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a6a42f50948115f4e23f1cd6339d84e09" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ACameraDevice</ref> *</type>
+        <definition>ACameraDevice* ILLIXR::xr_sensor_capture::camera_device_</definition>
+        <argsstring></argsstring>
+        <name>camera_device_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::camera_device_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="267" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="267" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ab7c5bcd95696bb154590b74f361a7aca" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ACameraCaptureSession</ref> *</type>
+        <definition>ACameraCaptureSession* ILLIXR::xr_sensor_capture::capture_session_</definition>
+        <argsstring></argsstring>
+        <name>capture_session_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::capture_session_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="268" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="268" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1afb0383670d19e168b4f0d104dba1bdf4" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ACaptureRequest</ref> *</type>
+        <definition>ACaptureRequest* ILLIXR::xr_sensor_capture::capture_request_</definition>
+        <argsstring></argsstring>
+        <name>capture_request_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::capture_request_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="269" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="269" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a7d73893e568522561b89114436c1c5a8" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ACameraOutputTarget</ref> *</type>
+        <definition>ACameraOutputTarget* ILLIXR::xr_sensor_capture::camera_output_target_</definition>
+        <argsstring></argsstring>
+        <name>camera_output_target_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::camera_output_target_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="270" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="270" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a7999b7d7ec82302e54dd0a59e150bed4" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ACaptureSessionOutputContainer</ref> *</type>
+        <definition>ACaptureSessionOutputContainer* ILLIXR::xr_sensor_capture::session_output_container_</definition>
+        <argsstring></argsstring>
+        <name>session_output_container_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::session_output_container_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="271" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="271" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a1a1e2610016294c8363f5ec8998bbc0c" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ACaptureSessionOutput</ref> *</type>
+        <definition>ACaptureSessionOutput* ILLIXR::xr_sensor_capture::session_output_</definition>
+        <argsstring></argsstring>
+        <name>session_output_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::session_output_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="272" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="272" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ad4bf4280d847495eac5268dbf33c497b" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1camera__intrinsics" kindref="compound">data_format::camera_intrinsics</ref></type>
+        <definition>data_format::camera_intrinsics ILLIXR::xr_sensor_capture::rgb_intrinsics_</definition>
+        <argsstring></argsstring>
+        <name>rgb_intrinsics_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::rgb_intrinsics_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="274" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="274" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1aab00df2896c8da35255d6146870940d6" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::xr_sensor_capture::rgb_intrinsics_valid_</definition>
+        <argsstring></argsstring>
+        <name>rgb_intrinsics_valid_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::rgb_intrinsics_valid_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="275" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="275" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1ade5dc5acf7869ab356f37d91771c5b34" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::xr_sensor_capture::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="278" column="49" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="278" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a3be52c66afd299af54ad7cb82ce51082" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1semantic__frame" kindref="compound">data_format::semantic_frame</ref> &gt;</type>
+        <definition>switchboard::network_writer&lt;data_format::semantic_frame&gt; ILLIXR::xr_sensor_capture::writer_</definition>
+        <argsstring></argsstring>
+        <name>writer_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="279" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="279" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a4a1f1944ecb009c63328cada9dee4591" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></type>
+        <definition>int32_t ILLIXR::xr_sensor_capture::frame_number_</definition>
+        <argsstring></argsstring>
+        <name>frame_number_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::frame_number_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="280" column="62" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="280" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a10b2154046c8056332e7596f7ee69a22" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::xr_sensor_capture::max_depth_m_</definition>
+        <argsstring></argsstring>
+        <name>max_depth_m_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::max_depth_m_</qualifiedname>
+        <initializer>= 0.<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">f</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="281" column="62" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="281" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a201f265e715e3899dd9979bf3bcbf4c6" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classILLIXR_1_1ndk__encoder" kindref="compound">ndk_encoder</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;ndk_encoder&gt; ILLIXR::xr_sensor_capture::encoder_</definition>
+        <argsstring></argsstring>
+        <name>encoder_</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::encoder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="283" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="283" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a82623b29390051f71963f0e5d28a2ada" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>constexpr int ILLIXR::xr_sensor_capture::DEPTH_ACQUIRE_EVERY</definition>
+        <argsstring></argsstring>
+        <name>DEPTH_ACQUIRE_EVERY</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::DEPTH_ACQUIRE_EVERY</qualifiedname>
+        <initializer>= 9</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="223" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="223" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1xr__sensor__capture_1a0ef88563a27f9f37bd90fe76206bba14" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+        <definition>constexpr size_t ILLIXR::xr_sensor_capture::DEPTH_CACHE_SIZE</definition>
+        <argsstring></argsstring>
+        <name>DEPTH_CACHE_SIZE</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::DEPTH_CACHE_SIZE</qualifiedname>
+        <initializer>= 16</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="224" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="224" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a29719b5ef3d6b99901754bd5758e56b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>xr_sensor_capture::xr_sensor_capture</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>xr_sensor_capture</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::xr_sensor_capture</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="83" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="194" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a49f3c8379cb587b9f22db82349d16786" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>xr_sensor_capture::~xr_sensor_capture</definition>
+        <argsstring>() override</argsstring>
+        <name>~xr_sensor_capture</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::~xr_sensor_capture</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="84" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="277" bodyend="282"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a527df59709c710656b6b731918284046" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void xr_sensor_capture::acquire_depth_unity_thread</definition>
+        <argsstring>(int64_t predicted_display_time_ns, double ovr_plugin_time_sec, const float *rgb_camera_pose_lh, const float *head_pose_lh, const float *tracking_to_world_lh)</argsstring>
+        <name>acquire_depth_unity_thread</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::acquire_depth_unity_thread</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int64_t</ref></type>
+          <declname>predicted_display_time_ns</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>ovr_plugin_time_sec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>rgb_camera_pose_lh</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>head_pose_lh</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>tracking_to_world_lh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="90" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="548" bodyend="718"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1ac8317bb76b11fbd889aee136e1a78cdd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool xr_sensor_capture::init_vulkan</definition>
+        <argsstring>()</argsstring>
+        <name>init_vulkan</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::init_vulkan</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="95" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="417" bodyend="466"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a7330390dddccab14546d8335406c6dc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void xr_sensor_capture::destroy_vulkan</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_vulkan</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::destroy_vulkan</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="96" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="468" bodyend="489"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a4b63a0e4b90a40127718979d7e73d5c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void xr_sensor_capture::submit_depth_readback</definition>
+        <argsstring>()</argsstring>
+        <name>submit_depth_readback</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::submit_depth_readback</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="108" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="720" bodyend="858"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a681a0d0ef176b3353577367c47210685" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void xr_sensor_capture::release_depth_after_submit</definition>
+        <argsstring>()</argsstring>
+        <name>release_depth_after_submit</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::release_depth_after_submit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="114" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="284" bodyend="301"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a3ffcac1b5b679996b827943f7ca55a49" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void xr_sensor_capture::set_unity_interfaces</definition>
+        <argsstring>(IUnityInterfaces *interfaces)</argsstring>
+        <name>set_unity_interfaces</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::set_unity_interfaces</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">IUnityInterfaces</ref> *</type>
+          <declname>interfaces</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="99" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="33" bodyend="44"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a64d5b9e314c9c71e5a7d601c824be85b" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void xr_sensor_capture::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::_p_one_iteration</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be">_p_one_iteration</reimplements>
+        <briefdescription>
+<para>Override with the computation the thread does every loop. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This gets called in rapid succession. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="157" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="1071" bodyend="1142"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1ae1d6bd7bff27fe3b2ccd41cd8a296812" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">skip_option</ref></type>
+        <definition>threadloop::skip_option xr_sensor_capture::_p_should_skip</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_should_skip</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::_p_should_skip</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a">_p_should_skip</reimplements>
+        <briefdescription>
+<para>Gets called in a tight loop, to gate the invocation of <computeroutput><ref refid="classILLIXR_1_1xr__sensor__capture_1a64d5b9e314c9c71e5a7d601c824be85b" kindref="member">_p_one_iteration()</ref></computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="158" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="1063" bodyend="1069"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1ae8fd6aa76225cd66360350e893d22ceb" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool xr_sensor_capture::init_openxr</definition>
+        <argsstring>()</argsstring>
+        <name>init_openxr</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::init_openxr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="170" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="307" bodyend="376"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a7c3f5ce6f6e709e58b6b9b9b1a9d37ef" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void xr_sensor_capture::destroy_openxr</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_openxr</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::destroy_openxr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="171" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="378" bodyend="411"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a16b782ed69bd4961100a6c799ba66890" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+        <definition>uint32_t xr_sensor_capture::find_memory_type</definition>
+        <argsstring>(uint32_t type_filter, VkMemoryPropertyFlags props) const</argsstring>
+        <name>find_memory_type</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::find_memory_type</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>type_filter</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkMemoryPropertyFlags</ref></type>
+          <declname>props</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="215" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="491" bodyend="500"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a15e345062c7ced70d039f701755a045f" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1xr__sensor__capture_1_1depth__frame__data" kindref="compound">depth_frame_data</ref> *</type>
+        <definition>const xr_sensor_capture::depth_frame_data * xr_sensor_capture::find_closest_depth</definition>
+        <argsstring>(XrTime rgb_ts) const</argsstring>
+        <name>find_closest_depth</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::find_closest_depth</qualifiedname>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>rgb_ts</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="238" column="28" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="860" bodyend="874"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a8a088ac80e2c009685fc30589649719e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool xr_sensor_capture::init_camera</definition>
+        <argsstring>()</argsstring>
+        <name>init_camera</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::init_camera</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="263" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="907" bodyend="1025"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1xr__sensor__capture_1a02c4df9468a213245562bc4f5f39c00b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void xr_sensor_capture::destroy_camera</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_camera</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::destroy_camera</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="264" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.cpp" bodystart="1027" bodyend="1057"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref> plugin that co-captures HEVC-encoded RGB frames, depth frames, and per-sensor matched head poses on the Meta Quest 3. </para>
+    </briefdescription>
+    <detaileddescription>
+<sect2 id="classILLIXR_1_1xr__sensor__capture_1autotoc_md3">
+<title>Acquisition and encoding pipeline</title>
+<para>RGB: Camera2 writes directly into MediaCodec&apos;s ANativeWindow input surface. The Snapdragon hardware handles NV12 -&gt; HEVC without any CPU copy. The encoder is initialised first so its ANativeWindow can be used as the Camera2 capture target. Completed H.265 output buffers are drained on each threadloop tick.</para>
+<para>RGB pose: <ref refid="classILLIXR_1_1xr__sensor__capture_1a527df59709c710656b6b731918284046" kindref="member">acquire_depth_unity_thread()</ref> samples xrLocateSpace(VIEW,LOCAL) at 90Hz on Unity&apos;s main thread (the only valid context for VIEW space) and stores the result in latest_head_pose_ under a mutex. <ref refid="plugins_2quest3_2unity_2plugin_8cpp_1a05a1d84a7218367205d5c6c332911196" kindref="member">on_capture_completed()</ref> snapshots that pose into capture_result_cache_ at the moment of each Camera2 exposure. <ref refid="classILLIXR_1_1xr__sensor__capture_1a64d5b9e314c9c71e5a7d601c824be85b" kindref="member">_p_one_iteration()</ref> reads the most recent capture result pose and attaches it to the outgoing frame.</para>
+<para>Depth: XR_META_environment_depth OpenXR extension (standard Khronos openxr.h). Unity uses the Vulkan renderer, so depth swapchain images are VkImages. <ref refid="classILLIXR_1_1xr__sensor__capture_1a527df59709c710656b6b731918284046" kindref="member">acquire_depth_unity_thread()</ref> is called from <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">LateUpdate()</ref> via ILLIXRBridge while Unity&apos;s XR frame is open. It acquires the depth VkImage and copies it to a host-visible staging buffer via vkCmdCopyImageToBuffer, then maps the buffer to read the R16F pixels to CPU. Vulkan handles are obtained from IUnityGraphicsVulkan via <ref refid="plugins_2quest3_2unity_2plugin_8cpp_1a0eb563e4b022d1dea153e98810cf76b9" kindref="member">UnityPluginLoad()</ref>. Depth format: R16F (float16), 2 bytes/pixel, top-down, inverted NDC. depth_m = near_z / r_value.</para>
+</sect2>
+<sect2 id="classILLIXR_1_1xr__sensor__capture_1autotoc_md4">
+<title>Initialisation order</title>
+<para><ref refid="plugins_2quest3_2unity_2plugin_8cpp_1a0eb563e4b022d1dea153e98810cf76b9" kindref="member">UnityPluginLoad()</ref> - captures IUnityGraphicsVulkan (called by Unity at startup)<orderedlist>
+<listitem><para><ref refid="classILLIXR_1_1xr__sensor__capture_1ae8fd6aa76225cd66360350e893d22ceb" kindref="member">init_openxr()</ref> - reuses Unity&apos;s XrInstance/XrSession, loads depth extension</para>
+</listitem><listitem><para><ref refid="classILLIXR_1_1xr__sensor__capture_1ac8317bb76b11fbd889aee136e1a78cdd" kindref="member">init_vulkan()</ref> - creates staging buffer, command pool, fence from Unity&apos;s VkDevice</para>
+</listitem><listitem><para><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">init_encoder()</ref> - MediaCodec HEVC, creates input ANativeWindow</para>
+</listitem><listitem><para><ref refid="classILLIXR_1_1xr__sensor__capture_1a8a088ac80e2c009685fc30589649719e" kindref="member">init_camera()</ref> - Camera2, targeting encoder&apos;s ANativeWindow</para>
+</listitem></orderedlist>
+</para>
+</sect2>
+<sect2 id="classILLIXR_1_1xr__sensor__capture_1autotoc_md5">
+<title>Configuration (env vars, set via Unity JNI bridge before plugin start)</title>
+<para>ILLIXR_CAPTURE_FPS Encoder target FPS hint (default: 2) ILLIXR_ENCODER_BITRATE_BPS HEVC bitrate in bits/s (default: 5000000) ILLIXR_ENCODER_IFRAME_SEC IDR period in seconds (default: 1) ILLIXR_DEPTH_DISABLED Set to 1 to skip depth (default: 0) ILLIXR_MAX_DEPTH_M Far-depth cap in metres (default: 0) ILLIXR_CAMERA_WIDTH Camera capture width (default: 960) ILLIXR_CAMERA_HEIGHT Camera capture height (default: 960)</para>
+<para>Publishes: &quot;semantic_frame&quot; (<ref refid="structILLIXR_1_1data__format_1_1semantic__frame" kindref="compound">ILLIXR::data_format::semantic_frame</ref>) </para>
+</sect2>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::xr_sensor_capture</label>
+        <link refid="classILLIXR_1_1xr__sensor__capture"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="7">
+        <label>ILLIXR::data_format::camera_intrinsics</label>
+        <link refid="structILLIXR_1_1data__format_1_1camera__intrinsics"/>
+      </node>
+      <node id="11">
+        <label>ILLIXR::network::topic_config</label>
+        <link refid="structILLIXR_1_1network_1_1topic__config"/>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>ILLIXR::switchboard::topic</label>
+        <link refid="classILLIXR_1_1switchboard_1_1topic"/>
+      </node>
+      <node id="9">
+        <label>ILLIXR::switchboard::writer&lt; Specific_event &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="10" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::xr_sensor_capture</label>
+        <link refid="classILLIXR_1_1xr__sensor__capture"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>latest_head_pose_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>pending_readback_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>rgb_intrinsics_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>writer_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::xr_sensor_capture::latest_head_pose</label>
+        <link refid="structILLIXR_1_1xr__sensor__capture_1_1latest__head__pose"/>
+      </node>
+      <node id="6">
+        <label>ILLIXR::xr_sensor_capture::pending_readback</label>
+        <link refid="structILLIXR_1_1xr__sensor__capture_1_1pending__readback"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>intrinsics</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>ILLIXR::switchboard::network_writer&lt; ILLIXR::data_format::semantic_frame &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1network__writer"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="81" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="81" bodyend="284"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a64d5b9e314c9c71e5a7d601c824be85b" prot="protected" virt="virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ae1d6bd7bff27fe3b2ccd41cd8a296812" prot="protected" virt="virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" virt="virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a527df59709c710656b6b731918284046" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>acquire_depth_unity_thread</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a6a42f50948115f4e23f1cd6339d84e09" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>camera_device_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a72d85d39982385b7028ad98ed375eb37" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>camera_mgr_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a7d73893e568522561b89114436c1c5a8" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>camera_output_target_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1afb0383670d19e168b4f0d104dba1bdf4" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>capture_request_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a3fb31b6f5d423bd984b792fdfb2e14d5" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>capture_result_cache_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a82f637170d447aed353b4572e3e6c68d" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>CAPTURE_RESULT_CACHE_SIZE</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a2fffca1388c7b8d9eb8944febe68c030" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>capture_result_mutex_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a20a1bc02bc5dd251411123e4fbc5d2f4" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>capture_result_next_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ab7c5bcd95696bb154590b74f361a7aca" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>capture_session_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1aee5dfbc9e9188a7dc89023fb016bce0d" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>clock_offset_ns_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a2e5cc32dc922dd7d3f2172bfa16beb18" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_acquire_counter_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a82623b29390051f71963f0e5d28a2ada" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>DEPTH_ACQUIRE_EVERY</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ae192074d54a2635c0ed80b46eec0b974" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_cache_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a49bb24dabeca5647b5a9dad820fda982" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_cache_next_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a0ef88563a27f9f37bd90fe76206bba14" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>DEPTH_CACHE_SIZE</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a0bdf98ecb46d907fbf10e476978d29ee" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_ext_available_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a8b24f257c3117278b6e0d2c7930675d1" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_mutex_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a491926aa68b99a68a7b958ef1512fc2c" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_provider_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a4317cda067723b465f8dbfa5e8db74e0" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_swapchain_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1aecd9410eb32c02b0dfe638a484d57b5f" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_swapchain_height_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1aa52a62a94a8c4baf5cc9082f3ff8dc18" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_swapchain_width_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1acbb1a3d9811ea11381d7a386b67e91e5" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>depth_vk_images_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a02c4df9468a213245562bc4f5f39c00b" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>destroy_camera</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a7c3f5ce6f6e709e58b6b9b9b1a9d37ef" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>destroy_openxr</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a7330390dddccab14546d8335406c6dc5" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>destroy_vulkan</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a201f265e715e3899dd9979bf3bcbf4c6" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>encoder_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a15e345062c7ced70d039f701755a045f" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>find_closest_depth</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a16b782ed69bd4961100a6c799ba66890" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>find_memory_type</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a4a1f1944ecb009c63328cada9dee4591" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>frame_number_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a8a088ac80e2c009685fc30589649719e" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>init_camera</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a4d7ca593992a51813f6efc056f373637" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>init_failed_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ae8fd6aa76225cd66360350e893d22ceb" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>init_openxr</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ac8317bb76b11fbd889aee136e1a78cdd" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>init_vulkan</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1addfbade169288512c9be438f4ae9bc07" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>internal_stop_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ab08049c7d7fcbf4074cb3e767e2312fa" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>last_tick_ns_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1abb3a433703bc9117bb231aa6d12bc4ce" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>latest_head_pose_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a961e3e68f5a6f15f076266bdb8cb956f" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>latest_head_pose_mutex_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a2e94b75d6e6dad9db51d6d45db14c817" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>local_space_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a10b2154046c8056332e7596f7ee69a22" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>max_depth_m_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ae98eefd14a78e3101bbe40cdcdc338a2" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>needs_depth_release_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a95dc5450c63006e2855749f63c462678" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>ovr_time_offset_sec_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a73d77091b1b5b6b7ca21c7df4c643543" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>owns_xr_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1aaa705072fd5f6dd7f39bc697249ae065" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>pending_readback_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a21d9514624739b45587fd0dd5c901127" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>pending_readback_mutex_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a681a0d0ef176b3353577367c47210685" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>release_depth_after_submit</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ad4bf4280d847495eac5268dbf33c497b" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>rgb_intrinsics_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1aab00df2896c8da35255d6146870940d6" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>rgb_intrinsics_valid_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a7375a3d89c5a614ee3109ffd87e23477" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>s_unity_interfaces_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1accc9435d7e16b9222d454661ba75d56a" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>s_vk_interface_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a1a1e2610016294c8363f5ec8998bbc0c" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>session_output_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a7999b7d7ec82302e54dd0a59e150bed4" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>session_output_container_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a3ffcac1b5b679996b827943f7ca55a49" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>set_unity_interfaces</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" prot="public" virt="virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a2390e3eff6ab0c0cc11f061f34cf7b39" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>stoplight_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a4b63a0e4b90a40127718979d7e73d5c4" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>submit_depth_readback</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ade5dc5acf7869ab356f37d91771c5b34" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a468309a771ef1d60c4cc107cf2e9cab2" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>thread_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1ace62d94a271fd7a253eb1ee71589da61" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>thread_main</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1afeff9dd6563052c5269890e156214a63" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>tick_interval_ns_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a5a8c15e71c9f52a2a6a1f9647348c1cc" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_cmd_buf_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a9fbb7f9f5bb1cb93e0f78dea430d0bbd" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_cmd_pool_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ad914a313b0abecb6ffb5460786a0f81f" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_device_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a03eb7a7b8599cb83dbb9db2f9a0464ae" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_fence_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ad39337280207e267423a6f942a756291" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_physical_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ad533005a908e7de7e52d1bc125f91f2e" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_queue_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ad9abd3a97bcaefd9b8e87099d961fdd0" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_queue_family_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a675c33e2c62cdb504eb0ab210691ae69" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_staging_buf_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1ae86588fe5145daee914ca72d876e32f5" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_staging_mem_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a9a821fcb6eb67dd92cfcef3b09d836c6" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>vk_staging_size_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a3be52c66afd299af54ad7cb82ce51082" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>writer_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a82bf13a55d749fe2b2f433771f9fe4f4" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_acquire_depth_image_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a58c9fae5fa50bde5f2657dea85ed8c45" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_create_depth_provider_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1aea4ff3ce6211cd0d2ec39f41c08162eb" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_create_depth_swapchain_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a184a4648c3fa199c7ad189c453726d5d" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_destroy_depth_provider_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a56621a146088711c5a0d316e512abdc8" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_destroy_depth_swapchain_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1acaa84c156c75cfaab0af382725066ab3" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_enum_depth_images_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a6f563c6edab9695fc3dc6e6edfd22377" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_get_depth_state_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a84aad3dfa46e43b60c9e74371a914b81" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_instance_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a3ba79734901bbdf0eb089003d055a79a" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_release_depth_fn</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1afd6868feb78484a9e509e4123684b6ba" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_release_depth_image_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a29719b5ef3d6b99901754bd5758e56b1" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_sensor_capture</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1adca7635eda0947b8480cc93fa8f8a792" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_session_</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1af4b127d012c45331dc4f633186360f12" prot="private" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>xr_start_depth_provider_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>~threadloop</name></member>
+      <member refid="classILLIXR_1_1xr__sensor__capture_1a49f3c8379cb587b9f22db82349d16786" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture</scope><name>~xr_sensor_capture</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,17 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp">
+<area shape="rect" id="Node000001" title="NVDEC hardware H.265 decoder for the semantic_python plugin." alt="" coords="300,5,504,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,123,135,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="300,72,125,121,124,116,299,67"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="159,123,226,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="328,77,232,120,230,115,325,72"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="251,123,316,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="361,77,311,116,307,112,358,73"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="341,123,463,148"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="405,75,405,109,399,109,399,75"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="488,123,671,148"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="467,72,546,114,544,118,465,77"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="695,123,781,148"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="505,67,684,116,683,122,503,72"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="806,123,865,148"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="505,58,793,120,792,125,504,63"/>
+</map>

@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1latency__pong" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::latency_pong</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <includes refid="latency__data_8hpp" local="no">latency_data.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1latency__pong_1af9784bae2ccbb13c4148a7a1a15e6825" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+        <definition>uint64_t ILLIXR::data_format::latency_pong::sequence_number</definition>
+        <argsstring></argsstring>
+        <name>sequence_number</name>
+        <qualifiedname>ILLIXR::data_format::latency_pong::sequence_number</qualifiedname>
+        <briefdescription>
+<para>Original sequence number from ping. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" line="34" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1latency__pong_1afa07f497495c1a6644b14a0d3830fd1c" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+        <definition>uint64_t ILLIXR::data_format::latency_pong::client_timestamp_ns</definition>
+        <argsstring></argsstring>
+        <name>client_timestamp_ns</name>
+        <qualifiedname>ILLIXR::data_format::latency_pong::client_timestamp_ns</qualifiedname>
+        <briefdescription>
+<para>Original client timestamp from ping. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" line="35" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1latency__pong_1a620a94ee6328de9ed5ea025db95f3253" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+        <definition>uint64_t ILLIXR::data_format::latency_pong::server_timestamp_ns</definition>
+        <argsstring></argsstring>
+        <name>server_timestamp_ns</name>
+        <qualifiedname>ILLIXR::data_format::latency_pong::server_timestamp_ns</qualifiedname>
+        <briefdescription>
+<para>Server timestamp when pong was generated. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" line="36" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1latency__pong_1adb01716ef0ac9323836f6a23a24d3b94" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::latency_pong::latency_pong</definition>
+        <argsstring>()</argsstring>
+        <name>latency_pong</name>
+        <qualifiedname>ILLIXR::data_format::latency_pong::latency_pong</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" line="38" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" bodystart="38" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1latency__pong_1a1929247f2cfecd7bc175352e69311262" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::latency_pong::latency_pong</definition>
+        <argsstring>(uint64_t seq, uint64_t client_ts, uint64_t server_ts)</argsstring>
+        <name>latency_pong</name>
+        <qualifiedname>ILLIXR::data_format::latency_pong::latency_pong</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>seq</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>client_ts</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>server_ts</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" line="43" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" bodystart="43" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Pong packet structure sent back from server to client. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Contains the original ping data plus server processing timestamp. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::latency_pong</label>
+        <link refid="structILLIXR_1_1data__format_1_1latency__pong"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::latency_pong</label>
+        <link refid="structILLIXR_1_1data__format_1_1latency__pong"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" line="33" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp" bodystart="33" bodyend="47"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1latency__pong_1afa07f497495c1a6644b14a0d3830fd1c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::latency_pong</scope><name>client_timestamp_ns</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1latency__pong_1adb01716ef0ac9323836f6a23a24d3b94" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::latency_pong</scope><name>latency_pong</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1latency__pong_1a1929247f2cfecd7bc175352e69311262" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::latency_pong</scope><name>latency_pong</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1latency__pong_1af9784bae2ccbb13c4148a7a1a15e6825" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::latency_pong</scope><name>sequence_number</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::latency_pong</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1latency__pong_1a620a94ee6328de9ed5ea025db95f3253" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::latency_pong</scope><name>server_timestamp_ns</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::latency_pong</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

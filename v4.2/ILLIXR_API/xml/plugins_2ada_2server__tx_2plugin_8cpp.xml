@@ -1,0 +1,498 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2ada_2server__tx_2plugin_8cpp" kind="file" language="C++">
+    <compoundname>plugin.cpp</compoundname>
+    <includes refid="plugins_2ada_2server__tx_2plugin_8hpp" local="yes">plugin.hpp</includes>
+    <includes local="no">arpa/inet.h</includes>
+    <includes local="no">chrono</includes>
+    <includes local="no">cstring</includes>
+    <includes local="no">spdlog/spdlog.h</includes>
+    <incdepgraph>
+      <node id="52">
+        <label>../proto/output_stub.hpp</label>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/mesh.hpp</label>
+        <link refid="mesh_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>poses/head_pose.hpp</label>
+        <link refid="poses_2head__pose_8hpp"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>illixr/data_format/scene_reconstruction.hpp</label>
+        <link refid="scene__reconstruction_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="7">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>illixr/plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/ada/server_tx/plugin.cpp</label>
+        <link refid="plugins_2ada_2server__tx_2plugin_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>plugin.hpp</label>
+        <link refid="plugins_2ada_2server__tx_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>any</label>
+      </node>
+      <node id="55">
+        <label>arpa/inet.h</label>
+      </node>
+      <node id="8">
+        <label>atomic</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="9">
+        <label>cassert</label>
+      </node>
+      <node id="24">
+        <label>chrono</label>
+      </node>
+      <node id="5">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="56">
+        <label>cstring</label>
+      </node>
+      <node id="39">
+        <label>draco_illixr/io/ply_reader.h</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="44">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="32">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="53">
+        <label>filesystem</label>
+      </node>
+      <node id="54">
+        <label>fstream</label>
+      </node>
+      <node id="10">
+        <label>functional</label>
+      </node>
+      <node id="16">
+        <label>iostream</label>
+      </node>
+      <node id="33">
+        <label>list</label>
+      </node>
+      <node id="43">
+        <label>map</label>
+      </node>
+      <node id="17">
+        <label>memory</label>
+      </node>
+      <node id="18">
+        <label>mutex</label>
+      </node>
+      <node id="45">
+        <label>opencv4/opencv2/core/mat.hpp</label>
+      </node>
+      <node id="25">
+        <label>optional</label>
+      </node>
+      <node id="46">
+        <label>set</label>
+      </node>
+      <node id="19">
+        <label>shared_mutex</label>
+      </node>
+      <node id="48">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="49">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="50">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="22">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="30">
+        <label>sstream</label>
+      </node>
+      <node id="11">
+        <label>stdexcept</label>
+      </node>
+      <node id="29">
+        <label>string</label>
+      </node>
+      <node id="12">
+        <label>thread</label>
+      </node>
+      <node id="20">
+        <label>typeindex</label>
+      </node>
+      <node id="51">
+        <label>typeinfo</label>
+      </node>
+      <node id="21">
+        <label>unordered_map</label>
+      </node>
+      <node id="13">
+        <label>utility</label>
+      </node>
+      <node id="26">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="plugins_2zed_2plugin_8hpp" kindref="compound">plugin.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;arpa/inet.h&gt;</highlight><highlight class="normal"><sp/></highlight><highlight class="comment">//<sp/>htonl</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;chrono&gt;</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>std::chrono::...</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>std::memcpy</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;spdlog/spdlog.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format" kindref="compound">ILLIXR::data_format</ref>;</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal">[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="classserver__tx_1a3a670b116e830dc3b52024149f29e582" kindref="member">server_tx::server_tx</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name_,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb_</ref>)</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref>{name_,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb_</ref>}</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>switchboard_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>&gt;()}</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>ada_writer_{switchboard_-&gt;get_network_writer&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>::event_wrapper&lt;<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="plugins_2offload__rendering__server_2CMakeLists_8txt_1a5a320a78f5d255e59cead61a98c7cbea" kindref="member">string</ref>&gt;&gt;(</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;ada_processed&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>network::topic_config{network::topic_config::SerializationMethod::PROTOBUF,</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>network::topic_config::TransportMethod::TCP,<sp/><ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">chrono</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">milliseconds</ref>(0)})}<sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!std::filesystem::exists(data_path))<sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!std::filesystem::create_directory(data_path))<sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(</highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>create<sp/>data<sp/>directory.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>sender_time.open(data_path<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;/server_package_mesh.csv&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>sender_timestamp.open(data_path<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;/server_send_mesh_timestamp.csv&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>chunk_count<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classserver__tx_1ad7023c0e838a6bc6a8a8d636251c47df" kindref="member">server_tx::start</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc" kindref="member">plugin::start</ref>();</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a7bc003e4fa75b44a4fd4e360eeefdcb1" kindref="member">switchboard_</ref>-&gt;schedule&lt;<ref refid="structILLIXR_1_1data__format_1_1vb__type" kindref="compound">vb_type</ref>&gt;(<ref refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" kindref="member">id_</ref>,<sp/></highlight><highlight class="stringliteral">&quot;unique_VB_list&quot;</highlight><highlight class="normal">,<sp/>[</highlight><highlight class="keyword">this</highlight><highlight class="normal">](<ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const vb_type&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>,<sp/>std::size_t)<sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classserver__tx_1a82bbd7ea32ce3663c1ad80efcc9a25c0" kindref="member">send_vb_list</ref>(datum);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a7bc003e4fa75b44a4fd4e360eeefdcb1" kindref="member">switchboard_</ref>-&gt;schedule&lt;<ref refid="structILLIXR_1_1data__format_1_1mesh__type" kindref="compound">mesh_type</ref>&gt;(<ref refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" kindref="member">id_</ref>,<sp/></highlight><highlight class="stringliteral">&quot;compressed_scene&quot;</highlight><highlight class="normal">,<sp/>[</highlight><highlight class="keyword">this</highlight><highlight class="normal">](<ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const mesh_type&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>,<sp/>std::size_t)<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classserver__tx_1a86810d96d66bb362b6ada6a78d88ef1d" kindref="member">send_sr_output</ref>(datum);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classserver__tx_1a82bbd7ea32ce3663c1ad80efcc9a25c0" kindref="member">server_tx::send_vb_list</ref>(<ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const vb_type&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="classserver__tx_1ad7023c0e838a6bc6a8a8d636251c47df" kindref="member">start</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>std::chrono::high_resolution_clock::now();</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a31de62f431eae41c21e096628d9dc0ef" kindref="member">server_outgoing_vb_payload</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>sr_output_proto::CompressMeshData();</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;debug(</highlight><highlight class="stringliteral">&quot;send<sp/>vb&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>3<sp/>indicate<sp/>vb_lists</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a31de62f431eae41c21e096628d9dc0ef" kindref="member">server_outgoing_vb_payload</ref>-&gt;set_active(3);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a31de62f431eae41c21e096628d9dc0ef" kindref="member">server_outgoing_vb_payload</ref>-&gt;set_request_id(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;scene_id);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">each_vb</ref><sp/>:<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;unique_VB_lists)<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;debug(</highlight><highlight class="stringliteral">&quot;Adding<sp/>VB&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sr_output_proto::VB*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">new_vb</ref><sp/>=<sp/><ref refid="classserver__tx_1a31de62f431eae41c21e096628d9dc0ef" kindref="member">server_outgoing_vb_payload</ref>-&gt;add_vbs();</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">new_vb</ref>-&gt;set_x(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(std::get&lt;0&gt;(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">each_vb</ref>)));</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">new_vb</ref>-&gt;set_y(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(std::get&lt;1&gt;(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">each_vb</ref>)));</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">new_vb</ref>-&gt;set_z(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(std::get&lt;2&gt;(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">each_vb</ref>)));</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">payload_size</ref><sp/>=<sp/><ref refid="classserver__tx_1a31de62f431eae41c21e096628d9dc0ef" kindref="member">server_outgoing_vb_payload</ref>-&gt;ByteSizeLong();</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref><sp/>=<sp/><ref refid="classserver__tx_1a31de62f431eae41c21e096628d9dc0ef" kindref="member">server_outgoing_vb_payload</ref>-&gt;SerializeAsString()<sp/>+<sp/><ref refid="namespaceILLIXR_1a1ee7d9f70024bfd225b53bffc272a430" kindref="member">delimiter</ref>;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;debug(</highlight><highlight class="stringliteral">&quot;Sending<sp/>vb<sp/>{}<sp/>{}&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.size(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a14a7ae26079c6ea8eabdb60bfdefb4d0" kindref="member">ada_writer_</ref>.<ref refid="classILLIXR_1_1switchboard_1_1network__writer_1af3078d848e91150e0adac5af4c3c11c3" kindref="member">put</ref>(std::make_shared&lt;<ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper&lt;std::string&gt;</ref>&gt;(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>));</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/><ref refid="classserver__tx_1a31de62f431eae41c21e096628d9dc0ef" kindref="member">server_outgoing_vb_payload</ref>;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>end<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>std::chrono::high_resolution_clock::now();</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a43c3235ba9e3c6d60b541f692ea18ec6" kindref="member">duration</ref><sp/><sp/><sp/><sp/>=<sp/>std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(end<sp/>-<sp/><ref refid="classserver__tx_1ad7023c0e838a6bc6a8a8d636251c47df" kindref="member">start</ref>).count();</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">duration_ms</ref><sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a43c3235ba9e3c6d60b541f692ea18ec6" kindref="member">duration</ref>)<sp/>/<sp/>1000.0;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1acd57c658adbbb5ce7b1b269b924f8f35" kindref="member">sender_time</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;VB<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;scene_id<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">duration_ms</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">payload_size</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;\n&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1acd57c658adbbb5ce7b1b269b924f8f35" kindref="member">sender_time</ref>.flush();</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classserver__tx_1a86810d96d66bb362b6ada6a78d88ef1d" kindref="member">server_tx::send_sr_output</ref>(<ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const mesh_type&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="classserver__tx_1ad7023c0e838a6bc6a8a8d636251c47df" kindref="member">start</ref><sp/>=<sp/>std::chrono::high_resolution_clock::now();</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;debug(</highlight><highlight class="stringliteral">&quot;send<sp/>sr_out&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>sr_output_proto::CompressMeshData();</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">draco_owned</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>std::string(</highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;mesh.data()),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;mesh.size());</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref>-&gt;set_allocated_draco_data(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">draco_owned</ref>);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref>-&gt;set_active(2);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref>-&gt;set_request_id(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;id);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref>-&gt;set_chunk_id(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;chunk_id);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref>-&gt;set_max_chunk(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;max_chunk);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a6f89cb716a8b16d953c314bcdb6ee029" kindref="member">chunk_count</ref>++;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Prepare<sp/>data<sp/>delivery</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">payload_size</ref><sp/>=<sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref>-&gt;ByteSizeLong();</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref><sp/>=<sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref>-&gt;SerializeAsString()<sp/>+<sp/><ref refid="namespaceILLIXR_1a1ee7d9f70024bfd225b53bffc272a430" kindref="member">delimiter</ref>;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;debug(</highlight><highlight class="stringliteral">&quot;Sending<sp/>sr<sp/>{}<sp/>{}&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.size(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a14a7ae26079c6ea8eabdb60bfdefb4d0" kindref="member">ada_writer_</ref>.<ref refid="classILLIXR_1_1switchboard_1_1network__writer_1af3078d848e91150e0adac5af4c3c11c3" kindref="member">put</ref>(std::make_shared&lt;<ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper&lt;std::string&gt;</ref>&gt;(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>));</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>end<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>std::chrono::high_resolution_clock::now();</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a43c3235ba9e3c6d60b541f692ea18ec6" kindref="member">duration</ref><sp/><sp/><sp/><sp/>=<sp/>std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(end<sp/>-<sp/><ref refid="classserver__tx_1ad7023c0e838a6bc6a8a8d636251c47df" kindref="member">start</ref>).count();</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">duration_ms</ref><sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a43c3235ba9e3c6d60b541f692ea18ec6" kindref="member">duration</ref>)<sp/>/<sp/>1000.0;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1acd57c658adbbb5ce7b1b269b924f8f35" kindref="member">sender_time</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;id<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;chunk_id<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">payload_size</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">duration_ms</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;\n&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classserver__tx_1a6f89cb716a8b16d953c314bcdb6ee029" kindref="member">chunk_count</ref><sp/>==<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;max_chunk)<sp/>{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a6f89cb716a8b16d953c314bcdb6ee029" kindref="member">chunk_count</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classserver__tx_1a6f89cb716a8b16d953c314bcdb6ee029" kindref="member">chunk_count</ref><sp/>==<sp/>1)<sp/>{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">since_epoch</ref><sp/>=<sp/>end.time_since_epoch();</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">millis</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">since_epoch</ref>).count();</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a2f39940e08d03b7f6c51954d8fcfe106" kindref="member">sender_timestamp</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;id<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">millis</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;\n&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1a2f39940e08d03b7f6c51954d8fcfe106" kindref="member">sender_timestamp</ref>.flush();</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classserver__tx_1acd57c658adbbb5ce7b1b269b924f8f35" kindref="member">sender_time</ref>.flush();</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/><ref refid="classserver__tx_1a394e301833ffc7cbe9d274a7719dec43" kindref="member">server_outgoing_payload</ref>;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><ref refid="include_2illixr_2plugin_8hpp_1aa29023b17f5259cc4186f4627e1d9b5c" kindref="member">PLUGIN_MAIN</ref>(<ref refid="classserver__tx" kindref="compound">server_tx</ref>)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/ada/server_tx/plugin.cpp"/>
+  </compounddef>
+</doxygen>

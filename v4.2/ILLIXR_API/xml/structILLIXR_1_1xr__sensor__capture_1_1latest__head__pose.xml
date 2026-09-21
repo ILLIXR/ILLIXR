@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1xr__sensor__capture_1_1latest__head__pose" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::xr_sensor_capture::latest_head_pose</compoundname>
+    <includes refid="plugins_2quest3_2unity_2plugin_8hpp" local="no">plugin.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1xr__sensor__capture_1_1latest__head__pose_1af448def655031db72e6e1ec0eedabb64" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::xr_sensor_capture::latest_head_pose::pose[16]</definition>
+        <argsstring>[16]</argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::latest_head_pose::pose</qualifiedname>
+        <initializer>= {}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="124" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="124" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1xr__sensor__capture_1_1latest__head__pose_1abbfe884492a4db15195c9b47d184a91e" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::xr_sensor_capture::latest_head_pose::valid</definition>
+        <argsstring></argsstring>
+        <name>valid</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::latest_head_pose::valid</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="125" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="125" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="123" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="123" bodyend="126"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1xr__sensor__capture_1_1latest__head__pose_1af448def655031db72e6e1ec0eedabb64" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture::latest_head_pose</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1xr__sensor__capture_1_1latest__head__pose_1abbfe884492a4db15195c9b47d184a91e" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture::latest_head_pose</scope><name>valid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

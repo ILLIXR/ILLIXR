@@ -1,0 +1,1218 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1oxr__relay" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::oxr_relay</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <includes refid="oxr__relay_8hpp" local="no">oxr_relay.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a1a62727d8f470856801a3cd7913cfbca" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">friend</ref></type>
+        <definition>friend ILLIXR::oxr_relay::oxr_interface</definition>
+        <argsstring></argsstring>
+        <name>oxr_interface</name>
+        <qualifiedname>ILLIXR::oxr_relay::oxr_interface</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="76" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a57560d3ccf9f4d4f8bd06227bf0e25cb" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::oxr_relay::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::oxr_relay::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="214" column="30" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="214" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1ac8b5f5cf1ee2e2a03277216b5fd5c074" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;relative_clock&gt; ILLIXR::oxr_relay::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::oxr_relay::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="215" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1abd79c9cc36d284b05e7d6b0b33a28653" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer</ref>&lt; data_format::pose::combined_pose &gt;</type>
+        <definition>switchboard::network_writer&lt;data_format::pose::combined_pose&gt; ILLIXR::oxr_relay::combined_pose_writer_</definition>
+        <argsstring></argsstring>
+        <name>combined_pose_writer_</name>
+        <qualifiedname>ILLIXR::oxr_relay::combined_pose_writer_</qualifiedname>
+        <briefdescription>
+<para>Combined pose + hand tracking writer for network transmission. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Sends combined_pose to the offload rendering server, which contains the head pose, hand tracking data, and time conversion fields. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="223" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="223" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a0658d6760bfbb01bcce4d694ba8741a1" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1network__latency__result" kindref="compound">data_format::network_latency_result</ref> &gt;</type>
+        <definition>switchboard::reader&lt;data_format::network_latency_result&gt; ILLIXR::oxr_relay::latency_reader_</definition>
+        <argsstring></argsstring>
+        <name>latency_reader_</name>
+        <qualifiedname>ILLIXR::oxr_relay::latency_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reader for network latency results published by network_latency_pong_rx. Used to populate smoothed_clock_offset_ns and smoothed_rtt_ns in each combined_pose so the server has up-to-date network timing data. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="233" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a6728e4dd6e56a7ace9f6136713c86ff8" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref></type>
+        <definition>data_format::pose::head_pose_type ILLIXR::oxr_relay::current_head_pose_</definition>
+        <argsstring></argsstring>
+        <name>current_head_pose_</name>
+        <qualifiedname>ILLIXR::oxr_relay::current_head_pose_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="235" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="235" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a203bf6bd95732ac17c320ebf4b705181" prot="private" static="no" mutable="no">
+        <type>data_format::pose::hand_joint_poses_pair</type>
+        <definition>data_format::pose::hand_joint_poses_pair ILLIXR::oxr_relay::current_hand_poses_</definition>
+        <argsstring></argsstring>
+        <name>current_hand_poses_</name>
+        <qualifiedname>ILLIXR::oxr_relay::current_hand_poses_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="236" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="236" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a9926cff6fc4505db8a7756cf80dd4f75" prot="private" static="no" mutable="no">
+        <type>data_format::pose::hand_interaction_poses_pair</type>
+        <definition>data_format::pose::hand_interaction_poses_pair ILLIXR::oxr_relay::current_hand_interactions_</definition>
+        <argsstring></argsstring>
+        <name>current_hand_interactions_</name>
+        <qualifiedname>ILLIXR::oxr_relay::current_hand_interactions_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="237" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="237" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a36aaceab025822f5c1e0e339c4cd40f1" prot="private" static="no" mutable="no">
+        <type>data_format::pose::palm_poses_pair</type>
+        <definition>data_format::pose::palm_poses_pair ILLIXR::oxr_relay::current_palm_poses_</definition>
+        <argsstring></argsstring>
+        <name>current_palm_poses_</name>
+        <qualifiedname>ILLIXR::oxr_relay::current_palm_poses_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="238" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="238" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1afa13e01040442f76625767988e411374" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrInstance</ref></type>
+        <definition>XrInstance ILLIXR::oxr_relay::instance_</definition>
+        <argsstring></argsstring>
+        <name>instance_</name>
+        <qualifiedname>ILLIXR::oxr_relay::instance_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="240" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="240" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1ad2c526235dacd6d981d2dff351475153" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSession</ref></type>
+        <definition>XrSession ILLIXR::oxr_relay::session_</definition>
+        <argsstring></argsstring>
+        <name>session_</name>
+        <qualifiedname>ILLIXR::oxr_relay::session_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="241" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="241" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a79fcee1f4ba4b1ded8ffc87b2cdec5c8" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+        <definition>XrSpace ILLIXR::oxr_relay::local_space_</definition>
+        <argsstring></argsstring>
+        <name>local_space_</name>
+        <qualifiedname>ILLIXR::oxr_relay::local_space_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="242" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="242" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a3628c163da57e4742f1981b726ed949b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+        <definition>XrSpace ILLIXR::oxr_relay::view_space_</definition>
+        <argsstring></argsstring>
+        <name>view_space_</name>
+        <qualifiedname>ILLIXR::oxr_relay::view_space_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="243" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="243" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1ad34e8e3b2914976218bc04cf102ee800" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; <ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref> &gt;</type>
+        <definition>std::atomic&lt;XrTime&gt; ILLIXR::oxr_relay::predicted_time_</definition>
+        <argsstring></argsstring>
+        <name>predicted_time_</name>
+        <qualifiedname>ILLIXR::oxr_relay::predicted_time_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="244" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="244" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a1e975fd0058627374719f9d5bf337408" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrHandTrackerEXT</ref></type>
+        <definition>XrHandTrackerEXT ILLIXR::oxr_relay::left_hand_tracker_</definition>
+        <argsstring></argsstring>
+        <name>left_hand_tracker_</name>
+        <qualifiedname>ILLIXR::oxr_relay::left_hand_tracker_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+<para>Left hand tracker handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="247" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="247" bodyend="247"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1afbd7cd9fcf8f6f17e0040f76ed194cea" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrHandTrackerEXT</ref></type>
+        <definition>XrHandTrackerEXT ILLIXR::oxr_relay::right_hand_tracker_</definition>
+        <argsstring></argsstring>
+        <name>right_hand_tracker_</name>
+        <qualifiedname>ILLIXR::oxr_relay::right_hand_tracker_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+<para>Right hand tracker handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="250" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="250" bodyend="250"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a2d615930e83fbdd293c756c4695cba56" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrCreateHandTrackerEXT</ref></type>
+        <definition>PFN_xrCreateHandTrackerEXT ILLIXR::oxr_relay::xr_create_hand_tracker_</definition>
+        <argsstring></argsstring>
+        <name>xr_create_hand_tracker_</name>
+        <qualifiedname>ILLIXR::oxr_relay::xr_create_hand_tracker_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+<para>Function pointer for xrCreateHandTrackerEXT. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="253" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="253" bodyend="253"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a8b3fcf4a577df0eb30b255409a09369e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrDestroyHandTrackerEXT</ref></type>
+        <definition>PFN_xrDestroyHandTrackerEXT ILLIXR::oxr_relay::xr_destroy_hand_tracker_</definition>
+        <argsstring></argsstring>
+        <name>xr_destroy_hand_tracker_</name>
+        <qualifiedname>ILLIXR::oxr_relay::xr_destroy_hand_tracker_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+<para>Function pointer for xrDestroyHandTrackerEXT. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="256" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="256" bodyend="256"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a6d7578ef4f411759e0337644be014c13" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrLocateHandJointsEXT</ref></type>
+        <definition>PFN_xrLocateHandJointsEXT ILLIXR::oxr_relay::xr_locate_hand_joints_</definition>
+        <argsstring></argsstring>
+        <name>xr_locate_hand_joints_</name>
+        <qualifiedname>ILLIXR::oxr_relay::xr_locate_hand_joints_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+<para>Function pointer for xrLocateHandJointsEXT. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="259" column="31" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="259" bodyend="259"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a7fb9cf0747e06d3bafcd451a53add346" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::oxr_relay::hand_interaction_supported_</definition>
+        <argsstring></argsstring>
+        <name>hand_interaction_supported_</name>
+        <qualifiedname>ILLIXR::oxr_relay::hand_interaction_supported_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+<para>Whether XR_EXT_hand_interaction extension is supported and initialized. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="264" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="264" bodyend="264"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a36180976e85b170a47218a3a2cd03932" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::oxr_relay::hand_tracking_supported_</definition>
+        <argsstring></argsstring>
+        <name>hand_tracking_supported_</name>
+        <qualifiedname>ILLIXR::oxr_relay::hand_tracking_supported_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+<para>Whether XR_EXT_hand_tracking extension is supported. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="269" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="269" bodyend="269"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a52079514f258fc1284b805aabd3ef71a" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrActionSet</ref></type>
+        <definition>XrActionSet ILLIXR::oxr_relay::hand_interaction_action_set_</definition>
+        <argsstring></argsstring>
+        <name>hand_interaction_action_set_</name>
+        <qualifiedname>ILLIXR::oxr_relay::hand_interaction_action_set_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Single action set that owns all hand-interaction actions AND the palm pose action. Combining them avoids needing a second xrAttachSessionActionSets call, which is only permitted once per session. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="274" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="274" bodyend="274"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a7a74b4f73ce1fc47467e364d776d40e6" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref></type>
+        <definition>XrPath ILLIXR::oxr_relay::hand_subaction_paths_[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>hand_subaction_paths_</name>
+        <qualifiedname>ILLIXR::oxr_relay::hand_subaction_paths_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_PATH</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_PATH</ref>}</initializer>
+        <briefdescription>
+<para>sub-action paths for left (index 0) and right (index 1) hands. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Used when creating actions with sub-action paths and when querying per-hand action state. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="282" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="282" bodyend="282"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a42da871735d7daa92a3b8e3dfb08789e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::oxr_relay::interaction_pose_actions_[data_format::pose::NUM_INTERACTION_POSES]</definition>
+        <argsstring>[data_format::pose::NUM_INTERACTION_POSES]</argsstring>
+        <name>interaction_pose_actions_</name>
+        <qualifiedname>ILLIXR::oxr_relay::interaction_pose_actions_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+<para>One pose action per interaction_pose_type (AIM=0 … POKE=3). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Each action was created with both left and right sub-action paths so that a single action covers both hands; the per-hand state is retrieved by passing the appropriate sub-action path to xrGetActionStatePose / xrLocateSpace. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="292" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="292" bodyend="292"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1acf79d66c33ab82aa088cf256fb2c7910" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+        <definition>XrSpace ILLIXR::oxr_relay::interaction_pose_spaces_[2][data_format::pose::NUM_INTERACTION_POSES]</definition>
+        <argsstring>[2][data_format::pose::NUM_INTERACTION_POSES]</argsstring>
+        <name>interaction_pose_spaces_</name>
+        <qualifiedname>ILLIXR::oxr_relay::interaction_pose_spaces_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+<para>Action spaces indexed as [hand][interaction_pose_type]. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Created in <ref refid="classILLIXR_1_1oxr__relay_1ad6112aa1d43af2e4edfcf66e2bdd977b" kindref="member">init_hand_interaction()</ref> via xrCreateActionSpace with the corresponding pose action and sub-action path. Used every frame inside <ref refid="classILLIXR_1_1oxr__relay_1a6698a87a5ca05847e4f24595a409f35c" kindref="member">update_hand_interaction()</ref> to locate each pose. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="301" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="301" bodyend="301"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a8e7db6a74f3852f43c0e4f27585f2510" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::oxr_relay::interaction_value_actions_[3]</definition>
+        <argsstring>[3]</argsstring>
+        <name>interaction_value_actions_</name>
+        <qualifiedname>ILLIXR::oxr_relay::interaction_value_actions_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+<para>Float (gesture-strength) actions for AIM (0), GRIP (1), and PINCH (2). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>POKE has no value binding in XR_EXT_hand_interaction and is therefore not represented here. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="309" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="309" bodyend="309"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1ade9fc3dcc0d65807a6966760b96b0d2c" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::oxr_relay::interaction_ready_actions_[3]</definition>
+        <argsstring>[3]</argsstring>
+        <name>interaction_ready_actions_</name>
+        <qualifiedname>ILLIXR::oxr_relay::interaction_ready_actions_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+<para>Boolean (gesture-ready) actions for AIM (0), GRIP (1), and PINCH (2). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>As with value actions, POKE has no ready binding. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="316" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="316" bodyend="316"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1adf568d3d3b727d39e50d6b74ad784ca0" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::oxr_relay::palm_pose_action_</definition>
+        <argsstring></argsstring>
+        <name>palm_pose_action_</name>
+        <qualifiedname>ILLIXR::oxr_relay::palm_pose_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+<para>Palm pose action from XR_EXT_palm_pose, shared across both hands via sub-action paths. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Bindings are suggested against every relevant interaction profile so that a palm pose is available regardless of whether the user is using bare hands or holding controllers. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="326" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="326" bodyend="326"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1abfefe85c0c81a8d51773188916ffaa80" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+        <definition>XrSpace ILLIXR::oxr_relay::palm_pose_spaces_[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>palm_pose_spaces_</name>
+        <qualifiedname>ILLIXR::oxr_relay::palm_pose_spaces_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+<para>Action spaces for the palm pose, indexed by hand (LEFT=0, RIGHT=1). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Created in <ref refid="classILLIXR_1_1oxr__relay_1ad6112aa1d43af2e4edfcf66e2bdd977b" kindref="member">init_hand_interaction()</ref> once the action and session are ready. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="333" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="333" bodyend="333"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1aafeaa4afcc198e880fea46795d1b4837" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::oxr_relay::actions_mutex_</definition>
+        <argsstring></argsstring>
+        <name>actions_mutex_</name>
+        <qualifiedname>ILLIXR::oxr_relay::actions_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="351" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="351" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a83aba4ff0eb37870b2ce27ef968180f2" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::oxr_relay::initialized_</definition>
+        <argsstring></argsstring>
+        <name>initialized_</name>
+        <qualifiedname>ILLIXR::oxr_relay::initialized_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="356" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="356" bodyend="356"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1abead2419abd608c140614ec825dfa6ec" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::oxr_relay::xr_time_verified_</definition>
+        <argsstring></argsstring>
+        <name>xr_time_verified_</name>
+        <qualifiedname>ILLIXR::oxr_relay::xr_time_verified_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="357" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="357" bodyend="357"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a35979affc52e8a29b8c99e943ede5166" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::oxr_relay::time_offsets_calibrated_</definition>
+        <argsstring></argsstring>
+        <name>time_offsets_calibrated_</name>
+        <qualifiedname>ILLIXR::oxr_relay::time_offsets_calibrated_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="358" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="358" bodyend="358"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a4c56e6bbc9e18a9f3f03091f09744298" prot="private" static="no" mutable="no">
+        <type>std::chrono::steady_clock::time_point</type>
+        <definition>std::chrono::steady_clock::time_point ILLIXR::oxr_relay::last_offset_calibration_</definition>
+        <argsstring></argsstring>
+        <name>last_offset_calibration_</name>
+        <qualifiedname>ILLIXR::oxr_relay::last_offset_calibration_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="359" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="359" bodyend="359"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1abc68b7a97cad461841d0c23e09cb14ad" prot="private" static="no" mutable="no">
+        <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+        <definition>XrTime ILLIXR::oxr_relay::monotonic_to_system_offset_ns_</definition>
+        <argsstring></argsstring>
+        <name>monotonic_to_system_offset_ns_</name>
+        <qualifiedname>ILLIXR::oxr_relay::monotonic_to_system_offset_ns_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="360" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="360" bodyend="360"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a062d600806c8b921db9e9641bbc4e8d8" prot="private" static="no" mutable="no">
+        <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+        <definition>XrTime ILLIXR::oxr_relay::xr_to_monotonic_offset_ns_</definition>
+        <argsstring></argsstring>
+        <name>xr_to_monotonic_offset_ns_</name>
+        <qualifiedname>ILLIXR::oxr_relay::xr_to_monotonic_offset_ns_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="361" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="361" bodyend="361"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1afa6d401bffa7cc5100da814b7e2a0229" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+        <definition>uint64_t ILLIXR::oxr_relay::counter_</definition>
+        <argsstring></argsstring>
+        <name>counter_</name>
+        <qualifiedname>ILLIXR::oxr_relay::counter_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="362" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="362" bodyend="362"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1afda98e1319b40e8c5aaa296427bbb30c" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref></type>
+        <definition>data_format::pose::head_pose_type ILLIXR::oxr_relay::last_pose_</definition>
+        <argsstring></argsstring>
+        <name>last_pose_</name>
+        <qualifiedname>ILLIXR::oxr_relay::last_pose_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="363" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="363" bodyend="363"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1ae9b295b1118916e09a98ebd86c32da3b" prot="private" static="no" mutable="no">
+        <type>std::map&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref>, <ref refid="structILLIXR_1_1pose__history__entry" kindref="compound">pose_history_entry</ref> &gt;</type>
+        <definition>std::map&lt;uint64_t, pose_history_entry&gt; ILLIXR::oxr_relay::pose_history_</definition>
+        <argsstring></argsstring>
+        <name>pose_history_</name>
+        <qualifiedname>ILLIXR::oxr_relay::pose_history_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bounded to 240 entries (~2 seconds at 120 Hz) to avoid unbounded growth. Accessible by oxr_interface for frame correlation logging. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="368" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="368" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a1714ad7248175ff3c76db27367643e08" prot="private" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::oxr_relay::pose_history_mutex_</definition>
+        <argsstring></argsstring>
+        <name>pose_history_mutex_</name>
+        <qualifiedname>ILLIXR::oxr_relay::pose_history_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="369" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="369" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1oxr__relay_1a8845ec1c82896448690fbf9305827fa2" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+        <definition>constexpr size_t ILLIXR::oxr_relay::MAX_POSE_HISTORY</definition>
+        <argsstring></argsstring>
+        <name>MAX_POSE_HISTORY</name>
+        <qualifiedname>ILLIXR::oxr_relay::MAX_POSE_HISTORY</qualifiedname>
+        <initializer>= 240</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="370" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="370" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a1f1b5ebcc58723b072f44c763771e74c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>oxr_relay::oxr_relay</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>oxr_relay</name>
+        <qualifiedname>ILLIXR::oxr_relay::oxr_relay</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="54" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="43" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a17fd2244a46cc21c03b7acf9969bd0e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>oxr_relay::~oxr_relay</definition>
+        <argsstring>() override</argsstring>
+        <name>~oxr_relay</name>
+        <qualifiedname>ILLIXR::oxr_relay::~oxr_relay</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="56" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="66" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1ad1a28c8d6667eedc9a2e701b57453dd4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool oxr_relay::get_pose_history</definition>
+        <argsstring>(uint64_t id, pose_history_entry &amp;out_entry) const</argsstring>
+        <name>get_pose_history</name>
+        <qualifiedname>ILLIXR::oxr_relay::get_pose_history</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1pose__history__entry" kindref="compound">pose_history_entry</ref> &amp;</type>
+          <declname>out_entry</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Look up a pose history entry by combined_pose id. Returns true and populates out_entry if found, false otherwise. Thread-safe. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="61" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="1329" bodyend="1337"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a20a79f9d31abbdbcf4173df7e81e8376" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">skip_option</ref></type>
+        <definition>threadloop::skip_option oxr_relay::_p_should_skip</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_should_skip</name>
+        <qualifiedname>ILLIXR::oxr_relay::_p_should_skip</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a">_p_should_skip</reimplements>
+        <briefdescription>
+<para>Gets called in a tight loop, to gate the invocation of <computeroutput><ref refid="classILLIXR_1_1oxr__relay_1ac16ce8379479fbb2dc0ce6ba74cd3545" kindref="member">_p_one_iteration()</ref></computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="71" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="93" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1ac16ce8379479fbb2dc0ce6ba74cd3545" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::oxr_relay::_p_one_iteration</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be">_p_one_iteration</reimplements>
+        <briefdescription>
+<para>Override with the computation the thread does every loop. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This gets called in rapid succession. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="73" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="103" bodyend="171"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a16db63737563e9df54866f0f9f86031b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::initialize</definition>
+        <argsstring>(XrInstance instance, XrSession session, XrSpace local, XrSpace view)</argsstring>
+        <name>initialize</name>
+        <qualifiedname>ILLIXR::oxr_relay::initialize</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrInstance</ref></type>
+          <declname>instance</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSession</ref></type>
+          <declname>session</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+          <declname>local</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+          <declname>view</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="78" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="70" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a8972e78479a28d8a34683ab160a1f125" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::destroy</definition>
+        <argsstring>()</argsstring>
+        <name>destroy</name>
+        <qualifiedname>ILLIXR::oxr_relay::destroy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="80" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="59" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a4d10ea4a4a4f2d428a29364e6261eeb2" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::oxr_relay::update_time</definition>
+        <argsstring>(XrTime time)</argsstring>
+        <name>update_time</name>
+        <qualifiedname>ILLIXR::oxr_relay::update_time</qualifiedname>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>time</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="82" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="82" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a190b9b1cc074362fd99adb173d83a98d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrResult</ref></type>
+        <definition>XrResult oxr_relay::get_head_pose</definition>
+        <argsstring>(XrTime time, data_format::pose::head_pose_type *out_pose)</argsstring>
+        <name>get_head_pose</name>
+        <qualifiedname>ILLIXR::oxr_relay::get_head_pose</qualifiedname>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>time</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref> *</type>
+          <declname>out_pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="87" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="334" bodyend="351"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1aaaab57cd4e3af4f4e2c0bd1db9f63c3a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::calibrate_time_offsets</definition>
+        <argsstring>()</argsstring>
+        <name>calibrate_time_offsets</name>
+        <qualifiedname>ILLIXR::oxr_relay::calibrate_time_offsets</qualifiedname>
+        <briefdescription>
+<para>Compute the offset between XrTime and CLOCK_MONOTONIC once at session initialization using xrConvertTimespecTimeToTimeKHR. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Populates xr_to_monotonic_offset_ns_ such that: CLOCK_MONOTONIC_ns = XrTime + xr_to_monotonic_offset_ns_</para>
+<para>Also computes monotonic_to_system_offset_ns_ such that: system_clock_ns = CLOCK_MONOTONIC_ns + monotonic_to_system_offset_ns_</para>
+<para>Both offsets are sent in every combined_pose so the server can convert headset XrTime into Monado time. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="103" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="1281" bodyend="1327"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a2586b076437ba1eeedc57fd6b31ac1d7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool oxr_relay::init_hand_tracking</definition>
+        <argsstring>()</argsstring>
+        <name>init_hand_tracking</name>
+        <qualifiedname>ILLIXR::oxr_relay::init_hand_tracking</qualifiedname>
+        <briefdescription>
+<para>Initialize the OpenXR hand tracking extension. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Queries for XR_EXT_hand_tracking support and creates hand trackers for both left and right hands.</para>
+<para><simplesect kind="return"><para>true if hand tracking was successfully initialized </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="114" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="173" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1af612f8ca7443ca775a6030e77f615feb" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::destroy_hand_tracking</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_hand_tracking</name>
+        <qualifiedname>ILLIXR::oxr_relay::destroy_hand_tracking</qualifiedname>
+        <briefdescription>
+<para>Clean up hand tracking resources. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="119" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="215" bodyend="226"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a68f53557f35602b8c899f33490999e11" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::update_hand_tracking</definition>
+        <argsstring>(XrTime predicted_time)</argsstring>
+        <name>update_hand_tracking</name>
+        <qualifiedname>ILLIXR::oxr_relay::update_hand_tracking</qualifiedname>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>predicted_time</declname>
+        </param>
+        <briefdescription>
+<para>Update hand tracking and palm pose data for the current frame. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Locates hand joints at the predicted display time, publishes joint tracking data to &quot;hand_tracking&quot; and extracts palm poses to publish on &quot;palm_poses&quot;.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>predicted_time</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The predicted display time for this frame </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="129" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="228" bodyend="332"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1ad6112aa1d43af2e4edfcf66e2bdd977b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool oxr_relay::init_hand_interaction</definition>
+        <argsstring>()</argsstring>
+        <name>init_hand_interaction</name>
+        <qualifiedname>ILLIXR::oxr_relay::init_hand_interaction</qualifiedname>
+        <briefdescription>
+<para>Initialize the XR_EXT_hand_interaction action set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates actions for aim / grip / pinch / poke poses (and their associated gesture-strength values and readiness flags), suggests bindings against the hand-interaction interaction profile, attaches the action set to the session, and creates the per-hand action spaces used each frame.</para>
+<para>Must be called after <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">create_session()</ref> and, if hand tracking is used, after <ref refid="classILLIXR_1_1oxr__relay_1a2586b076437ba1eeedc57fd6b31ac1d7" kindref="member">init_hand_tracking()</ref>.</para>
+<para><simplesect kind="return"><para>true if the action set was fully initialized </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="146" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="489" bodyend="721"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a7d174b3410d19100d98017337f377224" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::destroy_hand_interaction</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_hand_interaction</name>
+        <qualifiedname>ILLIXR::oxr_relay::destroy_hand_interaction</qualifiedname>
+        <briefdescription>
+<para>Destroy action spaces and the hand interaction action set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="151" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="819" bodyend="839"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a6698a87a5ca05847e4f24595a409f35c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::update_hand_interaction</definition>
+        <argsstring>(XrTime predicted_time)</argsstring>
+        <name>update_hand_interaction</name>
+        <qualifiedname>ILLIXR::oxr_relay::update_hand_interaction</qualifiedname>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>predicted_time</declname>
+        </param>
+        <briefdescription>
+<para>Sync actions and publish hand interaction poses for the current frame. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Calls xrSyncActions, then for every hand × interaction-pose-type combination: locates the action space, and (for AIM / GRIP / PINCH) reads the gesture-strength value and readiness boolean. Publishes a hand_interaction_poses_pair to &quot;hand_interaction&quot; when at least one pose is valid.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>predicted_time</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The predicted display time for this frame </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="164" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="841" bodyend="1029"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a7e7386cddb896b10b2ac644ba537c7f7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool oxr_relay::sync_actions</definition>
+        <argsstring>()</argsstring>
+        <name>sync_actions</name>
+        <qualifiedname>ILLIXR::oxr_relay::sync_actions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Synchronize the one attached action set under actions_mutex_. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="200" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="1033" bodyend="1059"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1oxr__relay_1a8100a02b20e3bc1739de90d0db184b8b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void oxr_relay::push_poses</definition>
+        <argsstring>(XrTime predicted_time)</argsstring>
+        <name>push_poses</name>
+        <qualifiedname>ILLIXR::oxr_relay::push_poses</qualifiedname>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>predicted_time</declname>
+        </param>
+        <briefdescription>
+<para>Send the latest pose to the server. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Populates a combined_pose with the head pose, hand tracking data, and all time conversion fields needed by <ref refid="classILLIXR_1_1pose__relay" kindref="compound">pose_relay</ref> on the server to convert the headset XrTime into Monado time.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>predicted_time</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The predictedDisplayTime from xrWaitFrame </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="211" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp" bodystart="353" bodyend="487"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::oxr_relay</label>
+        <link refid="classILLIXR_1_1oxr__relay"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="12">
+        <label>ILLIXR::data_format::pose::head_pose_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>ILLIXR::data_format::pose::head_pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>sensor_time</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+      <node id="8">
+        <label>ILLIXR::network::topic_config</label>
+        <link refid="structILLIXR_1_1network_1_1topic__config"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::oxr_relay</label>
+        <link refid="classILLIXR_1_1oxr__relay"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>combined_pose_writer_</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>latency_reader_</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>current_head_pose_</edgelabel>
+          <edgelabel>last_pose_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+      <node id="7">
+        <label>ILLIXR::switchboard::topic</label>
+        <link refid="classILLIXR_1_1switchboard_1_1topic"/>
+      </node>
+      <node id="6">
+        <label>ILLIXR::switchboard::writer&lt; Specific_event &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>ILLIXR::time_point</label>
+        <link refid="classILLIXR_1_1time__point"/>
+      </node>
+      <node id="5">
+        <label>ILLIXR::switchboard::network_writer&lt; data_format::pose::combined_pose &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1network__writer"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>ILLIXR::switchboard::reader&lt; ILLIXR::data_format::network_latency_result &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1reader"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="52" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="52" bodyend="371"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1oxr__relay_1ac16ce8379479fbb2dc0ce6ba74cd3545" prot="protected" virt="virtual"><scope>ILLIXR::oxr_relay</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a20a79f9d31abbdbcf4173df7e81e8376" prot="protected" virt="virtual"><scope>ILLIXR::oxr_relay</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" virt="virtual"><scope>ILLIXR::oxr_relay</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1aafeaa4afcc198e880fea46795d1b4837" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>actions_mutex_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1aaaab57cd4e3af4f4e2c0bd1db9f63c3a" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>calibrate_time_offsets</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1ac8b5f5cf1ee2e2a03277216b5fd5c074" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1abd79c9cc36d284b05e7d6b0b33a28653" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>combined_pose_writer_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1afa6d401bffa7cc5100da814b7e2a0229" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>counter_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a9926cff6fc4505db8a7756cf80dd4f75" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>current_hand_interactions_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a203bf6bd95732ac17c320ebf4b705181" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>current_hand_poses_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a6728e4dd6e56a7ace9f6136713c86ff8" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>current_head_pose_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a36aaceab025822f5c1e0e339c4cd40f1" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>current_palm_poses_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a8972e78479a28d8a34683ab160a1f125" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>destroy</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a7d174b3410d19100d98017337f377224" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>destroy_hand_interaction</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1af612f8ca7443ca775a6030e77f615feb" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>destroy_hand_tracking</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a190b9b1cc074362fd99adb173d83a98d" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>get_head_pose</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1ad1a28c8d6667eedc9a2e701b57453dd4" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>get_pose_history</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a52079514f258fc1284b805aabd3ef71a" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>hand_interaction_action_set_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a7fb9cf0747e06d3bafcd451a53add346" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>hand_interaction_supported_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a7a74b4f73ce1fc47467e364d776d40e6" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>hand_subaction_paths_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a36180976e85b170a47218a3a2cd03932" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>hand_tracking_supported_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1ad6112aa1d43af2e4edfcf66e2bdd977b" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>init_hand_interaction</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a2586b076437ba1eeedc57fd6b31ac1d7" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>init_hand_tracking</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a16db63737563e9df54866f0f9f86031b" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>initialize</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a83aba4ff0eb37870b2ce27ef968180f2" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>initialized_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1afa13e01040442f76625767988e411374" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>instance_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a42da871735d7daa92a3b8e3dfb08789e" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>interaction_pose_actions_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1acf79d66c33ab82aa088cf256fb2c7910" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>interaction_pose_spaces_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1ade9fc3dcc0d65807a6966760b96b0d2c" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>interaction_ready_actions_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a8e7db6a74f3852f43c0e4f27585f2510" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>interaction_value_actions_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::oxr_relay</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1addfbade169288512c9be438f4ae9bc07" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>internal_stop_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a4c56e6bbc9e18a9f3f03091f09744298" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>last_offset_calibration_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1afda98e1319b40e8c5aaa296427bbb30c" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>last_pose_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a0658d6760bfbb01bcce4d694ba8741a1" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>latency_reader_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a1e975fd0058627374719f9d5bf337408" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>left_hand_tracker_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a79fcee1f4ba4b1ded8ffc87b2cdec5c8" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>local_space_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a8845ec1c82896448690fbf9305827fa2" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>MAX_POSE_HISTORY</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1abc68b7a97cad461841d0c23e09cb14ad" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>monotonic_to_system_offset_ns_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a1a62727d8f470856801a3cd7913cfbca" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>oxr_interface</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a1f1b5ebcc58723b072f44c763771e74c" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>oxr_relay</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1adf568d3d3b727d39e50d6b74ad784ca0" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>palm_pose_action_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1abfefe85c0c81a8d51773188916ffaa80" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>palm_pose_spaces_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1ae9b295b1118916e09a98ebd86c32da3b" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>pose_history_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a1714ad7248175ff3c76db27367643e08" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>pose_history_mutex_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1ad34e8e3b2914976218bc04cf102ee800" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>predicted_time_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a8100a02b20e3bc1739de90d0db184b8b" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>push_poses</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1afbd7cd9fcf8f6f17e0040f76ed194cea" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>right_hand_tracker_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1ad2c526235dacd6d981d2dff351475153" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>session_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" prot="public" virt="virtual"><scope>ILLIXR::oxr_relay</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::oxr_relay</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a2390e3eff6ab0c0cc11f061f34cf7b39" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>stoplight_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a57560d3ccf9f4d4f8bd06227bf0e25cb" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a7e7386cddb896b10b2ac644ba537c7f7" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>sync_actions</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a468309a771ef1d60c4cc107cf2e9cab2" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>thread_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1ace62d94a271fd7a253eb1ee71589da61" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>thread_main</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a35979affc52e8a29b8c99e943ede5166" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>time_offsets_calibrated_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a6698a87a5ca05847e4f24595a409f35c" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>update_hand_interaction</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a68f53557f35602b8c899f33490999e11" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>update_hand_tracking</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a4d10ea4a4a4f2d428a29364e6261eeb2" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>update_time</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a3628c163da57e4742f1981b726ed949b" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>view_space_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a2d615930e83fbdd293c756c4695cba56" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>xr_create_hand_tracker_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a8b3fcf4a577df0eb30b255409a09369e" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>xr_destroy_hand_tracker_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a6d7578ef4f411759e0337644be014c13" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>xr_locate_hand_joints_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1abead2419abd608c140614ec825dfa6ec" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>xr_time_verified_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a062d600806c8b921db9e9641bbc4e8d8" prot="private" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>xr_to_monotonic_offset_ns_</name></member>
+      <member refid="classILLIXR_1_1oxr__relay_1a17fd2244a46cc21c03b7acf9969bd0e5" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>~oxr_relay</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::oxr_relay</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::oxr_relay</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

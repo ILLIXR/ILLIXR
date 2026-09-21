@@ -1,0 +1,13 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/net_config.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/net_config.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="331,5,509,75"/>
+<area shape="rect" id="Node000002" href="$plugins_2ada_2device__tx_2plugin_8hpp.html" title=" " alt="" coords="5,123,197,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="319,81,195,125,193,120,317,76"/>
+<area shape="rect" id="Node000004" href="$plugins_2offload__vio_2device__rx_2plugin_8cpp.html" title=" " alt="" coords="221,123,408,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="382,87,347,124,344,121,378,83"/>
+<area shape="rect" id="Node000005" href="$plugins_2offload__vio_2server__rx_2plugin_8cpp.html" title=" " alt="" coords="433,123,618,192"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="462,83,496,121,493,124,458,87"/>
+<area shape="rect" id="Node000006" href="$plugins_2offload__vio_2server__tx_2plugin_8cpp.html" title=" " alt="" coords="642,123,827,192"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="524,76,644,120,642,125,522,81"/>
+<area shape="rect" id="Node000003" href="$plugins_2ada_2device__tx_2plugin_8cpp.html" title=" " alt="" coords="5,240,197,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="104,206,104,240,99,240,99,206"/>
+</map>

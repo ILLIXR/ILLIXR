@@ -1,0 +1,11 @@
+<map id="ILLIXR::vulkan::app" name="ILLIXR::vulkan::app">
+<area shape="rect" id="Node000001" title=" " alt="" coords="114,167,261,192"/>
+<area shape="rect" id="Node000004" href="$classILLIXR_1_1offload__rendering__client.html" title=" " alt="" coords="5,240,191,280"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="166,203,121,242,118,238,162,199"/>
+<area shape="rect" id="Node000005" href="$classILLIXR_1_1vkdemo.html" title=" " alt="" coords="215,247,338,273"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="212,199,265,245,262,249,209,203"/>
+<area shape="rect" id="Node000002" href="$classILLIXR_1_1vulkan_1_1render__pass.html" title=" " alt="" coords="87,93,288,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="190,132,190,167,185,167,185,132"/>
+<area shape="rect" id="Node000003" href="$classILLIXR_1_1phonebook_1_1service.html" title="A &#39;service&#39; that can be registered in the phonebook." alt="" coords="112,5,263,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="190,59,190,93,185,93,185,59"/>
+</map>

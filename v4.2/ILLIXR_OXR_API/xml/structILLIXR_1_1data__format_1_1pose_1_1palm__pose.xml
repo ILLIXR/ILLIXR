@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::pose::palm_pose</compoundname>
+    <basecompoundref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation" prot="public" virt="non-virtual">ILLIXR::data_format::pose::xrt_space_relation</basecompoundref>
+    <includes refid="poses_2palm__pose_8hpp" local="no">palm_pose.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1palm__pose_1a5cb4f5060f2b3b3f4589d48a77641177" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::pose::palm_pose::is_valid</definition>
+        <argsstring>() const</argsstring>
+        <name>is_valid</name>
+        <qualifiedname>ILLIXR::data_format::pose::palm_pose::is_valid</qualifiedname>
+        <briefdescription>
+<para>Returns whether or not there are any valid bit in the internal flags. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp" line="17" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp" bodystart="17" bodyend="19"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1palm__pose_1a4556e89afc1c9105de4a8d91cb73aa2c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::pose::palm_pose::update</definition>
+        <argsstring>(XrSpaceLocation &amp;location, XrSpaceVelocity &amp;velocity)</argsstring>
+        <name>update</name>
+        <qualifiedname>ILLIXR::data_format::pose::palm_pose::update</qualifiedname>
+        <param>
+          <type>XrSpaceLocation &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>XrSpaceVelocity &amp;</type>
+          <declname>velocity</declname>
+        </param>
+        <briefdescription>
+<para>Update the internal data members. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The new palm location information </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>velocity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The new palm velocity information </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp" line="27" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp" bodystart="27" bodyend="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Palm pose and velocity information. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::pose::palm_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::xrt_space_relation</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::pose::palm_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::xrt_space_relation</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp" line="13" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp" bodystart="13" bodyend="34"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a3ef1fdf58723fd642b5bbdff4c54645d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>angular_velocity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose_1a5cb4f5060f2b3b3f4589d48a77641177" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>is_valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a67fc9e6e7fc117dd5a393794b9d1df50" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>linear_velocity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0cff14cc81cd5dd27151dce0bb0632b9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a02955255368097b3cdd49ca8651a5eab" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>relation_flags</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0b8644408a512e4f983fb8d56ccb841c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>set_flags</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1aabc7b9783ea1003a4facf7c40440b324" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>set_flags</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose_1a4556e89afc1c9105de4a8d91cb73aa2c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>update</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1ae7be657315a0b3685b067606c73619ff" prot="public" virt="virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a74f652484d296234ab31f51b4ce8c27e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>xrt_space_relation</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1ab065bafa0c9f4ea396b2e496fffa4cf1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::palm_pose</scope><name>xrt_space_relation</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

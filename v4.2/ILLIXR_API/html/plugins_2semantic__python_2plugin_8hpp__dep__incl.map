@@ -1,0 +1,8 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,187,75"/>
+<area shape="rect" id="Node000002" href="$plugins_2semantic__python_2plugin_8cpp.html" title=" " alt="" coords="5,240,187,309"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="61,87,44,124,37,157,44,191,55,216,69,238,65,241,50,218,39,193,32,157,39,122,57,85"/>
+<area shape="rect" id="Node000003" href="$switchboard__bindings_8hpp.html" title="pybind11 bindings exposing ILLIXR switchboard topics to Python." alt="" coords="53,123,299,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="130,85,155,121,150,124,125,88"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="147,205,122,241,117,238,142,202"/>
+</map>

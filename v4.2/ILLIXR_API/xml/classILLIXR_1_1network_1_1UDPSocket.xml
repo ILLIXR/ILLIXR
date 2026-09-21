@@ -1,0 +1,355 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1network_1_1UDPSocket" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::network::UDPSocket</compoundname>
+    <includes refid="udpsocket_8hpp" local="no">udpsocket.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1network_1_1UDPSocket_1a3adb7e6d9e07aa8742177aeb219471ff" prot="private" static="no" mutable="no">
+        <type><ref refid="tcpsocket_8hpp_1af8a6d8f4620148c279a9fdfeeac534aa" kindref="member">SOCKET_TYPE</ref></type>
+        <definition>SOCKET_TYPE ILLIXR::network::UDPSocket::fd_</definition>
+        <argsstring></argsstring>
+        <name>fd_</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::fd_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="219" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1network_1_1UDPSocket_1ad856f8ad69662a6778241d992047117c" prot="private" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::network::UDPSocket::peer_mutex_</definition>
+        <argsstring></argsstring>
+        <name>peer_mutex_</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::peer_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="220" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1network_1_1UDPSocket_1a9005f042b3eb3225fff04e8e3a877970" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sockaddr_in</ref></type>
+        <definition>sockaddr_in ILLIXR::network::UDPSocket::peer_addr_</definition>
+        <argsstring></argsstring>
+        <name>peer_addr_</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::peer_addr_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="221" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="221" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1network_1_1UDPSocket_1ad2d6a84344d208eea481bf2f7ef6d394" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::network::UDPSocket::peer_set_</definition>
+        <argsstring></argsstring>
+        <name>peer_set_</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::peer_set_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="222" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="222" bodyend="222"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1network_1_1UDPSocket_1ad6eb3198d549bf4e1fc1614008aeb40f" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+        <definition>constexpr size_t ILLIXR::network::UDPSocket::BUFFER_SIZE</definition>
+        <argsstring></argsstring>
+        <name>BUFFER_SIZE</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::BUFFER_SIZE</qualifiedname>
+        <initializer>= 1024 * 64</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="224" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="224" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1a90e3447239e1aea0b28fe0237aae649c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::network::UDPSocket::UDPSocket</definition>
+        <argsstring>()</argsstring>
+        <name>UDPSocket</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::UDPSocket</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="40" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="40" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1a7a3050165b4e1f3776ad39ba7cb240a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::network::UDPSocket::~UDPSocket</definition>
+        <argsstring>()</argsstring>
+        <name>~UDPSocket</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::~UDPSocket</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="59" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="59" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1aeef568afefe55fb3dd1ce0ae221ac422" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::network::UDPSocket::socket_bind</definition>
+        <argsstring>(const std::string &amp;ip, int port) const</argsstring>
+        <name>socket_bind</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::socket_bind</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>ip</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>port</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="68" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="68" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1a989868cce67cc8207625690567084b54" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::network::UDPSocket::socket_bind</definition>
+        <argsstring>(int port) const</argsstring>
+        <name>socket_bind</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::socket_bind</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>port</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="78" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="78" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1aa3b694e1863b2407c4e127e68bfde5fb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::network::UDPSocket::socket_set_reuseaddr</definition>
+        <argsstring>() const</argsstring>
+        <name>socket_set_reuseaddr</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::socket_set_reuseaddr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="84" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="84" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1ac6edfb8017a1165a9a165fc7f66638e9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::network::UDPSocket::socket_set_receive_timeout</definition>
+        <argsstring>(int milliseconds) const</argsstring>
+        <name>socket_set_receive_timeout</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::socket_set_receive_timeout</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>milliseconds</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bound the time a receive thread can remain asleep so plugin shutdown can join it even when the peer is no longer sending datagrams. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="99" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="99" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1aaaa9d93c6fe758da7fbe1673e2b63ca8" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::network::UDPSocket::socket_shutdown</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>socket_shutdown</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::socket_shutdown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Interrupt a blocking receive when supported. The receive timeout above remains the fallback for unconnected UDP sockets. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="113" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="113" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1a6af40fddd80ff3063becf8e0a1a804a2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::network::UDPSocket::set_peer</definition>
+        <argsstring>(const std::string &amp;ip, int port)</argsstring>
+        <name>set_peer</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::set_peer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>ip</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>port</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="124" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="124" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1a026609b190b3c2ebebb74469739bdf3a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::network::UDPSocket::set_peer</definition>
+        <argsstring>(const sockaddr_in &amp;addr)</argsstring>
+        <name>set_peer</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::set_peer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sockaddr_in</ref> &amp;</type>
+          <declname>addr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="137" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="137" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1a2818591c3a5157887e3ede3a61ce0004" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::network::UDPSocket::write_data</definition>
+        <argsstring>(const std::string &amp;buffer) const</argsstring>
+        <name>write_data</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::write_data</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="145" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="145" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1ad2520b0e937c85fab0c2248d72bb1478" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::network::UDPSocket::write_data_to</definition>
+        <argsstring>(const std::string &amp;buffer, const sockaddr_in &amp;dest) const</argsstring>
+        <name>write_data_to</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::write_data_to</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>buffer</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sockaddr_in</ref> &amp;</type>
+          <declname>dest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="160" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="160" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1ac9ea88b7c9d2a96c361dd7126ff7c756" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::network::UDPSocket::read_data</definition>
+        <argsstring>(sockaddr_in *src_addr=nullptr) const</argsstring>
+        <name>read_data</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::read_data</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sockaddr_in</ref> *</type>
+          <declname>src_addr</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="173" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="173" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1a8019158e590a59ed8119a3d278e2753a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::network::UDPSocket::local_address</definition>
+        <argsstring>() const</argsstring>
+        <name>local_address</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::local_address</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="196" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="196" bodyend="211"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1UDPSocket_1a70b5f1c0649580b000e4f5d7aba741f3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::network::UDPSocket::has_peer</definition>
+        <argsstring>() const</argsstring>
+        <name>has_peer</name>
+        <qualifiedname>ILLIXR::network::UDPSocket::has_peer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="213" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="213" bodyend="216"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" line="38" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udpsocket.hpp" bodystart="38" bodyend="225"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1ad6eb3198d549bf4e1fc1614008aeb40f" prot="private" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>BUFFER_SIZE</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a3adb7e6d9e07aa8742177aeb219471ff" prot="private" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>fd_</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a70b5f1c0649580b000e4f5d7aba741f3" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>has_peer</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a8019158e590a59ed8119a3d278e2753a" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>local_address</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a9005f042b3eb3225fff04e8e3a877970" prot="private" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>peer_addr_</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1ad856f8ad69662a6778241d992047117c" prot="private" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>peer_mutex_</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1ad2d6a84344d208eea481bf2f7ef6d394" prot="private" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>peer_set_</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1ac9ea88b7c9d2a96c361dd7126ff7c756" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>read_data</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a6af40fddd80ff3063becf8e0a1a804a2" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>set_peer</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a026609b190b3c2ebebb74469739bdf3a" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>set_peer</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1aeef568afefe55fb3dd1ce0ae221ac422" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>socket_bind</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a989868cce67cc8207625690567084b54" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>socket_bind</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1ac6edfb8017a1165a9a165fc7f66638e9" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>socket_set_receive_timeout</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1aa3b694e1863b2407c4e127e68bfde5fb" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>socket_set_reuseaddr</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1aaaa9d93c6fe758da7fbe1673e2b63ca8" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>socket_shutdown</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a90e3447239e1aea0b28fe0237aae649c" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>UDPSocket</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a2818591c3a5157887e3ede3a61ce0004" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>write_data</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1ad2520b0e937c85fab0c2248d72bb1478" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>write_data_to</name></member>
+      <member refid="classILLIXR_1_1network_1_1UDPSocket_1a7a3050165b4e1f3776ad39ba7cb240a5" prot="public" virt="non-virtual"><scope>ILLIXR::network::UDPSocket</scope><name>~UDPSocket</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

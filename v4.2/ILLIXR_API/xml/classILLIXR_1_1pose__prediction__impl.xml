@@ -1,0 +1,449 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1pose__prediction__impl" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::pose_prediction_impl</compoundname>
+    <basecompoundref refid="classILLIXR_1_1data__format_1_1pose__prediction" prot="public" virt="non-virtual">ILLIXR::data_format::pose_prediction</basecompoundref>
+    <includes refid="pose__prediction_2service_8hpp" local="no">service.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1afddf0c10e04dcd640d61eae4e0b40702" prot="private" static="no" mutable="yes">
+        <type>std::atomic&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref> &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::pose_prediction_impl::first_time_</definition>
+        <argsstring></argsstring>
+        <name>first_time_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::first_time_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">true</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="24" column="64" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="24" bodyend="24"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1a10d23e195de5fca6a7f6d79ad0519af5" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::pose_prediction_impl::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="25" column="57" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1a72cf02d49712bc926c64ddbd13a7f0a0" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;const relative_clock&gt; ILLIXR::pose_prediction_impl::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="26" column="48" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1acdd2f5ae21b5343c7dbd9ce152af9551" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref> &gt;</type>
+        <definition>switchboard::reader&lt;data_format::pose::head_pose_type&gt; ILLIXR::pose_prediction_impl::slow_pose_</definition>
+        <argsstring></argsstring>
+        <name>slow_pose_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::slow_pose_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="27" column="35" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1aa394d2959047b98d81d1af0c4bd3954b" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__raw__type" kindref="compound">data_format::imu_raw_type</ref> &gt;</type>
+        <definition>switchboard::reader&lt;data_format::imu_raw_type&gt; ILLIXR::pose_prediction_impl::imu_raw_</definition>
+        <argsstring></argsstring>
+        <name>imu_raw_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::imu_raw_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="28" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1a2a657f08fea0107e9bdcd0c220afd2d9" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref> &gt;</type>
+        <definition>switchboard::reader&lt;data_format::pose::head_pose_type&gt; ILLIXR::pose_prediction_impl::true_pose_</definition>
+        <argsstring></argsstring>
+        <name>true_pose_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::true_pose_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="29" column="35" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1ae2a6cbc6ae2a8440c870e54b4eff732b" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; Eigen::Vector3f &gt; &gt;</type>
+        <definition>switchboard::reader&lt;switchboard::event_wrapper&lt;Eigen::Vector3f&gt; &gt; ILLIXR::pose_prediction_impl::ground_truth_offset_</definition>
+        <argsstring></argsstring>
+        <name>ground_truth_offset_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::ground_truth_offset_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="30" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1af6c57baa7eb3a22b6b99721d17ff380e" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; <ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref> &gt; &gt;</type>
+        <definition>switchboard::reader&lt;switchboard::event_wrapper&lt;time_point&gt; &gt; ILLIXR::pose_prediction_impl::vsync_estimate_</definition>
+        <argsstring></argsstring>
+        <name>vsync_estimate_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::vsync_estimate_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="31" column="30" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1a534b10748d35e72df498f0fe3df3809c" prot="private" static="no" mutable="yes">
+        <type>Eigen::Quaternionf</type>
+        <definition>Eigen::Quaternionf ILLIXR::pose_prediction_impl::offset_</definition>
+        <argsstring></argsstring>
+        <name>offset_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::offset_</qualifiedname>
+        <initializer>{Eigen::Quaternionf::Identity()}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="32" column="70" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1a89054bb00445beacf3ea37c1ee777943" prot="private" static="no" mutable="yes">
+        <type>std::shared_mutex</type>
+        <definition>std::shared_mutex ILLIXR::pose_prediction_impl::offset_mutex_</definition>
+        <argsstring></argsstring>
+        <name>offset_mutex_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::offset_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="33" column="70" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1pose__prediction__impl_1a1b9fa2ddcc7392919fa332ebd8587a74" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>const bool ILLIXR::pose_prediction_impl::using_lighthouse_</definition>
+        <argsstring></argsstring>
+        <name>using_lighthouse_</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::using_lighthouse_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="34" column="70" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1a88348d4e85db3d963112dd6e679125da" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>pose_prediction_impl::pose_prediction_impl</definition>
+        <argsstring>(const phonebook *const pb)</argsstring>
+        <name>pose_prediction_impl</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::pose_prediction_impl</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref></type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="12" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="16" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1ae27a2457e2eaf652a9ffdb9d068fe62b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">data_format::pose::fast_head_pose_type</ref></type>
+        <definition>pose::fast_head_pose_type pose_prediction_impl::get_fast_pose</definition>
+        <argsstring>() const override</argsstring>
+        <name>get_fast_pose</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::get_fast_pose</qualifiedname>
+        <reimplements refid="classILLIXR_1_1data__format_1_1pose__prediction_1a1303fb01096c608ef246ae15edaaeb90">get_fast_pose</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="13" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="34" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1a2f3a60b5516508f8346efd34b0ecc44b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref></type>
+        <definition>pose::head_pose_type pose_prediction_impl::get_true_pose</definition>
+        <argsstring>() const override</argsstring>
+        <name>get_true_pose</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::get_true_pose</qualifiedname>
+        <reimplements refid="classILLIXR_1_1data__format_1_1pose__prediction_1acf1bfd5ab111f087faeb0ddc6bde44ae">get_true_pose</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="14" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="44" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1aa3cfee62c3d95768fd548e4e3a4a1267" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">data_format::pose::fast_head_pose_type</ref></type>
+        <definition>pose::fast_head_pose_type pose_prediction_impl::get_fast_pose</definition>
+        <argsstring>(time_point future_timestamp) const override</argsstring>
+        <name>get_fast_pose</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::get_fast_pose</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref></type>
+          <declname>future_timestamp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="15" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="68" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1a6349fc76584fb98e19cd415f1c8094cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void pose_prediction_impl::set_offset</definition>
+        <argsstring>(const Eigen::Quaternionf &amp;raw_o_times_offset) override</argsstring>
+        <name>set_offset</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::set_offset</qualifiedname>
+        <reimplements refid="classILLIXR_1_1data__format_1_1pose__prediction_1acfe6269431c3696e3e2d99e3a73d3399">set_offset</reimplements>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> Eigen::Quaternionf &amp;</type>
+          <declname>raw_o_times_offset</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="16" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="120" bodyend="132"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1a80bd2044b1cdc4166d8d6f20b7bb6896" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Eigen::Quaternionf</type>
+        <definition>Eigen::Quaternionf pose_prediction_impl::apply_offset</definition>
+        <argsstring>(const Eigen::Quaternionf &amp;orientation) const</argsstring>
+        <name>apply_offset</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::apply_offset</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> Eigen::Quaternionf &amp;</type>
+          <declname>orientation</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="17" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="134" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1a8cdc02d1284409b163a9f0386bc7b011" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool pose_prediction_impl::fast_pose_reliable</definition>
+        <argsstring>() const override</argsstring>
+        <name>fast_pose_reliable</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::fast_pose_reliable</qualifiedname>
+        <reimplements refid="classILLIXR_1_1data__format_1_1pose__prediction_1aba9e6e17c030f977147fdec718654f8b">fast_pose_reliable</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="18" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="139" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1ae9247d5b9042041a80f91f37097526cd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool pose_prediction_impl::true_pose_reliable</definition>
+        <argsstring>() const override</argsstring>
+        <name>true_pose_reliable</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::true_pose_reliable</qualifiedname>
+        <reimplements refid="classILLIXR_1_1data__format_1_1pose__prediction_1a982c0c2f406015727f83fa7a73e4a0bb">true_pose_reliable</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="19" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="159" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1a165d412516480614df14f4bff162abf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Eigen::Quaternionf</type>
+        <definition>Eigen::Quaternionf pose_prediction_impl::get_offset</definition>
+        <argsstring>() override</argsstring>
+        <name>get_offset</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::get_offset</qualifiedname>
+        <reimplements refid="classILLIXR_1_1data__format_1_1pose__prediction_1a0b7dc0a659ef0241dfcbe9b46839b752">get_offset</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="20" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="168" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1pose__prediction__impl_1ac124a0bda95999d0b385aa89f26d36fd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref></type>
+        <definition>pose::head_pose_type pose_prediction_impl::correct_pose</definition>
+        <argsstring>(const data_format::pose::head_pose_type &amp;pose) const override</argsstring>
+        <name>correct_pose</name>
+        <qualifiedname>ILLIXR::pose_prediction_impl::correct_pose</qualifiedname>
+        <reimplements refid="classILLIXR_1_1data__format_1_1pose__prediction_1a0032d072b1e87e213c7d8c6064507173">correct_pose</reimplements>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="21" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp" bodystart="174" bodyend="200"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::data_format::pose_prediction</label>
+        <link refid="classILLIXR_1_1data__format_1_1pose__prediction"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::pose_prediction_impl</label>
+        <link refid="classILLIXR_1_1pose__prediction__impl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::data_format::pose_prediction</label>
+        <link refid="classILLIXR_1_1data__format_1_1pose__prediction"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::pose_prediction_impl</label>
+        <link refid="classILLIXR_1_1pose__prediction__impl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>slow_pose_</edgelabel>
+          <edgelabel>true_pose_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>imu_raw_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>ground_truth_offset_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>vsync_estimate_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::switchboard::topic</label>
+        <link refid="classILLIXR_1_1switchboard_1_1topic"/>
+      </node>
+      <node id="6">
+        <label>ILLIXR::switchboard::reader&lt; ILLIXR::data_format::imu_raw_type &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1reader"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::switchboard::reader&lt; ILLIXR::data_format::pose::head_pose_type &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1reader"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>ILLIXR::switchboard::reader&lt; ILLIXR::switchboard::event_wrapper&lt; Eigen::Vector3f &gt; &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1reader"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>ILLIXR::switchboard::reader&lt; ILLIXR::switchboard::event_wrapper&lt; ILLIXR::time_point &gt; &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1reader"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" line="10" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.hpp" bodystart="10" bodyend="35"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1abaed4a8bc03a1d34e9390d8ab6ee8420" prot="protected" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>_correct_pose</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a8d55392ab96fa14ce9131dff2982676a" prot="protected" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>_set_offset</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a80bd2044b1cdc4166d8d6f20b7bb6896" prot="public" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>apply_offset</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a72cf02d49712bc926c64ddbd13a7f0a0" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1ac124a0bda95999d0b385aa89f26d36fd" prot="public" virt="virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>correct_pose</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a8cdc02d1284409b163a9f0386bc7b011" prot="public" virt="virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>fast_pose_reliable</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1afddf0c10e04dcd640d61eae4e0b40702" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>first_time_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1ae27a2457e2eaf652a9ffdb9d068fe62b" prot="public" virt="virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>get_fast_pose</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1aa3cfee62c3d95768fd548e4e3a4a1267" prot="public" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>get_fast_pose</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1af3203a55b8e266478517ff2678dfa105" prot="public" virt="pure-virtual" ambiguityscope="ILLIXR::data_format::pose_prediction::"><scope>ILLIXR::pose_prediction_impl</scope><name>get_fast_pose</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a165d412516480614df14f4bff162abf9" prot="public" virt="virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>get_offset</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a2f3a60b5516508f8346efd34b0ecc44b" prot="public" virt="virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>get_true_pose</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1ae2a6cbc6ae2a8440c870e54b4eff732b" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>ground_truth_offset_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1aa394d2959047b98d81d1af0c4bd3954b" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>imu_raw_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a534b10748d35e72df498f0fe3df3809c" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>offset_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a89054bb00445beacf3ea37c1ee777943" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>offset_mutex_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a88348d4e85db3d963112dd6e679125da" prot="public" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>pose_prediction_impl</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a6349fc76584fb98e19cd415f1c8094cc" prot="public" virt="virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>set_offset</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1acdd2f5ae21b5343c7dbd9ce152af9551" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>slow_pose_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a10d23e195de5fca6a7f6d79ad0519af5" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a2a657f08fea0107e9bdcd0c220afd2d9" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>true_pose_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1ae9247d5b9042041a80f91f37097526cd" prot="public" virt="virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>true_pose_reliable</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1a1b9fa2ddcc7392919fa332ebd8587a74" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>using_lighthouse_</name></member>
+      <member refid="classILLIXR_1_1pose__prediction__impl_1af6c57baa7eb3a22b6b99721d17ff380e" prot="private" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>vsync_estimate_</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1acea6d7b4f9b4d15cda0289398b67892f" prot="public" virt="non-virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>~pose_prediction</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::pose_prediction_impl</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

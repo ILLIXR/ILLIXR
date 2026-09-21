@@ -1,0 +1,173 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="474,21,645,47"/>
+<area shape="rect" id="Node000001" href="$classILLIXR_1_1device__tx.html" title=" " alt="" coords="748,5,881,31"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="658,25,748,19,748,25,659,30"/>
+<area shape="rect" id="Node000076" href="$classILLIXR_1_1server__rx.html" title=" " alt="" coords="749,55,880,80"/>
+<area shape="poly" id="edge2_Node000000_Node000076" title=" " alt="" coords="659,44,749,56,749,62,658,50"/>
+<area shape="rect" id="Node000030" href="$classILLIXR_1_1plugin.html" title="A dynamically&#45;loadable plugin for Spindle." alt="" coords="249,811,360,836"/>
+<area shape="rect" id="Node000031" href="$classILLIXR_1_1boba__immersive.html" title=" " alt="" coords="470,1033,649,1059"/>
+<area shape="poly" id="edge3_Node000030_Node000031" title=" " alt="" coords="320,847,340,886,370,932,409,979,455,1018,480,1031,478,1036,452,1023,405,983,366,936,336,888,315,850"/>
+<area shape="rect" id="Node000032" href="$classILLIXR_1_1depthai.html" title=" " alt="" coords="500,1083,619,1108"/>
+<area shape="poly" id="edge4_Node000030_Node000032" title=" " alt="" coords="317,849,334,897,363,956,403,1017,428,1044,455,1068,476,1080,500,1087,499,1092,474,1085,452,1072,424,1048,399,1020,359,959,330,899,312,851"/>
+<area shape="rect" id="Node000033" href="$classILLIXR_1_1fauxpose.html" title=" " alt="" coords="494,1132,625,1157"/>
+<area shape="poly" id="edge5_Node000030_Node000033" title=" " alt="" coords="314,849,329,906,356,978,375,1017,397,1054,424,1088,455,1117,474,1128,495,1136,493,1141,471,1133,452,1121,420,1091,393,1057,370,1019,351,981,324,907,309,850"/>
+<area shape="rect" id="Node000034" href="$classILLIXR_1_1ground__truth__slam.html" title=" " alt="" coords="463,1181,655,1207"/>
+<area shape="poly" id="edge6_Node000030_Node000034" title=" " alt="" coords="312,849,324,914,349,1000,368,1046,392,1090,420,1131,455,1167,475,1179,472,1183,452,1171,416,1135,387,1093,363,1048,344,1002,319,915,307,850"/>
+<area shape="rect" id="Node000035" href="$classILLIXR_1_1gtsam__integrator.html" title=" " alt="" coords="468,1231,651,1256"/>
+<area shape="poly" id="edge7_Node000030_Node000035" title=" " alt="" coords="310,850,320,923,343,1022,361,1075,386,1127,417,1175,455,1216,474,1228,471,1233,452,1220,413,1178,381,1129,356,1077,338,1024,314,924,305,850"/>
+<area shape="rect" id="Node000036" href="$classILLIXR_1_1mesh__compression.html" title=" " alt="" coords="461,96,657,121"/>
+<area shape="poly" id="edge8_Node000030_Node000036" title=" " alt="" coords="372,816,389,808,403,796,418,772,428,741,434,704,437,662,434,567,426,465,418,363,416,268,419,226,425,188,436,156,451,131,465,120,468,124,455,134,440,159,430,190,424,226,421,268,423,363,431,465,440,567,442,662,439,704,433,742,423,774,407,800,392,813,374,821"/>
+<area shape="rect" id="Node000037" href="$classILLIXR_1_1mesh__decompression.html" title=" " alt="" coords="453,145,665,171"/>
+<area shape="poly" id="edge9_Node000030_Node000037" title=" " alt="" coords="372,816,389,808,403,796,417,774,426,745,435,672,433,584,426,490,419,395,418,307,427,233,437,204,451,180,465,169,468,173,455,184,441,206,432,235,423,307,425,395,432,489,438,584,440,672,432,746,422,776,407,800,392,812,374,821"/>
+<area shape="rect" id="Node000038" href="$classILLIXR_1_1offload__data.html" title=" " alt="" coords="483,195,635,220"/>
+<area shape="poly" id="edge10_Node000030_Node000038" title=" " alt="" coords="372,816,389,808,403,796,416,776,425,749,433,682,432,602,426,515,421,428,420,348,428,280,438,253,451,231,465,219,482,211,484,216,468,223,455,234,443,255,434,281,425,348,426,428,432,515,437,602,438,683,430,751,421,778,407,800,392,812,374,820"/>
+<area shape="rect" id="Node000039" href="$classILLIXR_1_1offload__rendering__server__loader.html" title="Plugin loader for the offload rendering server." alt="" coords="467,1395,652,1435"/>
+<area shape="poly" id="edge11_Node000030_Node000039" title=" " alt="" coords="314,849,379,1140,420,1297,440,1352,455,1382,470,1393,466,1397,451,1385,435,1354,415,1299,373,1141,309,850"/>
+<area shape="rect" id="Node000042" href="$classILLIXR_1_1openxr__quest__controller.html" title=" " alt="" coords="480,245,639,285"/>
+<area shape="poly" id="edge12_Node000030_Node000042" title=" " alt="" coords="372,816,389,808,403,796,415,778,423,755,431,696,431,625,427,548,424,471,424,399,431,339,440,315,451,295,464,283,478,275,481,279,467,288,455,298,444,317,437,340,429,400,429,471,433,548,437,625,436,696,428,756,419,780,407,800,392,812,374,820"/>
+<area shape="rect" id="Node000043" href="$classILLIXR_1_1passthrough__integrator.html" title=" " alt="" coords="484,309,635,349"/>
+<area shape="poly" id="edge13_Node000030_Node000043" title=" " alt="" coords="372,815,389,808,403,796,423,769,437,742,444,715,447,689,441,635,428,581,415,527,409,472,411,444,418,416,431,387,451,359,466,346,483,337,485,342,469,350,455,362,436,390,423,418,416,445,414,472,420,526,433,580,447,634,452,689,449,716,442,744,428,772,407,800,392,812,374,820"/>
+<area shape="rect" id="Node000044" href="$classILLIXR_1_1realsense.html" title=" " alt="" coords="493,373,626,399"/>
+<area shape="poly" id="edge14_Node000030_Node000044" title=" " alt="" coords="372,815,389,808,403,796,421,772,433,748,440,724,442,700,438,652,426,604,415,555,410,507,413,482,420,457,433,433,451,408,470,394,491,386,493,391,472,399,455,412,437,436,425,459,418,483,416,507,420,555,431,603,443,652,448,701,445,725,438,750,426,775,407,800,392,812,374,820"/>
+<area shape="rect" id="Node000045" href="$classILLIXR_1_1record__imu__cam.html" title=" " alt="" coords="470,423,649,448"/>
+<area shape="poly" id="edge15_Node000030_Node000045" title=" " alt="" coords="372,815,389,808,403,796,419,775,430,755,439,713,435,672,426,630,417,587,414,545,424,502,435,480,451,459,468,446,472,450,455,463,439,483,429,504,420,545,423,587,432,629,441,671,444,714,435,757,424,778,407,800,392,812,374,820"/>
+<area shape="rect" id="Node000046" href="$classILLIXR_1_1record__rgb__depth.html" title=" " alt="" coords="490,473,629,513"/>
+<area shape="poly" id="edge16_Node000030_Node000046" title=" " alt="" coords="372,815,389,807,403,796,426,763,434,730,433,696,428,663,422,628,421,593,429,558,451,523,469,509,489,499,491,504,471,513,455,526,434,560,426,594,427,628,433,662,438,696,439,730,431,765,407,800,392,812,375,820"/>
+<area shape="rect" id="Node000047" href="$classILLIXR_1_1rk4__integrator.html" title=" " alt="" coords="478,537,641,563"/>
+<area shape="poly" id="edge17_Node000030_Node000047" title=" " alt="" coords="372,815,389,807,403,796,422,769,430,742,430,714,426,686,423,658,423,629,431,600,451,572,476,556,479,561,455,576,436,603,428,630,428,657,432,685,435,714,435,743,427,771,407,800,392,812,374,819"/>
+<area shape="rect" id="Node000048" href="$classILLIXR_1_1semantic__python.html" title=" " alt="" coords="468,587,651,612"/>
+<area shape="poly" id="edge18_Node000030_Node000048" title=" " alt="" coords="372,814,389,807,403,796,419,775,426,754,426,710,427,666,435,643,451,621,468,610,471,614,455,625,439,646,432,667,432,710,432,755,424,778,407,800,392,811,374,819"/>
+<area shape="rect" id="Node000049" href="$classILLIXR_1_1server__writer.html" title=" " alt="" coords="481,636,637,661"/>
+<area shape="poly" id="edge19_Node000030_Node000049" title=" " alt="" coords="373,813,389,806,404,796,416,781,423,766,427,735,431,702,438,686,452,671,480,655,482,659,455,675,442,689,436,704,432,735,428,768,421,784,407,800,392,811,375,818"/>
+<area shape="rect" id="Node000029" href="$classILLIXR_1_1tcp__network__backend.html" title=" " alt="" coords="739,1450,890,1490"/>
+<area shape="poly" id="edge20_Node000030_Node000029" title=" " alt="" coords="374,810,452,801,539,797,616,801,646,809,667,821,684,843,695,871,702,905,706,943,705,1030,698,1125,690,1221,687,1310,694,1384,702,1413,715,1436,727,1447,741,1455,738,1460,723,1451,711,1440,697,1415,688,1385,681,1310,685,1221,693,1125,700,1030,701,944,697,906,690,873,679,846,664,825,644,814,615,807,539,802,453,807,374,816"/>
+<area shape="rect" id="Node000002" href="$classILLIXR_1_1threadloop.html" title="A reusable threadloop for plugins." alt="" coords="489,735,629,760"/>
+<area shape="poly" id="edge21_Node000030_Node000002" title=" " alt="" coords="373,805,404,795,452,777,513,757,515,763,454,782,406,801,374,810"/>
+<area shape="rect" id="Node000050" href="$classILLIXR_1_1udp__network__backend.html" title=" " alt="" coords="737,1578,892,1618"/>
+<area shape="poly" id="edge52_Node000030_Node000050" title=" " alt="" coords="309,850,316,931,324,985,336,1043,355,1104,380,1163,413,1218,455,1265,481,1283,508,1291,534,1292,561,1289,588,1287,615,1288,641,1297,667,1317,689,1349,698,1380,697,1411,693,1442,689,1473,688,1503,696,1534,715,1564,739,1581,735,1586,711,1568,691,1536,683,1504,683,1472,688,1441,692,1411,692,1381,684,1351,663,1321,639,1302,613,1293,588,1292,561,1294,534,1297,507,1296,479,1288,452,1269,409,1221,376,1165,350,1106,331,1045,318,986,310,932,304,850"/>
+<area shape="rect" id="Node000052" href="$classILLIXR_1_1viewer.html" title=" " alt="" coords="502,685,617,711"/>
+<area shape="poly" id="edge53_Node000030_Node000052" title=" " alt="" coords="372,811,404,796,420,778,427,759,434,739,452,720,476,707,501,700,503,705,478,712,455,724,439,742,432,761,424,781,407,800,374,816"/>
+<area shape="rect" id="Node000053" href="$classILLIXR_1_1vkdemo__plugin.html" title=" " alt="" coords="474,836,645,861"/>
+<area shape="poly" id="edge54_Node000030_Node000053" title=" " alt="" coords="374,827,474,838,474,843,373,833"/>
+<area shape="rect" id="Node000041" href="$classoffload__rendering__client__loader.html" title="Plugin loader for the offload rendering client (Linux)" alt="" coords="469,1331,649,1371"/>
+<area shape="poly" id="edge55_Node000030_Node000041" title=" " alt="" coords="309,850,314,937,322,995,335,1059,353,1126,379,1193,412,1255,455,1311,480,1329,477,1333,451,1315,408,1258,374,1195,348,1128,330,1061,317,996,309,937,303,850"/>
+<area shape="rect" id="Node000054" href="$classpose__lookup__plugin.html" title=" " alt="" coords="484,885,635,911"/>
+<area shape="poly" id="edge56_Node000030_Node000054" title=" " alt="" coords="355,838,454,870,502,883,501,888,453,875,354,843"/>
+<area shape="rect" id="Node000055" href="$classpose__prediction__plugin.html" title=" " alt="" coords="473,935,645,960"/>
+<area shape="poly" id="edge57_Node000030_Node000055" title=" " alt="" coords="333,843,387,882,454,920,491,932,489,937,452,924,384,886,330,847"/>
+<area shape="rect" id="Node000056" href="$classserver__tx.html" title=" " alt="" coords="518,984,601,1009"/>
+<area shape="poly" id="edge58_Node000030_Node000056" title=" " alt="" coords="325,846,378,908,414,941,455,969,486,982,518,990,517,995,485,987,452,974,411,945,374,912,321,849"/>
+<area shape="poly" id="edge26_Node000002_Node000001" title=" " alt="" coords="641,736,663,720,678,695,689,664,695,626,698,583,695,487,687,382,678,278,676,181,678,137,685,99,695,66,711,40,727,27,747,19,749,24,730,32,715,44,700,69,690,100,684,138,681,181,684,277,692,382,700,486,703,583,700,626,694,665,683,698,667,724,644,741"/>
+<area shape="poly" id="edge45_Node000002_Node000076" title=" " alt="" coords="641,736,663,720,677,697,687,668,693,633,696,593,694,504,687,407,679,310,678,220,680,180,686,144,696,114,711,90,728,76,748,68,750,73,731,81,715,93,701,116,691,145,686,180,683,220,685,310,692,406,699,503,701,593,698,634,692,669,682,700,667,724,644,741"/>
+<area shape="rect" id="Node000003" href="$classILLIXR_1_1boba__streaming__server.html" title=" " alt="" coords="727,1386,902,1426"/>
+<area shape="poly" id="edge22_Node000002_Node000003" title=" " alt="" coords="644,759,667,778,681,801,690,830,699,901,698,985,692,1076,687,1166,686,1250,694,1321,703,1349,715,1371,730,1384,726,1388,711,1374,698,1351,689,1322,680,1251,681,1166,687,1075,693,985,694,901,685,831,676,803,663,781,641,763"/>
+<area shape="rect" id="Node000004" href="$classILLIXR_1_1data__injection.html" title=" " alt="" coords="733,104,896,129"/>
+<area shape="poly" id="edge23_Node000002_Node000004" title=" " alt="" coords="641,736,663,720,676,699,686,672,694,603,693,521,687,431,681,342,679,259,688,189,697,161,711,139,732,124,735,128,715,142,702,163,693,190,685,259,686,342,692,431,698,521,699,604,691,673,681,701,667,724,644,741"/>
+<area shape="rect" id="Node000005" href="$classILLIXR_1_1debugview.html" title=" " alt="" coords="744,153,885,179"/>
+<area shape="poly" id="edge24_Node000002_Node000005" title=" " alt="" coords="641,736,663,720,675,701,684,676,692,613,691,538,687,456,682,374,681,298,690,234,698,209,711,188,726,176,742,169,745,173,729,181,715,192,703,211,695,236,687,299,687,374,692,456,697,538,697,614,689,678,680,703,667,724,644,741"/>
+<area shape="rect" id="Node000006" href="$classILLIXR_1_1device__rx.html" title=" " alt="" coords="748,203,881,228"/>
+<area shape="poly" id="edge25_Node000002_Node000006" title=" " alt="" coords="641,736,663,720,685,690,700,660,708,631,710,601,703,541,687,481,671,421,663,360,666,330,674,299,689,268,711,237,728,224,747,217,749,222,730,229,715,241,693,271,679,301,671,331,669,360,676,420,692,480,708,540,715,601,713,631,705,662,690,693,667,724,644,740"/>
+<area shape="rect" id="Node000007" href="$classILLIXR_1_1gldemo.html" title=" " alt="" coords="755,252,874,277"/>
+<area shape="poly" id="edge27_Node000002_Node000007" title=" " alt="" coords="641,736,663,720,683,693,696,667,704,640,706,613,700,560,687,506,673,452,667,397,670,370,677,342,691,314,711,287,731,272,754,264,756,269,734,277,715,291,695,317,682,344,675,371,672,397,678,451,692,505,706,559,711,613,709,641,701,669,688,696,667,724,644,740"/>
+<area shape="rect" id="Node000008" href="$classILLIXR_1_1lighthouse.html" title=" " alt="" coords="745,301,884,327"/>
+<area shape="poly" id="edge28_Node000002_Node000008" title=" " alt="" coords="641,736,663,720,681,697,693,673,700,649,702,626,698,578,687,531,675,482,671,434,674,410,681,385,693,361,711,336,726,324,744,316,746,321,729,329,715,340,697,363,686,387,679,411,676,434,681,482,692,529,703,577,708,626,705,650,698,675,686,699,667,724,644,740"/>
+<area shape="rect" id="Node000009" href="$classILLIXR_1_1native__renderer.html" title=" " alt="" coords="728,351,901,376"/>
+<area shape="poly" id="edge29_Node000002_Node000009" title=" " alt="" coords="641,736,663,720,679,700,690,679,699,638,696,597,687,555,678,513,675,471,684,428,695,407,711,385,726,374,729,378,715,389,699,410,689,430,680,471,683,512,692,554,701,596,704,639,695,681,684,703,667,724,644,740"/>
+<area shape="rect" id="Node000010" href="$classILLIXR_1_1network__latency__rx.html" title="Network latency measurement server plugin (RX side)." alt="" coords="715,400,914,425"/>
+<area shape="poly" id="edge30_Node000002_Node000010" title=" " alt="" coords="641,736,663,720,687,686,695,651,693,615,687,580,680,544,678,507,687,471,711,435,726,423,729,428,715,438,692,473,684,508,685,543,692,579,699,615,700,651,691,688,667,724,644,740"/>
+<area shape="rect" id="Node000011" href="$classILLIXR_1_1network__latency__tx.html" title="Network latency measurement client plugin (TX side)." alt="" coords="715,449,914,475"/>
+<area shape="poly" id="edge31_Node000002_Node000011" title=" " alt="" coords="641,735,663,720,683,692,691,663,691,634,687,604,682,574,682,544,691,514,711,484,727,473,730,477,715,488,695,516,688,545,688,574,692,604,696,634,696,664,688,694,667,724,644,740"/>
+<area shape="rect" id="Node000012" href="$classILLIXR_1_1offline__cam.html" title=" " alt="" coords="741,499,888,524"/>
+<area shape="poly" id="edge32_Node000002_Node000012" title=" " alt="" coords="641,735,664,720,680,698,687,675,689,652,687,629,685,605,686,581,694,557,712,533,740,516,743,521,715,537,699,559,691,582,690,605,692,628,694,652,693,676,685,700,667,724,644,739"/>
+<area shape="rect" id="Node000013" href="$classILLIXR_1_1offline__imu.html" title=" " alt="" coords="743,548,887,573"/>
+<area shape="poly" id="edge33_Node000002_Node000013" title=" " alt="" coords="641,734,664,720,677,704,684,688,687,653,690,618,697,600,712,583,741,566,744,571,715,587,702,603,695,619,692,654,689,689,681,707,667,724,644,739"/>
+<area shape="rect" id="Node000014" href="$classILLIXR_1_1offline__scannet.html" title=" " alt="" coords="729,597,900,623"/>
+<area shape="poly" id="edge34_Node000002_Node000014" title=" " alt="" coords="641,732,664,720,680,699,687,677,694,654,712,632,732,620,734,625,715,636,698,657,692,679,685,702,667,724,644,737"/>
+<area shape="rect" id="Node000015" href="$classILLIXR_1_1offload__reader.html" title=" " alt="" coords="732,647,897,672"/>
+<area shape="poly" id="edge35_Node000002_Node000015" title=" " alt="" coords="642,729,664,720,678,710,687,701,697,691,712,681,742,670,744,675,715,686,701,695,691,705,681,715,667,724,644,734"/>
+<area shape="rect" id="Node000016" href="$classILLIXR_1_1offload__rendering__client.html" title=" " alt="" coords="722,1514,907,1554"/>
+<area shape="poly" id="edge36_Node000002_Node000016" title=" " alt="" coords="604,764,639,788,655,804,668,822,679,851,687,885,693,968,691,1065,684,1168,679,1270,679,1364,683,1406,690,1443,701,1475,715,1500,728,1512,724,1516,711,1504,696,1477,685,1445,678,1407,674,1365,674,1270,679,1168,685,1065,688,968,682,886,674,852,663,825,651,807,636,792,601,769"/>
+<area shape="rect" id="Node000021" href="$classILLIXR_1_1offload__rendering__server.html" title="Main server implementation for offload rendering." alt="" coords="722,1723,907,1763"/>
+<area shape="poly" id="edge37_Node000002_Node000021" title=" " alt="" coords="604,764,639,788,655,804,668,822,682,856,692,896,702,992,703,1104,699,1224,693,1343,692,1456,698,1554,705,1595,716,1629,730,1656,749,1681,789,1721,786,1725,745,1685,726,1659,711,1631,700,1596,693,1554,686,1456,688,1343,693,1223,698,1104,697,993,687,897,677,857,663,825,651,807,636,792,601,769"/>
+<area shape="rect" id="Node000069" href="$classILLIXR_1_1offload__writer.html" title=" " alt="" coords="734,696,895,721"/>
+<area shape="poly" id="edge38_Node000002_Node000069" title=" " alt="" coords="643,732,733,718,734,723,644,737"/>
+<area shape="rect" id="Node000070" href="$classILLIXR_1_1openni__plugin.html" title=" " alt="" coords="734,745,895,771"/>
+<area shape="poly" id="edge39_Node000002_Node000070" title=" " alt="" coords="643,748,734,752,734,757,643,753"/>
+<area shape="rect" id="Node000071" href="$classILLIXR_1_1openwarp__vk__plugin.html" title=" " alt="" coords="736,795,893,835"/>
+<area shape="poly" id="edge40_Node000002_Node000071" title=" " alt="" coords="622,761,739,793,738,798,621,766"/>
+<area shape="rect" id="Node000072" href="$classILLIXR_1_1oxr__relay.html" title=" " alt="" coords="749,860,880,885"/>
+<area shape="poly" id="edge41_Node000002_Node000072" title=" " alt="" coords="640,763,667,777,683,795,692,812,699,829,715,845,750,861,748,866,712,850,695,832,687,815,679,798,664,781,638,767"/>
+<area shape="rect" id="Node000073" href="$classILLIXR_1_1pose__relay.html" title=" " alt="" coords="744,909,885,935"/>
+<area shape="poly" id="edge42_Node000002_Node000073" title=" " alt="" coords="644,762,667,777,680,792,687,808,692,838,696,867,703,881,715,895,745,911,742,916,712,899,699,884,691,869,686,839,682,809,675,795,664,781,641,766"/>
+<area shape="rect" id="Node000074" href="$classILLIXR_1_1scene__management.html" title=" " alt="" coords="713,959,916,984"/>
+<area shape="poly" id="edge43_Node000002_Node000074" title=" " alt="" coords="644,761,667,777,683,799,690,821,692,863,693,905,700,924,715,944,733,956,730,961,711,948,695,927,687,906,686,863,685,821,678,801,663,781,641,765"/>
+<area shape="rect" id="Node000075" href="$classILLIXR_1_1server__reader.html" title=" " alt="" coords="735,1008,895,1033"/>
+<area shape="poly" id="edge44_Node000002_Node000075" title=" " alt="" coords="644,761,667,777,686,805,694,833,694,861,691,888,688,915,689,942,697,968,715,993,736,1008,733,1012,711,997,692,970,684,942,683,915,686,888,689,861,689,834,681,808,663,781,641,765"/>
+<area shape="rect" id="Node000077" href="$classILLIXR_1_1timewarp__gl.html" title=" " alt="" coords="739,1057,890,1083"/>
+<area shape="poly" id="edge46_Node000002_Node000077" title=" " alt="" coords="643,760,667,778,689,812,698,846,697,880,691,913,686,946,685,979,693,1011,715,1043,741,1059,738,1064,711,1047,689,1013,680,979,681,946,686,912,691,879,692,847,684,814,663,781,640,764"/>
+<area shape="rect" id="Node000078" href="$classILLIXR_1_1timewarp__vk__plugin.html" title=" " alt="" coords="737,1107,892,1147"/>
+<area shape="poly" id="edge47_Node000002_Node000078" title=" " alt="" coords="644,760,667,777,682,798,693,818,702,858,700,898,692,937,685,975,683,1014,691,1053,701,1072,715,1092,739,1110,736,1114,711,1096,697,1075,686,1055,678,1014,680,975,687,936,694,897,696,859,688,820,678,801,663,781,640,764"/>
+<area shape="rect" id="Node000079" href="$classILLIXR_1_1webcam.html" title=" " alt="" coords="752,1172,877,1197"/>
+<area shape="poly" id="edge48_Node000002_Node000079" title=" " alt="" coords="643,759,667,777,685,802,697,827,703,851,706,876,702,924,691,971,680,1018,676,1064,679,1088,686,1111,698,1134,715,1157,732,1171,753,1178,751,1183,729,1175,711,1161,693,1137,681,1113,674,1089,671,1065,675,1017,686,970,696,923,701,876,698,852,692,829,680,805,663,781,640,764"/>
+<area shape="rect" id="Node000080" href="$classILLIXR_1_1xr__sensor__capture.html" title="ILLIXR plugin that co&#45;captures HEVC&#45;encoded RGB frames, depth frames, and per&#45;sensor matched head pos..." alt="" coords="720,1221,909,1247"/>
+<area shape="poly" id="edge49_Node000002_Node000080" title=" " alt="" coords="644,759,667,777,687,806,700,833,707,861,709,888,704,942,691,996,678,1049,673,1101,675,1127,683,1154,696,1180,715,1207,730,1219,727,1223,711,1211,691,1183,678,1156,670,1128,667,1101,672,1048,685,994,699,941,704,888,702,862,695,835,682,808,663,781,640,763"/>
+<area shape="rect" id="Node000081" href="$classILLIXR_1_1zed__camera__thread.html" title=" " alt="" coords="740,1271,889,1311"/>
+<area shape="poly" id="edge50_Node000002_Node000081" title=" " alt="" coords="644,759,667,777,689,809,703,840,711,870,714,900,708,960,693,1019,678,1077,671,1136,674,1166,681,1195,695,1226,715,1256,727,1267,741,1276,738,1280,724,1272,711,1260,690,1228,676,1197,668,1166,666,1136,673,1076,688,1017,702,959,709,900,706,871,698,841,684,811,663,781,640,763"/>
+<area shape="rect" id="Node000082" href="$classILLIXR_1_1zed__imu__thread.html" title=" " alt="" coords="727,1336,902,1361"/>
+<area shape="poly" id="edge51_Node000002_Node000082" title=" " alt="" coords="644,759,667,778,680,799,689,825,697,891,696,969,691,1052,686,1136,686,1212,694,1277,703,1302,715,1322,730,1334,727,1338,711,1325,698,1304,689,1278,681,1213,681,1135,686,1052,691,968,691,891,684,827,675,801,663,781,641,763"/>
+<area shape="rect" id="Node000026" href="$classILLIXR_1_1phonebook_1_1service.html" title="A &#39;service&#39; that can be registered in the phonebook." alt="" coords="5,1491,156,1531"/>
+<area shape="rect" id="Node000022" href="$classILLIXR_1_1data__format_1_1pose__prediction.html" title=" " alt="" coords="229,1651,380,1691"/>
+<area shape="poly" id="edge59_Node000026_Node000022" title=" " alt="" coords="106,1541,149,1590,176,1615,205,1637,231,1650,228,1654,203,1642,173,1619,145,1594,102,1544"/>
+<area shape="rect" id="Node000027" href="$classILLIXR_1_1network_1_1network__backend.html" title=" " alt="" coords="213,1459,397,1499"/>
+<area shape="poly" id="edge64_Node000026_Node000027" title=" " alt="" coords="169,1496,212,1490,213,1495,170,1501"/>
+<area shape="rect" id="Node000057" href="$classILLIXR_1_1record__logger.html" title="The ILLIXR logging service for structured records." alt="" coords="225,1927,384,1952"/>
+<area shape="poly" id="edge69_Node000026_Node000057" title=" " alt="" coords="93,1544,134,1671,167,1749,206,1825,250,1882,291,1925,288,1928,246,1886,202,1827,162,1751,129,1673,88,1545"/>
+<area shape="rect" id="Node000061" href="$classILLIXR_1_1relative__clock.html" title="Relative clock for all of ILLIXR." alt="" coords="224,712,385,737"/>
+<area shape="poly" id="edge73_Node000026_Node000061" title=" " alt="" coords="80,1478,86,1323,104,1104,120,991,141,889,168,805,184,772,202,747,222,732,225,737,206,751,188,775,173,807,146,890,125,992,109,1104,91,1323,85,1478"/>
+<area shape="rect" id="Node000062" href="$classILLIXR_1_1stoplight.html" title="Start/stop synchronization for the whole application." alt="" coords="241,761,368,787"/>
+<area shape="poly" id="edge74_Node000026_Node000062" title=" " alt="" coords="80,1477,88,1331,107,1127,123,1023,144,928,170,850,185,819,202,796,220,783,240,775,242,780,222,788,206,800,189,822,174,852,149,929,128,1024,113,1128,93,1332,86,1478"/>
+<area shape="rect" id="Node000063" href="$classILLIXR_1_1switchboard.html" title="A manager for typesafe, threadsafe, named event&#45;streams (called topics)." alt="" coords="230,1281,379,1307"/>
+<area shape="poly" id="edge75_Node000026_Node000063" title=" " alt="" coords="92,1477,108,1440,132,1396,164,1353,202,1317,229,1304,231,1308,206,1322,168,1357,137,1399,113,1442,97,1479"/>
+<area shape="rect" id="Node000064" href="$classILLIXR_1_1vk_1_1vulkan__context__provider.html" title=" " alt="" coords="235,1331,374,1371"/>
+<area shape="poly" id="edge76_Node000026_Node000064" title=" " alt="" coords="102,1479,145,1429,173,1403,203,1381,234,1366,236,1371,205,1386,176,1407,149,1432,106,1482"/>
+<area shape="rect" id="Node000065" href="$classILLIXR_1_1vulkan_1_1display__provider.html" title="A display sink is a service that can display the rendered images to the screen." alt="" coords="220,1523,389,1563"/>
+<area shape="poly" id="edge77_Node000026_Node000065" title=" " alt="" coords="170,1521,220,1529,219,1534,170,1527"/>
+<area shape="rect" id="Node000019" href="$classILLIXR_1_1vulkan_1_1render__pass.html" title=" " alt="" coords="204,1788,405,1813"/>
+<area shape="poly" id="edge78_Node000026_Node000019" title=" " alt="" coords="101,1542,146,1617,206,1702,250,1749,290,1786,286,1790,247,1753,202,1705,142,1620,97,1544"/>
+<area shape="rect" id="Node000066" href="$classILLIXR_1_1xlib__gl__extended__window.html" title=" " alt="" coords="214,1587,395,1627"/>
+<area shape="poly" id="edge86_Node000026_Node000066" title=" " alt="" coords="130,1536,205,1573,236,1585,234,1590,203,1578,127,1540"/>
+<area shape="poly" id="edge61_Node000022_Node000021" title=" " alt="" coords="366,1694,409,1709,454,1721,523,1732,594,1738,722,1743,722,1748,594,1744,523,1737,453,1726,407,1714,364,1699"/>
+<area shape="rect" id="Node000023" href="$classILLIXR_1_1fauxpose__impl.html" title="Create a &quot;pose_prediction&quot; type service." alt="" coords="476,1637,643,1663"/>
+<area shape="poly" id="edge60_Node000022_Node000023" title=" " alt="" coords="393,1661,476,1654,476,1660,394,1667"/>
+<area shape="rect" id="Node000024" href="$classILLIXR_1_1pose__lookup__impl.html" title=" " alt="" coords="465,1687,653,1712"/>
+<area shape="poly" id="edge62_Node000022_Node000024" title=" " alt="" coords="394,1678,465,1686,465,1692,393,1684"/>
+<area shape="rect" id="Node000025" href="$classILLIXR_1_1pose__prediction__impl.html" title=" " alt="" coords="455,1588,664,1613"/>
+<area shape="poly" id="edge63_Node000022_Node000025" title=" " alt="" coords="381,1645,453,1622,498,1611,499,1616,454,1627,382,1650"/>
+<area shape="rect" id="Node000028" href="$structILLIXR_1_1network_1_1tcp__backend.html" title="Phonebook registration key for the TCP network backend." alt="" coords="484,1459,635,1499"/>
+<area shape="poly" id="edge65_Node000027_Node000028" title=" " alt="" coords="410,1477,484,1477,484,1482,410,1482"/>
+<area shape="rect" id="Node000051" href="$structILLIXR_1_1network_1_1udp__backend.html" title="Phonebook registration key for the UDP network backend." alt="" coords="482,1523,637,1563"/>
+<area shape="poly" id="edge67_Node000027_Node000051" title=" " alt="" coords="399,1500,482,1521,481,1527,398,1505"/>
+<area shape="poly" id="edge66_Node000028_Node000029" title=" " alt="" coords="648,1473,739,1470,739,1475,648,1479"/>
+<area shape="poly" id="edge68_Node000051_Node000050" title=" " alt="" coords="651,1560,737,1579,736,1584,650,1565"/>
+<area shape="rect" id="Node000058" href="$classILLIXR_1_1no__op__record__logger.html" title=" " alt="" coords="481,1887,638,1927"/>
+<area shape="poly" id="edge70_Node000057_Node000058" title=" " alt="" coords="397,1925,480,1915,481,1920,398,1930"/>
+<area shape="rect" id="Node000059" href="$classILLIXR_1_1sqlite__record__logger.html" title=" " alt="" coords="482,1951,637,1991"/>
+<area shape="poly" id="edge71_Node000057_Node000059" title=" " alt="" coords="398,1948,482,1959,481,1964,397,1954"/>
+<area shape="rect" id="Node000060" href="$classILLIXR_1_1stdout__record__logger.html" title=" " alt="" coords="480,2015,639,2055"/>
+<area shape="poly" id="edge72_Node000057_Node000060" title=" " alt="" coords="346,1955,454,2001,489,2013,488,2018,452,2006,344,1960"/>
+<area shape="rect" id="Node000017" href="$classILLIXR_1_1vulkan_1_1app.html" title=" " alt="" coords="486,1788,633,1813"/>
+<area shape="poly" id="edge79_Node000019_Node000017" title=" " alt="" coords="420,1798,486,1798,486,1803,420,1803"/>
+<area shape="rect" id="Node000020" href="$classILLIXR_1_1vulkan_1_1timewarp.html" title=" " alt="" coords="467,1837,651,1863"/>
+<area shape="poly" id="edge82_Node000019_Node000020" title=" " alt="" coords="385,1813,493,1835,492,1840,384,1819"/>
+<area shape="poly" id="edge80_Node000017_Node000016" title=" " alt="" coords="597,1779,632,1754,663,1722,675,1701,681,1680,683,1642,688,1603,696,1584,711,1564,727,1552,730,1556,715,1568,701,1587,693,1605,689,1642,686,1681,680,1703,667,1725,635,1758,600,1783"/>
+<area shape="rect" id="Node000018" href="$classILLIXR_1_1vkdemo.html" title=" " alt="" coords="753,1788,876,1813"/>
+<area shape="poly" id="edge81_Node000017_Node000018" title=" " alt="" coords="646,1798,753,1798,753,1803,646,1803"/>
+<area shape="poly" id="edge83_Node000020_Node000021" title=" " alt="" coords="651,1830,664,1824,679,1812,687,1800,697,1786,712,1773,735,1761,738,1766,715,1778,701,1790,692,1803,682,1816,667,1828,654,1835"/>
+<area shape="rect" id="Node000067" href="$classILLIXR_1_1openwarp__vk.html" title=" " alt="" coords="736,1837,893,1863"/>
+<area shape="poly" id="edge84_Node000020_Node000067" title=" " alt="" coords="665,1847,736,1847,736,1853,665,1853"/>
+<area shape="rect" id="Node000068" href="$classILLIXR_1_1timewarp__vk.html" title=" " alt="" coords="737,1887,892,1912"/>
+<area shape="poly" id="edge85_Node000020_Node000068" title=" " alt="" coords="639,1863,749,1884,748,1889,638,1868"/>
+<area shape="rect" id="Node000040" title=" " alt="" coords="224,1395,385,1435"/>
+<area shape="poly" id="edge87_Node000040_Node000039" title=" " alt="" coords="399,1413,466,1413,466,1418,399,1418"/>
+<area shape="poly" id="edge88_Node000040_Node000041" title=" " alt="" coords="398,1389,479,1369,480,1374,399,1394"/>
+</map>

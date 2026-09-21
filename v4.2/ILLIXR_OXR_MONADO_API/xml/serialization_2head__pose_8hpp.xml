@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="serialization_2head__pose_8hpp" kind="file" language="C++">
+    <compoundname>head_pose.hpp</compoundname>
+    <includes refid="poses_2head__pose_8hpp" local="yes">illixr/data_format/poses/head_pose.hpp</includes>
+    <includes refid="serialization_2pose__base_8hpp" local="yes">illixr/data_format/serialization/pose_base.hpp</includes>
+    <includes refid="misc_8hpp" local="yes">misc.hpp</includes>
+    <includes local="no">boost/serialization/base_object.hpp</includes>
+    <includedby refid="serialization_2combined__pose_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/combined_pose.hpp</includedby>
+    <includedby refid="frame_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>illixr/data_format/poses/head_pose.hpp</label>
+        <link refid="poses_2head__pose_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>openxr_defines.hpp</label>
+        <link refid="openxr__defines_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/head_pose.hpp</label>
+        <link refid="serialization_2head__pose_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>misc.hpp</label>
+        <link refid="misc_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>openxr.hpp</label>
+        <link refid="openxr_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>illixr/data_format/serialization/pose_base.hpp</label>
+        <link refid="serialization_2pose__base_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>boost/serialization/array.hpp</label>
+      </node>
+      <node id="17">
+        <label>boost/serialization/base_object.hpp</label>
+      </node>
+      <node id="12">
+        <label>boost/serialization/binary_object.hpp</label>
+      </node>
+      <node id="13">
+        <label>boost/serialization/export.hpp</label>
+      </node>
+      <node id="15">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="11">
+        <label>illixr/relative_clock.hpp</label>
+      </node>
+      <node id="6">
+        <label>illixr/switchboard.hpp</label>
+      </node>
+      <node id="4">
+        <label>map</label>
+      </node>
+      <node id="8">
+        <label>utility</label>
+      </node>
+      <node id="5">
+        <label>xrt/xrt_defines.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/combined_pose.hpp</label>
+        <link refid="serialization_2combined__pose_8hpp"/>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp</label>
+        <link refid="frame_8hpp"/>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/head_pose.hpp</label>
+        <link refid="serialization_2head__pose_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespaceboost">boost</innernamespace>
+    <innernamespace refid="namespaceboost_1_1serialization">boost::serialization</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="poses_2head__pose_8hpp" kindref="compound">illixr/data_format/poses/head_pose.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="serialization_2pose__base_8hpp" kindref="compound">illixr/data_format/serialization/pose_base.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="misc_8hpp" kindref="compound">misc.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/base_object.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceboost_1_1serialization" kindref="compound">boost::serialization</ref><sp/>{</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>USING_OPENXR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal">[[maybe_unused]]<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceboost_1_1serialization_1ad190099ace7813108c601872bfa3d086" kindref="member">serialize</ref>(Archive&amp;<sp/>ar,<sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a35bce4e4fdcff8b5199df49927ec2182" kindref="member">ILLIXR::data_format::pose::head_pose_data</ref>&amp;<sp/>pose,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>(void)<sp/>version;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>ar&amp;<sp/>boost::serialization::base_object&lt;ILLIXR::data_format::pose::pose_base&gt;(pose);</highlight></codeline>
+<codeline lineno="16"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">[[maybe_unused]]<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceboost_1_1serialization_1ad190099ace7813108c601872bfa3d086" kindref="member">serialize</ref>(Archive&amp;<sp/>ar,<sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1aef5b9b48867d32c8aa1820d030fdfc9a" kindref="member">ILLIXR::data_format::pose::head_pose_type</ref>&amp;<sp/>pose,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>(void)<sp/>version;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>ar&amp;<sp/>boost::serialization::base_object&lt;ILLIXR::switchboard::event&gt;(pose);</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>ar&amp;<sp/>boost::serialization::base_object&lt;ILLIXR::data_format::pose::head_pose_data&gt;(pose);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>pose.sensor_time;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>ar&amp;<sp/>boost::serialization::make_array(pose.linear_velocity.derived().data(),<sp/>pose.linear_velocity.size());</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>ar&amp;<sp/>boost::serialization::make_array(pose.angular_velocity.derived().data(),<sp/>pose.angular_velocity.size());</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>pose.linear_velocity_valid;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>pose.angular_velocity_valid;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="32" refid="namespaceboost_1_1serialization_1afe9c743d0976a97430e9582c60c79618" refkind="member"><highlight class="normal">[[maybe_unused]]<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceboost_1_1serialization_1ad190099ace7813108c601872bfa3d086" kindref="member">serialize</ref>(Archive&amp;<sp/>ar,<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">ILLIXR::data_format::pose::fast_head_pose_type</ref>&amp;<sp/>pose,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>(void)<sp/>version;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>ar&amp;<sp/>boost::serialization::base_object&lt;ILLIXR::switchboard::event&gt;(pose);</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1adf0c2095e1dc3e7c714edfe315341f59" kindref="member">pose</ref>;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1a326e9365e74a3f508dbd3a3a4fff8aef" kindref="member">predict_computed_time</ref>;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1ae300ff7522e8858be0a16f6473fef66f" kindref="member">predict_target_time</ref>;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>boost::serialization</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal">BOOST_CLASS_EXPORT_KEY(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1aef5b9b48867d32c8aa1820d030fdfc9a" kindref="member">ILLIXR::data_format::pose::head_pose_type</ref>)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">BOOST_CLASS_EXPORT_KEY(<ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">ILLIXR::data_format::pose::fast_head_pose_type</ref>)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/head_pose.hpp"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1157 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceboost_1_1serialization" kind="namespace" language="C++">
+    <compoundname>boost::serialization</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1ad190099ace7813108c601872bfa3d086" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::pose::combined_pose &amp;data, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose" kindref="compound">ILLIXR::data_format::pose::combined_pose</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/combined_pose.hpp" line="14" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/combined_pose.hpp" bodystart="14" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a8e02c5b551703b9b67779c8ed0b005c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::save</definition>
+        <argsstring>(Archive &amp;ar, const ILLIXR::data_format::compressed_frame &amp;f, const unsigned int version)</argsstring>
+        <name>save</name>
+        <qualifiedname>boost::serialization::save</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const ILLIXR::data_format::compressed_frame &amp;</type>
+          <declname>f</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" line="199" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" bodystart="199" bodyend="279"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a6d6545471ef9816bd958cdd2e4952830" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::load</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::compressed_frame &amp;f, const unsigned int version)</argsstring>
+        <name>load</name>
+        <qualifiedname>boost::serialization::load</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::compressed_frame &amp;</type>
+          <declname>f</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" line="282" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" bodystart="282" bodyend="373"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a25d2ed04ca161e374bea644691ebaacf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::compressed_frame &amp;f, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::compressed_frame &amp;</type>
+          <declname>f</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" line="377" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" bodystart="377" bodyend="379"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1aafbc6df294a5543163fa2dd650066c1f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::save</definition>
+        <argsstring>(Archive &amp;ar, const ILLIXR::data_format::boba_modal_texture &amp;texture, const unsigned int version)</argsstring>
+        <name>save</name>
+        <qualifiedname>boost::serialization::save</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const ILLIXR::data_format::boba_modal_texture &amp;</type>
+          <declname>texture</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Encode a content-addressed modal texture for the reliable TCP topic. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" line="383" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" bodystart="383" bodyend="391"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a02ea3227bc87ee954381d8a7d8777bb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::load</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::boba_modal_texture &amp;texture, const unsigned int version)</argsstring>
+        <name>load</name>
+        <qualifiedname>boost::serialization::load</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::boba_modal_texture &amp;</type>
+          <declname>texture</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Decode a reliable modal texture and reject oversized or inconsistent payloads. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" line="395" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" bodystart="395" bodyend="409"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1ab4805e16f6e5473051e48ef1b9e72d95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::boba_modal_texture &amp;texture, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::boba_modal_texture &amp;</type>
+          <declname>texture</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" line="412" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/frame.hpp" bodystart="412" bodyend="414"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1aaa06099168db58cf49711a439d3d9116" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::pose::hand_interaction_pose &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose" kindref="compound">ILLIXR::data_format::pose::hand_interaction_pose</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_interaction_pose.hpp" line="10" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_interaction_pose.hpp" bodystart="10" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1aee279cf0c57f154de7354b16d573bef2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::pose::hand_interaction_poses &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses" kindref="compound">ILLIXR::data_format::pose::hand_interaction_poses</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_interaction_pose.hpp" line="23" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_interaction_pose.hpp" bodystart="23" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a29391818420bd9bfadffcd3b6d72b742" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::pose::hand_interaction_poses_pair &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair" kindref="compound">ILLIXR::data_format::pose::hand_interaction_poses_pair</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_interaction_pose.hpp" line="32" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_interaction_pose.hpp" bodystart="32" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1adf8c97c222b376f291097adcc6dc1843" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, HAND_JOINT_TYPE &amp;joint, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="misc_8hpp_1a50b00946d19a39dd3171b6b4fe923c69" kindref="member">HAND_JOINT_TYPE</ref> &amp;</type>
+          <declname>joint</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp" line="11" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp" bodystart="11" bodyend="15"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a25d12b1337df195d1775296c8984d0ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, HAND_JOINT_SET &amp;hand, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="misc_8hpp_1a246d10afc6639c6f3325ec9c697b2c82" kindref="member">HAND_JOINT_SET</ref> &amp;</type>
+          <declname>hand</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp" line="18" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp" bodystart="18" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a781d1791e35ed9fbca7bf81d10c7e2bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::pose::hand_joint_poses_pair &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair" kindref="compound">ILLIXR::data_format::pose::hand_joint_poses_pair</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp" line="32" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp" bodystart="32" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1afe9c743d0976a97430e9582c60c79618" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::pose::fast_head_pose_type &amp;pose, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">ILLIXR::data_format::pose::fast_head_pose_type</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/head_pose.hpp" line="32" column="7" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/head_pose.hpp" bodystart="32" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a653de6a591ed42e0c4cc69b53015d5a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, hmd_config &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>hmd_config &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hmd_config.hpp" line="11" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hmd_config.hpp" bodystart="11" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a381b473bd1c1172933a9f4de6ee1bf74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::hmd_config_data &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::hmd_config_data &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hmd_config.hpp" line="26" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hmd_config.hpp" bodystart="26" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a1c092987e16925cc12a1a1d40f84a24b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::latency_ping &amp;ping, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::latency_ping &amp;</type>
+          <declname>ping</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/latency.hpp" line="11" column="7" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/latency.hpp" bodystart="11" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a1ce922d5115eb160937c434ead07eb35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::latency_pong &amp;pong, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::latency_pong &amp;</type>
+          <declname>pong</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/latency.hpp" line="19" column="7" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/latency.hpp" bodystart="19" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a7569e70d7812ba39e64bbe555c931fb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::time_point &amp;tp, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::time_point &amp;</type>
+          <declname>tp</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" line="33" column="7" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" bodystart="33" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a1bdd2b745c6e223cab5587e9bae7f455" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, QUATERNION_TYPE &amp;quat, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="misc_8hpp_1a8bc3bac5757609822e568dc98245afcb" kindref="member">QUATERNION_TYPE</ref> &amp;</type>
+          <declname>quat</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr.hpp" line="16" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr.hpp" bodystart="16" bodyend="22"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a882d0c82b875783807a68b8c1894e335" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, THREE_VECTOR_TYPE &amp;position, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="misc_8hpp_1a3009dd8f782315d678015f5083093989" kindref="member">THREE_VECTOR_TYPE</ref> &amp;</type>
+          <declname>position</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr.hpp" line="25" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr.hpp" bodystart="25" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1af9c770318bb2473164fa2f03bad1cc9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, xrt_pose &amp;pose, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>xrt_pose &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr.hpp" line="33" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr.hpp" bodystart="33" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a31449b05924111669cc53902201e631d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::openxr_eye_view &amp;view, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::openxr_eye_view &amp;</type>
+          <declname>view</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Serialize an eye pose/FOV component in a platform-independent field order. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr_view_frame.hpp" line="12" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr_view_frame.hpp" bodystart="12" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1acd51f0a77398949a4025a0dd57b4cdff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::openxr_view_frame &amp;frame, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::openxr_view_frame &amp;</type>
+          <declname>frame</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Serialize the event envelope and its sequence-matched stereo view sample. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr_view_frame.hpp" line="44" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/openxr_view_frame.hpp" bodystart="44" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a10b811a04d29670d26792002d9076f96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::pose::palm_pose &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" kindref="compound">ILLIXR::data_format::pose::palm_pose</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/palm_pose.hpp" line="10" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/palm_pose.hpp" bodystart="10" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a68f006db6b01827d7c3c128237a8328f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::pose::palm_poses_pair &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair" kindref="compound">ILLIXR::data_format::pose::palm_poses_pair</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/palm_pose.hpp" line="24" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/palm_pose.hpp" bodystart="24" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a1a71c00959bd27ac9a6f11b83aaede87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::semantic_xr::point_cloud &amp;data, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::semantic_xr::point_cloud &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/point_cloud.hpp" line="20" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/point_cloud.hpp" bodystart="20" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a0873e98a142dacd9fabc77b5c0226c55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, POSE_BASE_TYPE &amp;xrt, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type><ref refid="misc_8hpp_1a1cae93df20d80cb3499cb1b3108fb93f" kindref="member">POSE_BASE_TYPE</ref> &amp;</type>
+          <declname>xrt</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/pose_base.hpp" line="14" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/pose_base.hpp" bodystart="14" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a9ab9c194ac7a5f6e4a04d52f26be1466" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::semantic_xr::query_response &amp;data, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::semantic_xr::query_response &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/query_response.hpp" line="21" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/query_response.hpp" bodystart="21" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a3f83f33cae636b211c9ce0c7c4917148" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::quest_controller_pose &amp;pose, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::quest_controller_pose &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Serialize pose scalars and tracking flags in a platform-independent field order. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" line="12" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" bodystart="12" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1ae4d76cb5d11ec898693c9774671ad254" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::quest_controller_button &amp;button, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::quest_controller_button &amp;</type>
+          <declname>button</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Serialize one boolean or thresholded-analog controller action. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" line="40" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" bodystart="40" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a468c6a9b9513946f8c0138510d89af70" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::quest_controller_axis2d &amp;axis, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::quest_controller_axis2d &amp;</type>
+          <declname>axis</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Serialize one two-dimensional controller action. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" line="50" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" bodystart="50" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a85e566f4f6f290f123f716229cc9071e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::quest_hand_controller &amp;hand, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::quest_hand_controller &amp;</type>
+          <declname>hand</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Serialize every action source associated with one hand. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" line="60" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" bodystart="60" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a5c9e365d8a645892b280e475a0e30d5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::quest_controller_input &amp;input, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::quest_controller_input &amp;</type>
+          <declname>input</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Serialize the complete two-hand switchboard event. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" line="75" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/quest_controller.hpp" bodystart="75" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a1e0b3a341bd5bb5f6c97121e3eebab38" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::camera_intrinsics &amp;data, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::camera_intrinsics &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/semantics.hpp" line="13" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/semantics.hpp" bodystart="13" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1a41f25c7fe7b0ff8833abd9924d282351" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::semantic_frame &amp;data, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::semantic_frame &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/semantics.hpp" line="23" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/semantics.hpp" bodystart="23" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceboost_1_1serialization_1acfdd49c62a35d8311ca5237e1f516349" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void boost::serialization::serialize</definition>
+        <argsstring>(Archive &amp;ar, ILLIXR::data_format::semantic_xr::voice_query &amp;data, const unsigned int)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>boost::serialization::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>ILLIXR::data_format::semantic_xr::voice_query &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/voice_query.hpp" line="20" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/voice_query.hpp" bodystart="20" bodyend="26"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/combined_pose.hpp" line="9" column="1"/>
+  </compounddef>
+</doxygen>

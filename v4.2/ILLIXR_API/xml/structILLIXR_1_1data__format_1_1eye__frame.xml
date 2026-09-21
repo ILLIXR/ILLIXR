@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1eye__frame" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::eye_frame</compoundname>
+    <includes refid="frame_8hpp" local="no">frame.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1eye__frame_1ac54be8eefe6d60200e4c86ca52fbee89" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; ILLIXR::data_format::eye_frame::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::data</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+<para>Raw pixel data (used when format is nv12 or rgba8) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="292" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="292" bodyend="292"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1eye__frame_1aeeb384a5cf58dc08de041071eba2cffd" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::data_format::eye_frame::texture_id</definition>
+        <argsstring></argsstring>
+        <name>texture_id</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::texture_id</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>GL texture ID (used when format is external_oes) This texture is owned by the decoder and valid until the next frame </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="296" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="296" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1eye__frame_1ad524520afdc70b5e2ff6edea130fb0c6" prot="public" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref>, 16 &gt;</type>
+        <definition>std::array&lt;float, 16&gt; ILLIXR::data_format::eye_frame::texture_transform</definition>
+        <argsstring></argsstring>
+        <name>texture_transform</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::texture_transform</qualifiedname>
+        <initializer>{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                                            0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Texture transform matrix from SurfaceTexture (4x4, column-major) Only valid when format is external_oes </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="300" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="300" bodyend="301"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1eye__frame_1a7cfa403414864e9b0a425ddd1b0b7f30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::eye_frame::eye_frame</definition>
+        <argsstring>()=default</argsstring>
+        <name>eye_frame</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::eye_frame</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="310" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1eye__frame_1aa99e7596ac835f1a5229ea70ceb01811" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::eye_frame::eye_frame</definition>
+        <argsstring>(std::vector&lt; uint8_t &gt; raw_data)</argsstring>
+        <name>eye_frame</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::eye_frame</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> &gt;</type>
+          <declname>raw_data</declname>
+        </param>
+        <briefdescription>
+<para>Construct with raw data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="313" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="313" bodyend="315"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1eye__frame_1afb1b88c957c448317d7eaf290670cf79" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::eye_frame::eye_frame</definition>
+        <argsstring>(GLuint tex_id, const float *transform)</argsstring>
+        <name>eye_frame</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::eye_frame</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>tex_id</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>transform</declname>
+        </param>
+        <briefdescription>
+<para>Construct with texture handle and transform. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="318" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="318" bodyend="323"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1eye__frame_1afdca2b94790e47ca713e4ac2937fa61a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::eye_frame::has_data</definition>
+        <argsstring>() const</argsstring>
+        <name>has_data</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::has_data</qualifiedname>
+        <briefdescription>
+<para>Check if this frame has valid data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="332" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="332" bodyend="338"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1eye__frame_1a731fe76b5a0fd58d5f087339087ecc50" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+        <definition>const uint8_t * ILLIXR::data_format::eye_frame::get_y_plane</definition>
+        <argsstring>() const</argsstring>
+        <name>get_y_plane</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::get_y_plane</qualifiedname>
+        <briefdescription>
+<para>Get Y plane pointer for NV12 format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="341" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="341" bodyend="343"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1eye__frame_1a41d6782c1728ae915b3ee8a02a5153c0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+        <definition>const uint8_t * ILLIXR::data_format::eye_frame::get_uv_plane</definition>
+        <argsstring>(int width, int height) const</argsstring>
+        <name>get_uv_plane</name>
+        <qualifiedname>ILLIXR::data_format::eye_frame::get_uv_plane</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+<para>Get UV plane pointer for NV12 format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="346" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="346" bodyend="348"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Single eye frame data. On Android, the Vulkan path uses hw_buffer exclusively; the GL paths use texture_id / data. Only one set of fields is populated at a time. </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="290" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="290" bodyend="349"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1ac54be8eefe6d60200e4c86ca52fbee89" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1a7cfa403414864e9b0a425ddd1b0b7f30" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>eye_frame</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1aa99e7596ac835f1a5229ea70ceb01811" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>eye_frame</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1afb1b88c957c448317d7eaf290670cf79" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>eye_frame</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1a41d6782c1728ae915b3ee8a02a5153c0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>get_uv_plane</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1a731fe76b5a0fd58d5f087339087ecc50" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>get_y_plane</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1afdca2b94790e47ca713e4ac2937fa61a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>has_data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1aeeb384a5cf58dc08de041071eba2cffd" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>texture_id</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1eye__frame_1ad524520afdc70b5e2ff6edea130fb0c6" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::eye_frame</scope><name>texture_transform</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

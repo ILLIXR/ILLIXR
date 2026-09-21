@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1HMD_1_1mesh__coord3d__t" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::HMD::mesh_coord3d_t</compoundname>
+    <includes refid="hmd_8hpp" local="no">hmd.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a905ade884e02f34526bfcda5ea71eae7" prot="public" static="no" mutable="no">
+        <type><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref></type>
+        <definition>FLOAT ILLIXR::HMD::mesh_coord3d_t::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <qualifiedname>ILLIXR::HMD::mesh_coord3d_t::x</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="35" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a826bff768f531e36cbf374f656e1736e" prot="public" static="no" mutable="no">
+        <type><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref></type>
+        <definition>FLOAT ILLIXR::HMD::mesh_coord3d_t::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>ILLIXR::HMD::mesh_coord3d_t::y</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="36" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a00f863936499d8e380800c8d123a5f79" prot="public" static="no" mutable="no">
+        <type><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref></type>
+        <definition>FLOAT ILLIXR::HMD::mesh_coord3d_t::z</definition>
+        <argsstring></argsstring>
+        <name>z</name>
+        <qualifiedname>ILLIXR::HMD::mesh_coord3d_t::z</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="37" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="34" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" bodystart="34" bodyend="38"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a905ade884e02f34526bfcda5ea71eae7" prot="public" virt="non-virtual"><scope>ILLIXR::HMD::mesh_coord3d_t</scope><name>x</name></member>
+      <member refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a826bff768f531e36cbf374f656e1736e" prot="public" virt="non-virtual"><scope>ILLIXR::HMD::mesh_coord3d_t</scope><name>y</name></member>
+      <member refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a00f863936499d8e380800c8d123a5f79" prot="public" virt="non-virtual"><scope>ILLIXR::HMD::mesh_coord3d_t</scope><name>z</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

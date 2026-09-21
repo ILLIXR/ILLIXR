@@ -1,0 +1,1793 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1stereo__renderer" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::stereo_renderer</compoundname>
+    <includes refid="stereo__renderer_8hpp" local="no">stereo_renderer.hpp</includes>
+    <innerclass refid="structILLIXR_1_1stereo__renderer_1_1imported__image" prot="private">ILLIXR::stereo_renderer::imported_image</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a378671c9e8aef771e67e44e5ddd8904a" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkInstance</ref></type>
+        <definition>VkInstance ILLIXR::stereo_renderer::instance_</definition>
+        <argsstring></argsstring>
+        <name>instance_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::instance_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="274" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="274" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a5f79c722b1b35558a070a6085abdf431" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref></type>
+        <definition>VkPhysicalDevice ILLIXR::stereo_renderer::physical_device_</definition>
+        <argsstring></argsstring>
+        <name>physical_device_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::physical_device_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="275" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="275" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a40c661dc269754f308add08c63f21d33" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref></type>
+        <definition>VkDevice ILLIXR::stereo_renderer::device_</definition>
+        <argsstring></argsstring>
+        <name>device_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::device_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="276" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="276" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a8a968bc28a8670bc3cdcda337248348f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkQueue</ref></type>
+        <definition>VkQueue ILLIXR::stereo_renderer::queue_</definition>
+        <argsstring></argsstring>
+        <name>queue_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::queue_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="277" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="277" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a2f70f20813d2b493310c4f643ee9a769" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+        <definition>uint32_t ILLIXR::stereo_renderer::queue_family_</definition>
+        <argsstring></argsstring>
+        <name>queue_family_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::queue_family_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="278" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="278" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a457ff8005929f8589952843e2ba449cc" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref></type>
+        <definition>VkFormat ILLIXR::stereo_renderer::swapchain_format_</definition>
+        <argsstring></argsstring>
+        <name>swapchain_format_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::swapchain_format_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_FORMAT_R8G8B8A8_UNORM</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="279" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="279" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a408594063ff8a8c037ec4e441b25fc2a" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref></type>
+        <definition>VkRenderPass ILLIXR::stereo_renderer::render_pass_</definition>
+        <argsstring></argsstring>
+        <name>render_pass_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::render_pass_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="282" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="282" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a8eef835679a2eb2cbbf81056f431975b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref></type>
+        <definition>VkPipelineLayout ILLIXR::stereo_renderer::pipeline_layout_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_layout_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::pipeline_layout_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="283" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="283" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a0ce2138983a65a24abc61e6e3b427e3d" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref></type>
+        <definition>VkPipeline ILLIXR::stereo_renderer::pipeline_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::pipeline_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="284" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="284" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a8066997eea5a7a28b5201e3970fd5048" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorPool</ref></type>
+        <definition>VkDescriptorPool ILLIXR::stereo_renderer::descriptor_pool_</definition>
+        <argsstring></argsstring>
+        <name>descriptor_pool_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::descriptor_pool_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="285" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="285" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1adadd77309bfc7d60b9fb8db236818f1a" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref></type>
+        <definition>VkDescriptorSetLayout ILLIXR::stereo_renderer::desc_set_layout_</definition>
+        <argsstring></argsstring>
+        <name>desc_set_layout_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::desc_set_layout_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="286" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="286" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a96260800b17a8a43fe90f8797b077866" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandPool</ref></type>
+        <definition>VkCommandPool ILLIXR::stereo_renderer::command_pool_</definition>
+        <argsstring></argsstring>
+        <name>command_pool_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::command_pool_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="287" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="287" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1af785985141bc47029dd0c25eadfb3ae7" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSet</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkDescriptorSet, 2&gt; ILLIXR::stereo_renderer::descriptor_sets_</definition>
+        <argsstring></argsstring>
+        <name>descriptor_sets_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::descriptor_sets_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="290" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="290" bodyend="290"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a5a6ec2d3a6f28d3a3977ac4656668872" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandBuffer</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkCommandBuffer, 2&gt; ILLIXR::stereo_renderer::command_buffers_</definition>
+        <argsstring></argsstring>
+        <name>command_buffers_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::command_buffers_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="291" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="291" bodyend="291"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1af3b4364ecc8963c12195423f97c73c7f" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFence</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkFence, 2&gt; ILLIXR::stereo_renderer::render_fences_</definition>
+        <argsstring></argsstring>
+        <name>render_fences_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::render_fences_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="292" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="292" bodyend="292"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a69ea446454e18e2dda2609f295d5344d" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFramebuffer</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkFramebuffer, 2&gt; ILLIXR::stereo_renderer::prev_framebuffers_</definition>
+        <argsstring></argsstring>
+        <name>prev_framebuffers_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::prev_framebuffers_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="296" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="296" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a5273735f96c41ce1a32624f419d3959d" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImageView</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkImageView, 2&gt; ILLIXR::stereo_renderer::prev_swapchain_views_</definition>
+        <argsstring></argsstring>
+        <name>prev_swapchain_views_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::prev_swapchain_views_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="297" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="297" bodyend="297"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a0427cd98fd5697a7d7f39ea45224d8bd" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref></type>
+        <definition>VkRenderPass ILLIXR::stereo_renderer::depth_render_pass_</definition>
+        <argsstring></argsstring>
+        <name>depth_render_pass_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_render_pass_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="331" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="331" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1ab218ea51de6968c2b54ebcb3471f8c54" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref></type>
+        <definition>VkPipelineLayout ILLIXR::stereo_renderer::depth_pipeline_layout_</definition>
+        <argsstring></argsstring>
+        <name>depth_pipeline_layout_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_pipeline_layout_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="332" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="332" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1adc3ef85eb55a11d5d7ba630ba0938b9f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref></type>
+        <definition>VkPipeline ILLIXR::stereo_renderer::depth_pipeline_</definition>
+        <argsstring></argsstring>
+        <name>depth_pipeline_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_pipeline_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="333" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="333" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a152000ccfd9c3a3789e719a2b73afdb5" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorPool</ref></type>
+        <definition>VkDescriptorPool ILLIXR::stereo_renderer::depth_descriptor_pool_</definition>
+        <argsstring></argsstring>
+        <name>depth_descriptor_pool_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_descriptor_pool_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="334" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="334" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a0455a4c968b0e122b74408c6b84ee2b4" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref></type>
+        <definition>VkDescriptorSetLayout ILLIXR::stereo_renderer::depth_desc_set_layout_</definition>
+        <argsstring></argsstring>
+        <name>depth_desc_set_layout_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_desc_set_layout_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="335" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="335" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1aa4e8cdef30cb5f16d264fa4e595bbe41" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSet</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkDescriptorSet, 2&gt; ILLIXR::stereo_renderer::depth_descriptor_sets_</definition>
+        <argsstring></argsstring>
+        <name>depth_descriptor_sets_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_descriptor_sets_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="338" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="338" bodyend="338"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1af697735063b799ec7ba0b1b999cf84e2" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandBuffer</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkCommandBuffer, 2&gt; ILLIXR::stereo_renderer::depth_command_buffers_</definition>
+        <argsstring></argsstring>
+        <name>depth_command_buffers_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_command_buffers_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="339" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="339" bodyend="339"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a7fd40398ec99b2c5e7bfe0bc0e333477" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFence</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkFence, 2&gt; ILLIXR::stereo_renderer::depth_fences_</definition>
+        <argsstring></argsstring>
+        <name>depth_fences_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_fences_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="340" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="340" bodyend="340"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a8bbf2bbfc4c65ab315a30adb31dccac5" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFramebuffer</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkFramebuffer, 2&gt; ILLIXR::stereo_renderer::prev_depth_framebuffers_</definition>
+        <argsstring></argsstring>
+        <name>prev_depth_framebuffers_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::prev_depth_framebuffers_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="341" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="341" bodyend="341"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a414caf6d20dca6c2e6b2bafae834fa58" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImageView</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkImageView, 2&gt; ILLIXR::stereo_renderer::prev_depth_views_</definition>
+        <argsstring></argsstring>
+        <name>prev_depth_views_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::prev_depth_views_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="342" column="20" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="342" bodyend="342"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a10da56338199d36aa5453f22c659f6a5" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSampler</ref></type>
+        <definition>VkSampler ILLIXR::stereo_renderer::depth_immutable_sampler_</definition>
+        <argsstring></argsstring>
+        <name>depth_immutable_sampler_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_immutable_sampler_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="346" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="346" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a8c9290ab2a223f3ca130a3b889425ed4" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref></type>
+        <definition>VkRenderPass ILLIXR::stereo_renderer::mv_render_pass_</definition>
+        <argsstring></argsstring>
+        <name>mv_render_pass_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_render_pass_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+<para>Render pass targeting VK_FORMAT_R16G16B16A16_SFLOAT. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="350" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="350" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a41c1c698006045e491c359fbf3997464" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref></type>
+        <definition>VkPipelineLayout ILLIXR::stereo_renderer::mv_pipeline_layout_</definition>
+        <argsstring></argsstring>
+        <name>mv_pipeline_layout_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_pipeline_layout_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="351" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="351" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1abfdf9094457b04a044df6cb0f6a68397" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref></type>
+        <definition>VkPipeline ILLIXR::stereo_renderer::mv_pipeline_</definition>
+        <argsstring></argsstring>
+        <name>mv_pipeline_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_pipeline_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="352" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="352" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a7b1f2a14cbe5f53e6b25671c16cb83a2" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorPool</ref></type>
+        <definition>VkDescriptorPool ILLIXR::stereo_renderer::mv_descriptor_pool_</definition>
+        <argsstring></argsstring>
+        <name>mv_descriptor_pool_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_descriptor_pool_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Descriptor pool and layout are shared between color and motion-vector pipelines since both use a single combined YCbCr sampler at binding 0. Separate pools are maintained so the descriptor counts are independent. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="356" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="356" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a8d8fceebb7b5a4ec0d9fcc52acf2375e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref></type>
+        <definition>VkDescriptorSetLayout ILLIXR::stereo_renderer::mv_desc_set_layout_</definition>
+        <argsstring></argsstring>
+        <name>mv_desc_set_layout_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_desc_set_layout_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="357" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="357" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1ac519be47dd578e896ee12110b37c8bb1" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSampler</ref></type>
+        <definition>VkSampler ILLIXR::stereo_renderer::mv_immutable_sampler_</definition>
+        <argsstring></argsstring>
+        <name>mv_immutable_sampler_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_immutable_sampler_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="358" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="358" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1ad8e8c739db78fdee3f1a1c4f28bdd2b3" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSet</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkDescriptorSet, 2&gt; ILLIXR::stereo_renderer::mv_descriptor_sets_</definition>
+        <argsstring></argsstring>
+        <name>mv_descriptor_sets_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_descriptor_sets_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="360" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="360" bodyend="360"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1ac0a059c289ac753eec3f92f38abac9c4" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandBuffer</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkCommandBuffer, 2&gt; ILLIXR::stereo_renderer::mv_command_buffers_</definition>
+        <argsstring></argsstring>
+        <name>mv_command_buffers_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_command_buffers_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="361" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="361" bodyend="361"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1acd7e9b5c5a371498a386d1e375c1f0ca" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFence</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkFence, 2&gt; ILLIXR::stereo_renderer::mv_fences_</definition>
+        <argsstring></argsstring>
+        <name>mv_fences_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_fences_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="362" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="362" bodyend="362"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a2fa28158dc4b44e8498ed63371e2212b" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFramebuffer</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkFramebuffer, 2&gt; ILLIXR::stereo_renderer::prev_mv_framebuffers_</definition>
+        <argsstring></argsstring>
+        <name>prev_mv_framebuffers_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::prev_mv_framebuffers_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="363" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="363" bodyend="363"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a759986a38a3e4799320160aaa13dd6fb" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImageView</ref>, 2 &gt;</type>
+        <definition>std::array&lt;VkImageView, 2&gt; ILLIXR::stereo_renderer::prev_mv_swapchain_views_</definition>
+        <argsstring></argsstring>
+        <name>prev_mv_swapchain_views_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::prev_mv_swapchain_views_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="364" column="20" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="364" bodyend="364"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a6549e72463c586e5311ee07e37393150" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">AHardwareBuffer</ref> *, std::unique_ptr&lt; <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &gt; &gt;</type>
+        <definition>std::unordered_map&lt;AHardwareBuffer*, std::unique_ptr&lt;imported_image&gt; &gt; ILLIXR::stereo_renderer::image_cache_</definition>
+        <argsstring></argsstring>
+        <name>image_cache_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::image_cache_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="367" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="367" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a9abda4a5756150796b2f8ec60d561730" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">AHardwareBuffer</ref> *, std::unique_ptr&lt; <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &gt; &gt;</type>
+        <definition>std::unordered_map&lt;AHardwareBuffer*, std::unique_ptr&lt;imported_image&gt; &gt; ILLIXR::stereo_renderer::depth_image_cache_</definition>
+        <argsstring></argsstring>
+        <name>depth_image_cache_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_image_cache_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="370" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="370" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1af14a901e936e70f10d194f4f7062da11" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">AHardwareBuffer</ref> *, std::unique_ptr&lt; <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &gt; &gt;</type>
+        <definition>std::unordered_map&lt;AHardwareBuffer*, std::unique_ptr&lt;imported_image&gt; &gt; ILLIXR::stereo_renderer::mv_image_cache_</definition>
+        <argsstring></argsstring>
+        <name>mv_image_cache_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_image_cache_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Separate cache for motion-vector buffers since they may share AHardwareBuffer pointers with depth buffers in degenerate cases. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="374" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="374" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a8087068112ac3a6b0c79908fc925532f" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> *, 2 &gt;</type>
+        <definition>std::array&lt;imported_image*, 2&gt; ILLIXR::stereo_renderer::current_images_</definition>
+        <argsstring></argsstring>
+        <name>current_images_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::current_images_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="377" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="377" bodyend="377"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a58df7b3b461ab8c0463d0708ea320c84" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> *, 2 &gt;</type>
+        <definition>std::array&lt;imported_image*, 2&gt; ILLIXR::stereo_renderer::current_depth_images_</definition>
+        <argsstring></argsstring>
+        <name>current_depth_images_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::current_depth_images_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="380" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="380" bodyend="380"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a723d67f13bc4ad9c24c0e22b694b3cce" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> *, 2 &gt;</type>
+        <definition>std::array&lt;imported_image*, 2&gt; ILLIXR::stereo_renderer::current_mv_images_</definition>
+        <argsstring></argsstring>
+        <name>current_mv_images_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::current_mv_images_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="382" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="382" bodyend="382"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a5cb9bdf00afd9cac6d582918a41d8313" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::stereo_renderer::crop_scale_x_</definition>
+        <argsstring></argsstring>
+        <name>crop_scale_x_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::crop_scale_x_</qualifiedname>
+        <initializer>{1.0f}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="385" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="385" bodyend="385"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1aecbb6f46f6a55a164373e3fa29e29ee3" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::stereo_renderer::crop_scale_y_</definition>
+        <argsstring></argsstring>
+        <name>crop_scale_y_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::crop_scale_y_</qualifiedname>
+        <initializer>{1.0f}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="386" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="386" bodyend="386"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1aa5f6c42d02130483d1995ab83f56e03c" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_vkGetAndroidHardwareBufferPropertiesANDROID</ref></type>
+        <definition>PFN_vkGetAndroidHardwareBufferPropertiesANDROID ILLIXR::stereo_renderer::vk_get_ahb_properties_</definition>
+        <argsstring></argsstring>
+        <name>vk_get_ahb_properties_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::vk_get_ahb_properties_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="389" column="53" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="389" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1aec43dec944758186e3e29cac0a54955e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::initialized_</definition>
+        <argsstring></argsstring>
+        <name>initialized_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::initialized_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="391" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="391" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a8ef5f8faabc16581667615f6e17250af" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::has_valid_frame_</definition>
+        <argsstring></argsstring>
+        <name>has_valid_frame_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::has_valid_frame_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="392" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="392" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a87465fcfcd91658e51840cedae1b9152" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::pipeline_created_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_created_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::pipeline_created_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="393" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="393" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1ab2c030e182bc1c7c0edb49ad36f4c1cb" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::depth_pipeline_created_</definition>
+        <argsstring></argsstring>
+        <name>depth_pipeline_created_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::depth_pipeline_created_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="394" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="394" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1abf6de6a7919a40a5398571f15b0987f8" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::mv_pipeline_created_</definition>
+        <argsstring></argsstring>
+        <name>mv_pipeline_created_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::mv_pipeline_created_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="395" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="395" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1a48d31bb41095a9b4acaf11396b6122af" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::has_depth_frame_</definition>
+        <argsstring></argsstring>
+        <name>has_depth_frame_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::has_depth_frame_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="396" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="396" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1stereo__renderer_1acde21bf12293d2a2c153b374ee852c4f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::has_mv_frame_</definition>
+        <argsstring></argsstring>
+        <name>has_mv_frame_</name>
+        <qualifiedname>ILLIXR::stereo_renderer::has_mv_frame_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="397" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="397" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a813dc6af859bced80e5f0daec5b67241" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::stereo_renderer::stereo_renderer</definition>
+        <argsstring>()=default</argsstring>
+        <name>stereo_renderer</name>
+        <qualifiedname>ILLIXR::stereo_renderer::stereo_renderer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="44" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a11f408f3bf8f062ceb02f87d9697969c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>stereo_renderer::~stereo_renderer</definition>
+        <argsstring>()</argsstring>
+        <name>~stereo_renderer</name>
+        <qualifiedname>ILLIXR::stereo_renderer::~stereo_renderer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="45" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="38" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1abc6af2a26c89edc07c52c1d6e2bd49a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::stereo_renderer::stereo_renderer</definition>
+        <argsstring>(const stereo_renderer &amp;)=delete</argsstring>
+        <name>stereo_renderer</name>
+        <qualifiedname>ILLIXR::stereo_renderer::stereo_renderer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1stereo__renderer" kindref="compound">stereo_renderer</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="48" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a4e779a68b53070d9b308a587111c5e26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1stereo__renderer" kindref="compound">stereo_renderer</ref> &amp;</type>
+        <definition>stereo_renderer &amp; ILLIXR::stereo_renderer::operator=</definition>
+        <argsstring>(const stereo_renderer &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>ILLIXR::stereo_renderer::operator=</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1stereo__renderer" kindref="compound">stereo_renderer</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="49" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1aec749e1a527771f4abedc87346a29484" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::initialize</definition>
+        <argsstring>(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, VkQueue queue, uint32_t queue_family, VkFormat swapchain_format)</argsstring>
+        <name>initialize</name>
+        <qualifiedname>ILLIXR::stereo_renderer::initialize</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkInstance</ref></type>
+          <declname>instance</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref></type>
+          <declname>physical_device</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref></type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkQueue</ref></type>
+          <declname>queue</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>queue_family</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref></type>
+          <declname>swapchain_format</declname>
+        </param>
+        <briefdescription>
+<para>Initialize Vulkan rendering resources. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Must be called once after the OpenXR Vulkan session has been created.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>instance</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Vulkan instance (created via xrCreateVulkanInstanceKHR). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>physical_device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Physical device selected by OpenXR. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Logical device (created via xrCreateVulkanDeviceKHR). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>queue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Graphics queue used for rendering submissions. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>queue_family</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Queue family index for the graphics queue. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>swapchain_format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>VkFormat of the OpenXR swapchain images. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true on success. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="64" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="53" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a3819bbc7c61d406deb08c76a97347566" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void stereo_renderer::receive_frame</definition>
+        <argsstring>(const data_format::dual_frames &amp;frame)</argsstring>
+        <name>receive_frame</name>
+        <qualifiedname>ILLIXR::stereo_renderer::receive_frame</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1dual__frames" kindref="compound">data_format::dual_frames</ref> &amp;</type>
+          <declname>frame</declname>
+        </param>
+        <briefdescription>
+<para>Import AHardwareBuffer handles from a decoded frame into Vulkan. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Call this once per frame before any render_eye* calls. For hardware_buffer format: caches imported images keyed by buffer pointer. For nv12 format: uploads pixel data to internal textures. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="74" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1291" bodyend="1471"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a863734f7124f7390893632a630b18cf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::render_eye</definition>
+        <argsstring>(int eye, VkImage swapchain_image, uint32_t swapchain_width, uint32_t swapchain_height, VkSemaphore signal_semaphore=VK_NULL_HANDLE)</argsstring>
+        <name>render_eye</name>
+        <qualifiedname>ILLIXR::stereo_renderer::render_eye</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref></type>
+          <declname>swapchain_image</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>swapchain_width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>swapchain_height</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSemaphore</ref></type>
+          <declname>signal_semaphore</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref></defval>
+        </param>
+        <briefdescription>
+<para>Record and submit a command buffer that renders one eye&apos;s color. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>eye</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>0 = left, 1 = right. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>swapchain_image</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The VkImage from xrAcquireSwapchainImage. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>swapchain_width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Swapchain image width. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>swapchain_height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Swapchain image height. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>signal_semaphore</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>VkSemaphore to signal when GPU work is complete (pass VK_NULL_HANDLE if not needed). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true on success. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="87" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1477" bodyend="1642"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a2c30c4b2f770b549ecf54804362633ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::render_eye_depth</definition>
+        <argsstring>(int eye, VkImage depth_swapchain_image, VkFormat depth_format, uint32_t swapchain_width, uint32_t swapchain_height)</argsstring>
+        <name>render_eye_depth</name>
+        <qualifiedname>ILLIXR::stereo_renderer::render_eye_depth</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref></type>
+          <declname>depth_swapchain_image</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref></type>
+          <declname>depth_format</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>swapchain_width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>swapchain_height</declname>
+        </param>
+        <briefdescription>
+<para>Record and submit a command buffer that renders one eye&apos;s depth. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Samples the decoded depth AHardwareBuffer (RG-packed 16-bit depth) and writes the reconstructed normalised depth values into the OpenXR depth swapchain image. Must only be called when <ref refid="classILLIXR_1_1stereo__renderer_1a5c14320878dd0d13c3c24ea5e9f2b5f0" kindref="member">has_frame()</ref> is true and the frame has has_valid_depth() == true.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>eye</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>0 = left, 1 = right. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>depth_swapchain_image</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The VkImage from the depth XrSwapchain. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>depth_format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>VkFormat of the depth swapchain (e.g. VK_FORMAT_D32_SFLOAT). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>swapchain_width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Image width. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>swapchain_height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Image height. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true on success. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="105" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1648" bodyend="1780"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a85dae4573d4f470c1bca933f115ae8c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::render_eye_motion_vec</definition>
+        <argsstring>(int eye, VkImage mv_swapchain_image, uint32_t swapchain_width, uint32_t swapchain_height)</argsstring>
+        <name>render_eye_motion_vec</name>
+        <qualifiedname>ILLIXR::stereo_renderer::render_eye_motion_vec</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref></type>
+          <declname>mv_swapchain_image</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>swapchain_width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>swapchain_height</declname>
+        </param>
+        <briefdescription>
+<para>Record and submit a command buffer that renders one eye&apos;s motion-vector data into an App Spacewarp swapchain image. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Samples the decoded motion-vector AHardwareBuffer (HEVC 10-bit, two-component screen-space motion packed into Y/Cb planes) and converts it to VK_FORMAT_R16G16B16A16_SFLOAT for submission via XrCompositionLayerSpaceWarpInfoFB::motionVectorSubImage.</para>
+<para>Must only be called when <ref refid="classILLIXR_1_1stereo__renderer_1a5c14320878dd0d13c3c24ea5e9f2b5f0" kindref="member">has_frame()</ref> is true and the frame has <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">has_valid_motion_vectors()</ref> == true.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>eye</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>0 = left, 1 = right. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mv_swapchain_image</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The VkImage from the motion-vector XrSwapchain. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>swapchain_width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Image width (typically 432). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>swapchain_height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Image height (typically 432). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true on success. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="125" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2499" bodyend="2618"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a0be62a8c9dec988a77659689cbd6006b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void stereo_renderer::wait_idle</definition>
+        <argsstring>()</argsstring>
+        <name>wait_idle</name>
+        <qualifiedname>ILLIXR::stereo_renderer::wait_idle</qualifiedname>
+        <briefdescription>
+<para>Wait for all in-flight rendering to complete. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Call before releasing AHardwareBuffers from the previous frame. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="131" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2254" bodyend="2258"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1ac05033e2336dc716e4ab010883f5eb93" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::is_initialized</definition>
+        <argsstring>() const</argsstring>
+        <name>is_initialized</name>
+        <qualifiedname>ILLIXR::stereo_renderer::is_initialized</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="134" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="134" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a5c14320878dd0d13c3c24ea5e9f2b5f0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::stereo_renderer::has_frame</definition>
+        <argsstring>() const</argsstring>
+        <name>has_frame</name>
+        <qualifiedname>ILLIXR::stereo_renderer::has_frame</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="139" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="139" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a6938394e3d6dc228b215708df8574706" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void stereo_renderer::cleanup</definition>
+        <argsstring>()</argsstring>
+        <name>cleanup</name>
+        <qualifiedname>ILLIXR::stereo_renderer::cleanup</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="143" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2031" bodyend="2252"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1ad9d7a43ab370485a736326f9a649a155" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void stereo_renderer::set_crop_region</definition>
+        <argsstring>(int original_width, int original_height, int padded_width, int padded_height)</argsstring>
+        <name>set_crop_region</name>
+        <qualifiedname>ILLIXR::stereo_renderer::set_crop_region</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>original_width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>original_height</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>padded_width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>padded_height</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="147" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="42" bodyend="48"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a13bb956a36f87785384178e5702a3c67" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkShaderModule</ref></type>
+        <definition>VkShaderModule stereo_renderer::create_shader_module</definition>
+        <argsstring>(VkDevice device, const uint32_t *spv, size_t word_count)</argsstring>
+        <name>create_shader_module</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_shader_module</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref></type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref> *</type>
+          <declname>spv</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+          <declname>word_count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="183" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="936" bodyend="943"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1ab6b936b9364233793d0554168090e469" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::update_descriptor_set</definition>
+        <argsstring>(int eye, const imported_image &amp;img)</argsstring>
+        <name>update_descriptor_set</name>
+        <qualifiedname>ILLIXR::stereo_renderer::update_descriptor_set</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &amp;</type>
+          <declname>img</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="186" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2011" bodyend="2029"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a2318e07cbe64d9551f3a7e8fb662e330" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::update_depth_descriptor_set</definition>
+        <argsstring>(int eye, const imported_image &amp;img)</argsstring>
+        <name>update_depth_descriptor_set</name>
+        <qualifiedname>ILLIXR::stereo_renderer::update_depth_descriptor_set</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &amp;</type>
+          <declname>img</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="187" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1782" bodyend="1800"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a888ee64584fca0740425e7b0ea3f0177" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::update_mv_descriptor_set</definition>
+        <argsstring>(int eye, const imported_image &amp;img)</argsstring>
+        <name>update_mv_descriptor_set</name>
+        <qualifiedname>ILLIXR::stereo_renderer::update_mv_descriptor_set</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &amp;</type>
+          <declname>img</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="188" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2476" bodyend="2494"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a970b04d70221a9ab83cbdc3736ae2900" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> *</type>
+        <definition>stereo_renderer::imported_image * stereo_renderer::import_hardware_buffer</definition>
+        <argsstring>(AHardwareBuffer *hw_buffer)</argsstring>
+        <name>import_hardware_buffer</name>
+        <qualifiedname>ILLIXR::stereo_renderer::import_hardware_buffer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">AHardwareBuffer</ref> *</type>
+          <declname>hw_buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="191" column="20" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="986" bodyend="1151"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a1280f5821fa5d69204313053c0298b5a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void stereo_renderer::destroy_imported_image</definition>
+        <argsstring>(imported_image &amp;img)</argsstring>
+        <name>destroy_imported_image</name>
+        <qualifiedname>ILLIXR::stereo_renderer::destroy_imported_image</qualifiedname>
+        <param>
+          <type><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &amp;</type>
+          <declname>img</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="192" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="101" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a5276fc290b8a6d1c430e531ddcaeef90" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> *</type>
+        <definition>stereo_renderer::imported_image * stereo_renderer::import_mv_hardware_buffer</definition>
+        <argsstring>(AHardwareBuffer *hw_buffer)</argsstring>
+        <name>import_mv_hardware_buffer</name>
+        <qualifiedname>ILLIXR::stereo_renderer::import_mv_hardware_buffer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">AHardwareBuffer</ref> *</type>
+          <declname>hw_buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="194" column="20" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1153" bodyend="1286"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a96e47f9ffb84338e80febdf55cb69c58" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_render_pass</definition>
+        <argsstring>()</argsstring>
+        <name>create_render_pass</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_render_pass</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="197" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="128" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a796abaa77578417b63bf0bb2d889031a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_pipeline</definition>
+        <argsstring>(const imported_image &amp;prototype)</argsstring>
+        <name>create_pipeline</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_pipeline</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &amp;</type>
+          <declname>prototype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="198" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="174" bodyend="306"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1af8723c1ec0c86f40d7dd1bade1ede16e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_command_pool</definition>
+        <argsstring>()</argsstring>
+        <name>create_command_pool</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_command_pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="199" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="949" bodyend="955"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1abdd7fa9350360238881801036f6f217f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::allocate_command_buffers</definition>
+        <argsstring>()</argsstring>
+        <name>allocate_command_buffers</name>
+        <qualifiedname>ILLIXR::stereo_renderer::allocate_command_buffers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="200" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="957" bodyend="964"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1adffacdc01d5cfc86668f43940c3c8ece" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_descriptor_pool</definition>
+        <argsstring>()</argsstring>
+        <name>create_descriptor_pool</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_descriptor_pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="201" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="966" bodyend="980"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1aaeaa5233d979d69bd2d32a79e892c6a1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_depth_render_pass</definition>
+        <argsstring>(VkFormat depth_format)</argsstring>
+        <name>create_depth_render_pass</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_depth_render_pass</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref></type>
+          <declname>depth_format</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="254" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1806" bodyend="1844"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a7b2b566706d5e338ad43909c490107ae" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_depth_pipeline</definition>
+        <argsstring>(const imported_image &amp;prototype, VkFormat depth_format)</argsstring>
+        <name>create_depth_pipeline</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_depth_pipeline</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &amp;</type>
+          <declname>prototype</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref></type>
+          <declname>depth_format</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="255" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1869" bodyend="2009"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1a22d00eb55f2cde4c2aa9987c016324c9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_depth_descriptor_pool</definition>
+        <argsstring>()</argsstring>
+        <name>create_depth_descriptor_pool</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_depth_descriptor_pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="256" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1846" bodyend="1858"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1af579cf2c219c597a1a01f3978d591e03" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::allocate_depth_command_buffers</definition>
+        <argsstring>()</argsstring>
+        <name>allocate_depth_command_buffers</name>
+        <qualifiedname>ILLIXR::stereo_renderer::allocate_depth_command_buffers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="257" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="1860" bodyend="1867"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1ad31f9f2b1591eb8a4b38dd9cb7473519" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_mv_render_pass</definition>
+        <argsstring>()</argsstring>
+        <name>create_mv_render_pass</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_mv_render_pass</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Create the VK_FORMAT_R16G16B16A16_SFLOAT color render pass used when writing App Spacewarp motion vectors. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="262" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2263" bodyend="2303"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1ac0a8229c8fb4159a5c658aca498d3453" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_mv_pipeline</definition>
+        <argsstring>(const imported_image &amp;prototype)</argsstring>
+        <name>create_mv_pipeline</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_mv_pipeline</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref> &amp;</type>
+          <declname>prototype</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Create the graphics pipeline that samples a YCbCr AHardwareBuffer and converts the packed motion-vector data to R16G16B16A16_SFLOAT. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>prototype</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An already-imported AHardwareBuffer image whose YCbCr conversion info is used to build the immutable sampler. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="268" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2308" bodyend="2441"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1aab0054ec8d9322a9c355fca945e1c8c9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::create_mv_descriptor_pool</definition>
+        <argsstring>()</argsstring>
+        <name>create_mv_descriptor_pool</name>
+        <qualifiedname>ILLIXR::stereo_renderer::create_mv_descriptor_pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="270" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2444" bodyend="2463"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1stereo__renderer_1ac6278b5917e35e9f5c84ffc3fc91cbd3" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool stereo_renderer::allocate_mv_command_buffers</definition>
+        <argsstring>()</argsstring>
+        <name>allocate_mv_command_buffers</name>
+        <qualifiedname>ILLIXR::stereo_renderer::allocate_mv_command_buffers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="271" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp" bodystart="2466" bodyend="2473"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Stereo video renderer for Quest 3 — Vulkan backend. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Replaces the previous OpenGL ES / SurfaceTexture path entirely. No EGL context is needed; this class operates purely on Vulkan objects.</para>
+<para>Typical per-frame usage (called from the render thread in oxr_interface):</para>
+<para>renderer_-&gt;receive_frame(frame); // import AHardwareBuffers for (int eye = 0; eye &lt; 2; eye++) { renderer_-&gt;render_eye(eye, // record + submit command buffer swapchain_image, swapchain_width, swapchain_height, signal_semaphore);</para>
+<para>if (frame.has_valid_depth()) { renderer_-&gt;render_eye_depth(eye, ...); // depth swapchain image }</para>
+<para>if (frame.has_valid_motion_vectors()) { renderer_-&gt;render_eye_motion_vec(eye, …); // spacewarp MV swapchain } } </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" line="42" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp" bodystart="42" bodyend="402"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1stereo__renderer_1abdd7fa9350360238881801036f6f217f" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>allocate_command_buffers</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1af579cf2c219c597a1a01f3978d591e03" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>allocate_depth_command_buffers</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ac6278b5917e35e9f5c84ffc3fc91cbd3" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>allocate_mv_command_buffers</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a6938394e3d6dc228b215708df8574706" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>cleanup</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a5a6ec2d3a6f28d3a3977ac4656668872" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>command_buffers_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a96260800b17a8a43fe90f8797b077866" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>command_pool_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1af8723c1ec0c86f40d7dd1bade1ede16e" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_command_pool</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a22d00eb55f2cde4c2aa9987c016324c9" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_depth_descriptor_pool</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a7b2b566706d5e338ad43909c490107ae" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_depth_pipeline</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1aaeaa5233d979d69bd2d32a79e892c6a1" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_depth_render_pass</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1adffacdc01d5cfc86668f43940c3c8ece" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_descriptor_pool</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1aab0054ec8d9322a9c355fca945e1c8c9" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_mv_descriptor_pool</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ac0a8229c8fb4159a5c658aca498d3453" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_mv_pipeline</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ad31f9f2b1591eb8a4b38dd9cb7473519" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_mv_render_pass</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a796abaa77578417b63bf0bb2d889031a" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_pipeline</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a96e47f9ffb84338e80febdf55cb69c58" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_render_pass</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a13bb956a36f87785384178e5702a3c67" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>create_shader_module</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a5cb9bdf00afd9cac6d582918a41d8313" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>crop_scale_x_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1aecbb6f46f6a55a164373e3fa29e29ee3" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>crop_scale_y_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a58df7b3b461ab8c0463d0708ea320c84" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>current_depth_images_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a8087068112ac3a6b0c79908fc925532f" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>current_images_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a723d67f13bc4ad9c24c0e22b694b3cce" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>current_mv_images_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1af697735063b799ec7ba0b1b999cf84e2" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_command_buffers_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a0455a4c968b0e122b74408c6b84ee2b4" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_desc_set_layout_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a152000ccfd9c3a3789e719a2b73afdb5" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_descriptor_pool_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1aa4e8cdef30cb5f16d264fa4e595bbe41" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_descriptor_sets_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a7fd40398ec99b2c5e7bfe0bc0e333477" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_fences_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a9abda4a5756150796b2f8ec60d561730" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_image_cache_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a10da56338199d36aa5453f22c659f6a5" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_immutable_sampler_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1adc3ef85eb55a11d5d7ba630ba0938b9f" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_pipeline_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ab2c030e182bc1c7c0edb49ad36f4c1cb" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_pipeline_created_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ab218ea51de6968c2b54ebcb3471f8c54" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_pipeline_layout_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a0427cd98fd5697a7d7f39ea45224d8bd" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>depth_render_pass_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1adadd77309bfc7d60b9fb8db236818f1a" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>desc_set_layout_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a8066997eea5a7a28b5201e3970fd5048" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>descriptor_pool_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1af785985141bc47029dd0c25eadfb3ae7" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>descriptor_sets_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a1280f5821fa5d69204313053c0298b5a" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>destroy_imported_image</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a40c661dc269754f308add08c63f21d33" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>device_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a48d31bb41095a9b4acaf11396b6122af" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>has_depth_frame_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a5c14320878dd0d13c3c24ea5e9f2b5f0" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>has_frame</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1acde21bf12293d2a2c153b374ee852c4f" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>has_mv_frame_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a8ef5f8faabc16581667615f6e17250af" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>has_valid_frame_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a6549e72463c586e5311ee07e37393150" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>image_cache_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a970b04d70221a9ab83cbdc3736ae2900" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>import_hardware_buffer</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a5276fc290b8a6d1c430e531ddcaeef90" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>import_mv_hardware_buffer</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1aec749e1a527771f4abedc87346a29484" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>initialize</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1aec43dec944758186e3e29cac0a54955e" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>initialized_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a378671c9e8aef771e67e44e5ddd8904a" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>instance_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ac05033e2336dc716e4ab010883f5eb93" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>is_initialized</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ac0a059c289ac753eec3f92f38abac9c4" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_command_buffers_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a8d8fceebb7b5a4ec0d9fcc52acf2375e" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_desc_set_layout_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a7b1f2a14cbe5f53e6b25671c16cb83a2" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_descriptor_pool_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ad8e8c739db78fdee3f1a1c4f28bdd2b3" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_descriptor_sets_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1acd7e9b5c5a371498a386d1e375c1f0ca" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_fences_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1af14a901e936e70f10d194f4f7062da11" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_image_cache_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ac519be47dd578e896ee12110b37c8bb1" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_immutable_sampler_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1abfdf9094457b04a044df6cb0f6a68397" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_pipeline_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1abf6de6a7919a40a5398571f15b0987f8" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_pipeline_created_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a41c1c698006045e491c359fbf3997464" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_pipeline_layout_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a8c9290ab2a223f3ca130a3b889425ed4" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>mv_render_pass_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a4e779a68b53070d9b308a587111c5e26" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>operator=</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a5f79c722b1b35558a070a6085abdf431" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>physical_device_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a0ce2138983a65a24abc61e6e3b427e3d" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>pipeline_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a87465fcfcd91658e51840cedae1b9152" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>pipeline_created_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a8eef835679a2eb2cbbf81056f431975b" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>pipeline_layout_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a8bbf2bbfc4c65ab315a30adb31dccac5" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>prev_depth_framebuffers_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a414caf6d20dca6c2e6b2bafae834fa58" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>prev_depth_views_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a69ea446454e18e2dda2609f295d5344d" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>prev_framebuffers_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a2fa28158dc4b44e8498ed63371e2212b" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>prev_mv_framebuffers_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a759986a38a3e4799320160aaa13dd6fb" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>prev_mv_swapchain_views_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a5273735f96c41ce1a32624f419d3959d" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>prev_swapchain_views_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a8a968bc28a8670bc3cdcda337248348f" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>queue_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a2f70f20813d2b493310c4f643ee9a769" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>queue_family_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a3819bbc7c61d406deb08c76a97347566" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>receive_frame</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a863734f7124f7390893632a630b18cf6" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>render_eye</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a2c30c4b2f770b549ecf54804362633ff" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>render_eye_depth</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a85dae4573d4f470c1bca933f115ae8c3" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>render_eye_motion_vec</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1af3b4364ecc8963c12195423f97c73c7f" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>render_fences_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a408594063ff8a8c037ec4e441b25fc2a" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>render_pass_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ad9d7a43ab370485a736326f9a649a155" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>set_crop_region</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a813dc6af859bced80e5f0daec5b67241" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>stereo_renderer</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1abc6af2a26c89edc07c52c1d6e2bd49a9" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>stereo_renderer</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a457ff8005929f8589952843e2ba449cc" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>swapchain_format_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a2318e07cbe64d9551f3a7e8fb662e330" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>update_depth_descriptor_set</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1ab6b936b9364233793d0554168090e469" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>update_descriptor_set</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a888ee64584fca0740425e7b0ea3f0177" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>update_mv_descriptor_set</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1aa5f6c42d02130483d1995ab83f56e03c" prot="private" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>vk_get_ahb_properties_</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a0be62a8c9dec988a77659689cbd6006b" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>wait_idle</name></member>
+      <member refid="classILLIXR_1_1stereo__renderer_1a11f408f3bf8f062ceb02f87d9697969c" prot="public" virt="non-virtual"><scope>ILLIXR::stereo_renderer</scope><name>~stereo_renderer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

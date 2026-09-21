@@ -1,0 +1,23 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/point_cloud.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/point_cloud.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="275,5,489,75"/>
+<area shape="rect" id="Node000002" href="$query__response_8hpp.html" title=" " alt="" coords="183,130,424,199"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="356,87,327,131,323,128,351,84"/>
+<area shape="rect" id="Node000003" href="$serialization_2query__response_8hpp.html" title=" " alt="" coords="5,255,196,339"/>
+<area shape="poly" id="edge11_Node000001_Node000003" title=" " alt="" coords="264,70,215,93,172,125,148,154,131,189,110,255,105,254,126,187,144,151,168,121,212,88,261,66"/>
+<area shape="rect" id="Node000006" href="$plugins_2semantic__python_2plugin_8hpp.html" title=" " alt="" coords="410,262,591,331"/>
+<area shape="poly" id="edge12_Node000001_Node000006" title=" " alt="" coords="417,85,439,121,471,195,493,261,488,263,466,197,434,124,413,88"/>
+<area shape="rect" id="Node000009" href="$serialization_2point__cloud_8hpp.html" title=" " alt="" coords="500,123,691,207"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="453,79,526,120,523,125,451,84"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="241,209,166,257,163,252,238,205"/>
+<area shape="rect" id="Node000005" href="$plugins_2quest3_2unity_2plugin_8hpp.html" title=" " alt="" coords="221,262,386,331"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="306,213,306,262,301,262,301,213"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="367,205,451,260,448,264,364,209"/>
+<area shape="rect" id="Node000004" href="$plugins_2quest3_2unity_2plugin_8cpp.html" title=" " alt="" coords="149,387,314,456"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="156,346,197,385,194,389,153,350"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="279,344,254,388,249,385,274,342"/>
+<area shape="rect" id="Node000007" href="$plugins_2semantic__python_2plugin_8cpp.html" title=" " alt="" coords="401,504,582,573"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="463,344,449,365,439,387,432,421,439,455,450,480,464,502,460,505,445,482,434,457,427,421,434,386,445,362,458,341"/>
+<area shape="rect" id="Node000008" href="$switchboard__bindings_8hpp.html" title="pybind11 bindings exposing ILLIXR switchboard topics to Python." alt="" coords="448,387,695,456"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="529,342,554,385,549,388,524,344"/>
+<area shape="poly" id="edge9_Node000008_Node000007" title=" " alt="" coords="542,469,517,505,513,502,538,466"/>
+</map>

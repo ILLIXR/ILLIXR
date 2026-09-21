@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1display_1_1headless" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::display::headless</compoundname>
+    <basecompoundref refid="classILLIXR_1_1display_1_1display__backend" prot="public" virt="non-virtual">ILLIXR::display::display_backend</basecompoundref>
+    <includes refid="headless_8hpp" local="no">headless.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1headless_1a0a96ef56fd945a42dbe3b425c34283fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void headless::setup_display</definition>
+        <argsstring>(const std::shared_ptr&lt; switchboard &gt; sb, VkInstance vk_instance, VkPhysicalDevice vk_physical_device) override</argsstring>
+        <name>setup_display</name>
+        <qualifiedname>ILLIXR::display::headless::setup_display</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a48c4d9d8e7e5599793b02b1f5c18a38d">setup_display</reimplements>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+          <declname>sb</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkInstance</ref></type>
+          <declname>vk_instance</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref></type>
+          <declname>vk_physical_device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.hpp" line="11" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.cpp" bodystart="7" bodyend="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1headless_1a69dff1738f4018cafd8f11abe3da580f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSurfaceKHR</ref></type>
+        <definition>VkSurfaceKHR headless::create_surface</definition>
+        <argsstring>() override</argsstring>
+        <name>create_surface</name>
+        <qualifiedname>ILLIXR::display::headless::create_surface</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a21ebfd9665eab3dc93446909015dc017">create_surface</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.hpp" line="13" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.cpp" bodystart="14" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1headless_1a6f0f93e886528611b684a65dc72c7f4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void headless::cleanup</definition>
+        <argsstring>() override</argsstring>
+        <name>cleanup</name>
+        <qualifiedname>ILLIXR::display::headless::cleanup</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1adcf23384a18793748608eee0feeb10cf">cleanup</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.hpp" line="14" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.cpp" bodystart="18" bodyend="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1headless_1accfce127c7a6013bdc47072175aa907d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::set&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> * &gt;</type>
+        <definition>std::set&lt; const char * &gt; headless::get_required_instance_extensions</definition>
+        <argsstring>() override</argsstring>
+        <name>get_required_instance_extensions</name>
+        <qualifiedname>ILLIXR::display::headless::get_required_instance_extensions</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a1ae5a1dc1e63a5e920d97a1235b88b0e">get_required_instance_extensions</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.hpp" line="15" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.cpp" bodystart="20" bodyend="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1headless_1a57dc0bde45b26bd13a3d76b98f05856e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::set&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> * &gt;</type>
+        <definition>std::set&lt; const char * &gt; headless::get_required_device_extensions</definition>
+        <argsstring>() override</argsstring>
+        <name>get_required_device_extensions</name>
+        <qualifiedname>ILLIXR::display::headless::get_required_device_extensions</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a94ed86254b25408d365d7a1c99a20513">get_required_device_extensions</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.hpp" line="16" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.cpp" bodystart="24" bodyend="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1headless_1a0907bc19cb6ada7f903ef8671bd22fdb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35" kindref="member">display_backend_type</ref></type>
+        <definition>display_backend::display_backend_type headless::get_type</definition>
+        <argsstring>() override</argsstring>
+        <name>get_type</name>
+        <qualifiedname>ILLIXR::display::headless::get_type</qualifiedname>
+        <reimplements refid="classILLIXR_1_1display_1_1display__backend_1a6cd6989ffad3a129ffe9f687d490861c">get_type</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.hpp" line="17" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.cpp" bodystart="28" bodyend="30"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::display::display_backend</label>
+        <link refid="classILLIXR_1_1display_1_1display__backend"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::display::headless</label>
+        <link refid="classILLIXR_1_1display_1_1headless"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::display::display_backend</label>
+        <link refid="classILLIXR_1_1display_1_1display__backend"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::display::headless</label>
+        <link refid="classILLIXR_1_1display_1_1headless"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.hpp" line="9" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/headless.hpp" bodystart="9" bodyend="18"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1display_1_1headless_1a6f0f93e886528611b684a65dc72c7f4f" prot="public" virt="virtual"><scope>ILLIXR::display::headless</scope><name>cleanup</name></member>
+      <member refid="classILLIXR_1_1display_1_1headless_1a69dff1738f4018cafd8f11abe3da580f" prot="public" virt="virtual"><scope>ILLIXR::display::headless</scope><name>create_surface</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35" prot="public" virt="non-virtual"><scope>ILLIXR::display::headless</scope><name>display_backend_type</name></member>
+      <member refid="classILLIXR_1_1display_1_1headless_1a57dc0bde45b26bd13a3d76b98f05856e" prot="public" virt="virtual"><scope>ILLIXR::display::headless</scope><name>get_required_device_extensions</name></member>
+      <member refid="classILLIXR_1_1display_1_1headless_1accfce127c7a6013bdc47072175aa907d" prot="public" virt="virtual"><scope>ILLIXR::display::headless</scope><name>get_required_instance_extensions</name></member>
+      <member refid="classILLIXR_1_1display_1_1headless_1a0907bc19cb6ada7f903ef8671bd22fdb" prot="public" virt="virtual"><scope>ILLIXR::display::headless</scope><name>get_type</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a6c22ae7cd43cc6c85dc63463f39b30b3" prot="public" virt="non-virtual"><scope>ILLIXR::display::headless</scope><name>GLFW</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a9d4de65feff923a0f7da4d0c8b8cd878" prot="public" virt="non-virtual"><scope>ILLIXR::display::headless</scope><name>HEADLESS</name></member>
+      <member refid="classILLIXR_1_1display_1_1headless_1a0a96ef56fd945a42dbe3b425c34283fc" prot="public" virt="virtual"><scope>ILLIXR::display::headless</scope><name>setup_display</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a9ea10d97922d75ec50123c500e456e58" prot="protected" virt="non-virtual"><scope>ILLIXR::display::headless</scope><name>vk_instance_</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a76bb4a005202c52102006cef21d0ee35" prot="public" virt="non-virtual"><scope>ILLIXR::display::headless</scope><name>X11_DIRECT</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

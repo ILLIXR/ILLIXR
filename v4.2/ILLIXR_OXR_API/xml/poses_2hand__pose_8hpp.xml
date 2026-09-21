@@ -1,0 +1,258 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="poses_2hand__pose_8hpp" kind="file" language="C++">
+    <compoundname>hand_pose.hpp</compoundname>
+    <includes refid="poses_2pose__base_8hpp" local="yes">illixr/data_format/poses/pose_base.hpp</includes>
+    <includes local="yes">illixr/switchboard.hpp</includes>
+    <includes local="no">array</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">map</includes>
+    <includes local="no">utility</includes>
+    <includes refid="openxr__defines_8hpp" local="yes">openxr_defines.hpp</includes>
+    <includedby refid="poses_2combined__pose_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/combined_pose.hpp</includedby>
+    <includedby refid="serialization_2hand__pose_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp</label>
+        <link refid="poses_2hand__pose_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>openxr_defines.hpp</label>
+        <link refid="openxr__defines_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>array</label>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
+      </node>
+      <node id="7">
+        <label>illixr/switchboard.hpp</label>
+      </node>
+      <node id="3">
+        <label>map</label>
+      </node>
+      <node id="6">
+        <label>openxr/openxr.h</label>
+      </node>
+      <node id="9">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/combined_pose.hpp</label>
+        <link refid="poses_2combined__pose_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp</label>
+        <link refid="poses_2hand__pose_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/combined_pose.hpp</label>
+        <link refid="serialization_2combined__pose_8hpp"/>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/hand_pose.hpp</label>
+        <link refid="serialization_2hand__pose_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose" prot="public">ILLIXR::data_format::pose::hand_joint_pose</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses" prot="public">ILLIXR::data_format::pose::hand_joint_poses</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair" prot="public">ILLIXR::data_format::pose::hand_joint_poses_pair</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format_1_1pose">ILLIXR::data_format::pose</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="poses_2hand__pose_8hpp_1ad40bf8e7390ccca5291933835793f11d" prot="public" static="no">
+        <name>HAND_JOINT_COUNT</name>
+        <initializer>XR_HAND_JOINT_COUNT_EXT</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" line="14" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>USING_OPENXR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;<ref refid="poses_2pose__base_8hpp" kindref="compound">illixr/data_format/poses/pose_base.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;illixr/switchboard.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;utility&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>ENABLE_MONADO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>HAND_JOINT_COUNT<sp/>XRT_HAND_JOINT_COUNT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="poses_2hand__pose_8hpp_1ad40bf8e7390ccca5291933835793f11d" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>define<sp/>HAND_JOINT_COUNT<sp/>XR_HAND_JOINT_COUNT_EXT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&quot;<ref refid="openxr__defines_8hpp" kindref="compound">openxr_defines.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format_1_1pose" kindref="compound">ILLIXR::data_format::pose</ref><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3" kindref="member">joint</ref><sp/>:<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="27" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3accd55f74826c585687441d270077c4c4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3accd55f74826c585687441d270077c4c4" kindref="member">PALM</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="28" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ad1e2a641a69f763b16c13a8d0b41c14a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ad1e2a641a69f763b16c13a8d0b41c14a" kindref="member">WRIST</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="29" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3acedc309f8a9263d0cfedc743b9e84d65" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3acedc309f8a9263d0cfedc743b9e84d65" kindref="member">THUMB_METACARPAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/>=<sp/>2,</highlight></codeline>
+<codeline lineno="30" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ac11a5e74be9e743ac5708c372d9065c3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ac11a5e74be9e743ac5708c372d9065c3" kindref="member">THUMB_PROXIMAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>3,</highlight></codeline>
+<codeline lineno="31" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab0da229a7517bdb47416add8c2398c9a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab0da229a7517bdb47416add8c2398c9a" kindref="member">THUMB_DISTAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>4,</highlight></codeline>
+<codeline lineno="32" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a60517c9a8daaa4d8aa6bbb570d759adb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a60517c9a8daaa4d8aa6bbb570d759adb" kindref="member">THUMB_TIP</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>5,</highlight></codeline>
+<codeline lineno="33" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a931a292ae631dffeec3d6fd39326e5fc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a931a292ae631dffeec3d6fd39326e5fc" kindref="member">INDEX_METACARPAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/>=<sp/>6,</highlight></codeline>
+<codeline lineno="34" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3add954522bd403367045b2971e7dcc66d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3add954522bd403367045b2971e7dcc66d" kindref="member">INDEX_PROXIMAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>7,</highlight></codeline>
+<codeline lineno="35" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aac8c45dcadf468397017516b6c47dc2b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aac8c45dcadf468397017516b6c47dc2b" kindref="member">INDEX_INTERMEDIATE</ref><sp/>[[maybe_unused]]<sp/><sp/>=<sp/>8,</highlight></codeline>
+<codeline lineno="36" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a4ddfab3dea0c7ab2508e8083866fa3b3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a4ddfab3dea0c7ab2508e8083866fa3b3" kindref="member">INDEX_DISTAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>9,</highlight></codeline>
+<codeline lineno="37" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aa82f40fd50ac68be09728ba3d64d5d43" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aa82f40fd50ac68be09728ba3d64d5d43" kindref="member">INDEX_TIP</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>10,</highlight></codeline>
+<codeline lineno="38" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a2aa614267a9b60f41f98cd0f9317a569" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a2aa614267a9b60f41f98cd0f9317a569" kindref="member">MIDDLE_METACARPAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/>=<sp/>11,</highlight></codeline>
+<codeline lineno="39" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a0179c4d67653bb4f8314f7675b6ed42f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a0179c4d67653bb4f8314f7675b6ed42f" kindref="member">MIDDLE_PROXIMAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/>=<sp/>12,</highlight></codeline>
+<codeline lineno="40" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a4955fbc468e242b391352264ec435c99" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a4955fbc468e242b391352264ec435c99" kindref="member">MIDDLE_INTERMEDIATE</ref><sp/>[[maybe_unused]]<sp/>=<sp/>13,</highlight></codeline>
+<codeline lineno="41" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aaa64b6e384b8d52888a592586c08eef1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aaa64b6e384b8d52888a592586c08eef1" kindref="member">MIDDLE_DISTAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>14,</highlight></codeline>
+<codeline lineno="42" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a70e9ca5dd46d92f6c0348b845447f8e1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a70e9ca5dd46d92f6c0348b845447f8e1" kindref="member">MIDDLE_TIP</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>15,</highlight></codeline>
+<codeline lineno="43" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a1e27bd179064c3a2fb898d9aa023e772" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a1e27bd179064c3a2fb898d9aa023e772" kindref="member">RING_METACARPAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/>=<sp/>16,</highlight></codeline>
+<codeline lineno="44" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a5d56f8a1da31ca4fd9d845f32c4bca8d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a5d56f8a1da31ca4fd9d845f32c4bca8d" kindref="member">RING_PROXIMAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>17,</highlight></codeline>
+<codeline lineno="45" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aac965c033d7e3fbc2bf029a5cb2c54d7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aac965c033d7e3fbc2bf029a5cb2c54d7" kindref="member">RING_INTERMEDIATE</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/>=<sp/>18,</highlight></codeline>
+<codeline lineno="46" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab97de1d50ae49ac92904dd3ec6ea108a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab97de1d50ae49ac92904dd3ec6ea108a" kindref="member">RING_DISTAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>19,</highlight></codeline>
+<codeline lineno="47" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3af7393a74cf63282e7d44038ceac5fba3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3af7393a74cf63282e7d44038ceac5fba3" kindref="member">RING_TIP</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>20,</highlight></codeline>
+<codeline lineno="48" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aec5a32fac9f52014a7f82714c1d5af6a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aec5a32fac9f52014a7f82714c1d5af6a" kindref="member">LITTLE_METACARPAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/>=<sp/>21,</highlight></codeline>
+<codeline lineno="49" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a445bb8db2edb3e2bf363a9356c86a26c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a445bb8db2edb3e2bf363a9356c86a26c" kindref="member">LITTLE_PROXIMAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/>=<sp/>22,</highlight></codeline>
+<codeline lineno="50" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a9ed99ee037f2a3c45acd0e212b8edde4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a9ed99ee037f2a3c45acd0e212b8edde4" kindref="member">LITTLE_INTERMEDIATE</ref><sp/>[[maybe_unused]]<sp/>=<sp/>23,</highlight></codeline>
+<codeline lineno="51" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab2f1a27c9e9f4da0404c990f8064a6ef" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab2f1a27c9e9f4da0404c990f8064a6ef" kindref="member">LITTLE_DISTAL</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>24,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a6392b675c500f3c737a9b429ed38485d" kindref="member">LITTLE_TIP</ref><sp/>[[maybe_unused]]<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>25</highlight></codeline>
+<codeline lineno="53" refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a6392b675c500f3c737a9b429ed38485d" refkind="member"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>ENABLE_MONADO</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>xrt_hand_joint_value<sp/>hand_joint_pose;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight></codeline>
+<codeline lineno="76" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose" kindref="compound">hand_joint_pose</ref><sp/>{</highlight></codeline>
+<codeline lineno="77" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation" kindref="compound">xrt_space_relation</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" kindref="member">relation</ref>;<sp/></highlight></codeline>
+<codeline lineno="78" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a36cf86323b4b8586b1e848320aac05cf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a36cf86323b4b8586b1e848320aac05cf" kindref="member">radius</ref>;<sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a4ecb42de4c1a905e530b2e7955e40a0e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a4ecb42de4c1a905e530b2e7955e40a0e" kindref="member">hand_joint_pose</ref>()</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a36cf86323b4b8586b1e848320aac05cf" kindref="member">radius</ref>{0.}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a423b84118b44d6a6132f5a6db395876a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a423b84118b44d6a6132f5a6db395876a" kindref="member">hand_joint_pose</ref>(<ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation" kindref="compound">xrt_space_relation</ref><sp/>rel,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" kindref="member">relation</ref>{std::move(rel)}</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a36cf86323b4b8586b1e848320aac05cf" kindref="member">radius</ref>{r}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a5ce21c11448af8c324d2d72bc00679f1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a5ce21c11448af8c324d2d72bc00679f1" kindref="member">hand_joint_pose</ref>(XrHandJointLocationEXT<sp/>pose,<sp/>XrHandJointVelocityEXT<sp/>vel)<sp/>{</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a36cf86323b4b8586b1e848320aac05cf" kindref="member">radius</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>pose.radius;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" kindref="member">relation</ref>.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0cff14cc81cd5dd27151dce0bb0632b9" kindref="member">pose</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>pose.pose;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" kindref="member">relation</ref>.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a67fc9e6e7fc117dd5a393794b9d1df50" kindref="member">linear_velocity</ref><sp/><sp/>=<sp/>vel.linearVelocity;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" kindref="member">relation</ref>.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a3ef1fdf58723fd642b5bbdff4c54645d" kindref="member">angular_velocity</ref><sp/>=<sp/>vel.angularVelocity;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" kindref="member">relation</ref>.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0b8644408a512e4f983fb8d56ccb841c" kindref="member">set_flags</ref>(pose.locationFlags,<sp/>vel.velocityFlags);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>ENABLE_MONADO</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>xrt_hand_joint_set<sp/>hand_joint_poses;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses" kindref="compound">hand_joint_poses</ref><sp/>{</highlight></codeline>
+<codeline lineno="124" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1aee831378be972fed45380e5dda6a1b8c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;hand_joint_pose,<sp/>XR_HAND_JOINT_COUNT_EXT&gt;<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1aee831378be972fed45380e5dda6a1b8c" kindref="member">joints</ref>;<sp/></highlight></codeline>
+<codeline lineno="125" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab1e94f6298426bf927b59451408c7f66" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab1e94f6298426bf927b59451408c7f66" kindref="member">is_active</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;<sp/></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a5e6dd3ba892d1c4680efc751105f6d29" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a5e6dd3ba892d1c4680efc751105f6d29" kindref="member">hand_joint_poses</ref>()</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1aee831378be972fed45380e5dda6a1b8c" kindref="member">joints</ref>{}</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab1e94f6298426bf927b59451408c7f66" kindref="member">is_active</ref>{false}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab5ae7b89fa4b23230f19544d3197f17f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab5ae7b89fa4b23230f19544d3197f17f" kindref="member">update</ref>(std::array&lt;XrHandJointLocationEXT,<sp/>XR_HAND_JOINT_COUNT_EXT&gt;&amp;<sp/>pose,</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::array&lt;XrHandJointVelocityEXT,<sp/>XR_HAND_JOINT_COUNT_EXT&gt;&amp;<sp/>velocity)<sp/>{</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>tracked_count<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint32_t<sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>XR_HAND_JOINT_COUNT_EXT;<sp/>j++)<sp/>{</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1aee831378be972fed45380e5dda6a1b8c" kindref="member">joints</ref>[j]<sp/>=<sp/>{pose[j],<sp/>velocity[j]};</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(pose[j].locationFlags<sp/>&amp;<sp/>XR_SPACE_LOCATION_ORIENTATION_VALID_BIT<sp/>&amp;&amp;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pose[j].locationFlags<sp/>&amp;<sp/>XR_SPACE_LOCATION_POSITION_VALID_BIT)</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tracked_count++;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab1e94f6298426bf927b59451408c7f66" kindref="member">is_active</ref><sp/>=<sp/>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(tracked_count)<sp/>/<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(XR_HAND_JOINT_COUNT_EXT))<sp/>&gt;<sp/>0.;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab7c3f515f6afceeb2212cc75f10a8c1d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab7c3f515f6afceeb2212cc75f10a8c1d" kindref="member">hand_joint_poses</ref>(std::array&lt;XrHandJointLocationEXT,<sp/>XR_HAND_JOINT_COUNT_EXT&gt;&amp;<sp/>pose,</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::array&lt;XrHandJointVelocityEXT,<sp/>XR_HAND_JOINT_COUNT_EXT&gt;&amp;<sp/>velocity)<sp/>{</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab5ae7b89fa4b23230f19544d3197f17f" kindref="member">update</ref>(pose,<sp/>velocity);</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a1617a260fffc91068a32a221a7030abb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose" kindref="compound">hand_joint_pose</ref>&amp;<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a1617a260fffc91068a32a221a7030abb" kindref="member">operator[]</ref>(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3" kindref="member">joint</ref><sp/>j)<sp/>{</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1aee831378be972fed45380e5dda6a1b8c" kindref="member">joints</ref>[</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(j)];</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="175" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a56ccb571c592ed37d38fc01a13344edd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose" kindref="compound">hand_joint_pose</ref>&amp;<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a56ccb571c592ed37d38fc01a13344edd" kindref="member">operator[]</ref>(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3" kindref="member">joint</ref><sp/>j)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1aee831378be972fed45380e5dda6a1b8c" kindref="member">joints</ref>[</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(j)];</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="178"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight></codeline>
+<codeline lineno="186" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair" kindref="compound">hand_joint_poses_pair</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>switchboard::event<sp/>{</highlight></codeline>
+<codeline lineno="187" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1ac07c74438ddb0768ca077e3c464f36a2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;side,<sp/>hand_joint_poses&gt;<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1ac07c74438ddb0768ca077e3c464f36a2" kindref="member">hands</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="188" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a098a561877bcd1cc167fd9e07963b010" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>time_point<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a098a561877bcd1cc167fd9e07963b010" kindref="member">sensor_time</ref>;<sp/></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1af829f4b76c008199cf9c4a001dd61825" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1af829f4b76c008199cf9c4a001dd61825" kindref="member">hand_joint_poses_pair</ref>()</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1ac07c74438ddb0768ca077e3c464f36a2" kindref="member">hands</ref>{{<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a362edc549a08e94007634bdf2dd5274f" kindref="member">LEFT</ref>,<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses" kindref="compound">hand_joint_poses</ref>{}},<sp/>{<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a2ff363d8128801252a0b35d81d98dd85" kindref="member">RIGHT</ref>,<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses" kindref="compound">hand_joint_poses</ref>{}}}</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>sensor_time{time_point{}}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a769d0c34b6a9f984452a920337a95dc0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a769d0c34b6a9f984452a920337a95dc0" kindref="member">hand_joint_poses_pair</ref>(std::map&lt;side,<sp/>hand_joint_poses&gt;<sp/>hands_,<sp/>time_point<sp/>sensor_time_)</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>hands{std::move(hands_)}</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>sensor_time{sensor_time_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="210" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1ab30557903750217c9f8d0aea4fff54ee" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/>[[maybe_unused]]<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1ab30557903750217c9f8d0aea4fff54ee" kindref="member">has_hands</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>hands.at(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a362edc549a08e94007634bdf2dd5274f" kindref="member">LEFT</ref>).is_active<sp/>||<sp/>hands.at(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a2ff363d8128801252a0b35d81d98dd85" kindref="member">RIGHT</ref>).is_active;</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219" refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a53c924e7c34efb6c78afed3d9155387b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses" kindref="compound">hand_joint_poses</ref>&amp;<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a53c924e7c34efb6c78afed3d9155387b" kindref="member">operator[]</ref>(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372" kindref="member">side</ref><sp/>h)<sp/>{</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>hands[h];</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="222"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="224"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::data_format::pose</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp"/>
+  </compounddef>
+</doxygen>

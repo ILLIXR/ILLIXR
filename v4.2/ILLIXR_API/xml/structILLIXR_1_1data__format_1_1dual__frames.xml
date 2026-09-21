@@ -1,0 +1,518 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1dual__frames" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::dual_frames</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <includes refid="frame_8hpp" local="no">frame.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1ac599802c0a06c54564f772d2ad2b56c3" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1eye__frame" kindref="compound">eye_frame</ref></type>
+        <definition>eye_frame ILLIXR::data_format::dual_frames::left_eye</definition>
+        <argsstring></argsstring>
+        <name>left_eye</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::left_eye</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+<para>Color eye images. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="364" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="364" bodyend="364"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a87d7f90bc2fee7438f51786fd6cb0379" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1eye__frame" kindref="compound">eye_frame</ref></type>
+        <definition>eye_frame ILLIXR::data_format::dual_frames::right_eye</definition>
+        <argsstring></argsstring>
+        <name>right_eye</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::right_eye</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="365" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="365" bodyend="365"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a4505e762978082c1e7b41df2e41970ef" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1eye__frame" kindref="compound">eye_frame</ref></type>
+        <definition>eye_frame ILLIXR::data_format::dual_frames::left_depth</definition>
+        <argsstring></argsstring>
+        <name>left_depth</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::left_depth</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+<para>Depth eye images (432×432, valid when <ref refid="structILLIXR_1_1data__format_1_1dual__frames_1a66c85e284ee7bdeb072b38780cf225fa" kindref="member">has_valid_depth()</ref> is true) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="368" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="368" bodyend="368"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1ae1fa9b6e84a057a983b4d84f2b20eac8" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1eye__frame" kindref="compound">eye_frame</ref></type>
+        <definition>eye_frame ILLIXR::data_format::dual_frames::right_depth</definition>
+        <argsstring></argsstring>
+        <name>right_depth</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::right_depth</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="369" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="369" bodyend="369"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1aaec9282811420dff02144245b561abfc" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::data_format::dual_frames::width</definition>
+        <argsstring></argsstring>
+        <name>width</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::width</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="378" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="378" bodyend="378"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a8ad2fe40555ee8c45eda9cbcc4013099" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::data_format::dual_frames::height</definition>
+        <argsstring></argsstring>
+        <name>height</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::height</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="379" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="379" bodyend="379"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a1183de89698a642781fcf7353446b7e5" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1a51f52e0460a5375ad6e1eee9a90895f8" kindref="member">frame_format</ref></type>
+        <definition>frame_format ILLIXR::data_format::dual_frames::format</definition>
+        <argsstring></argsstring>
+        <name>format</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::format</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1_1data__format_1a51f52e0460a5375ad6e1eee9a90895f8a70d831c8685ddf61857a6d0e41eb5889" kindref="member">frame_format::nv12</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="382" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="382" bodyend="382"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1aafc989cade8adecd1070a4c978a10382" prot="public" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref></type>
+        <definition>time_point ILLIXR::data_format::dual_frames::render_time</definition>
+        <argsstring></argsstring>
+        <name>render_time</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::render_time</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="385" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="385" bodyend="385"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1adb2e88d6a2474a08f2aa8ee3d7c29258" prot="public" static="no" mutable="no">
+        <type><ref refid="frame_8hpp_1ad0f1c4b98ba297fceb92a5899a72e9d4" kindref="member">BUFFER_TYPE</ref></type>
+        <definition>BUFFER_TYPE ILLIXR::data_format::dual_frames::pose</definition>
+        <argsstring></argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::pose</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="387" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="387" bodyend="387"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a1efc1ae9531440c29ba22d01e67c3537" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+        <definition>uint64_t ILLIXR::data_format::dual_frames::frame_number</definition>
+        <argsstring></argsstring>
+        <name>frame_number</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::frame_number</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="390" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="390" bodyend="390"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a2e63702bc294eff6427ac4214cf4d244" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+        <definition>uint64_t ILLIXR::data_format::dual_frames::pose_id</definition>
+        <argsstring></argsstring>
+        <name>pose_id</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::pose_id</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="395" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="395" bodyend="395"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a89ff4c4d5f685c7fe4ee89c65d25bbfc" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::data_format::dual_frames::encode_time</definition>
+        <argsstring></argsstring>
+        <name>encode_time</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::encode_time</qualifiedname>
+        <initializer>{0.}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="396" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="396" bodyend="396"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a61e17012652785114a0bf42e2ceb3321" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::dual_frames::near_z</definition>
+        <argsstring></argsstring>
+        <name>near_z</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::near_z</qualifiedname>
+        <initializer>{0.0f}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="410" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="410" bodyend="410"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a0a20dd6b4b2795be424f5195303936d3" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::data_format::dual_frames::far_z</definition>
+        <argsstring></argsstring>
+        <name>far_z</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::far_z</qualifiedname>
+        <initializer>{0.0f}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="411" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="411" bodyend="411"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1dual__frames_1a90ec878b4c58d88f28ba5b862915c232" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::dual_frames::has_depth</definition>
+        <argsstring></argsstring>
+        <name>has_depth</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::has_depth</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="422" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="422" bodyend="422"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1dual__frames_1a1fdbde4dc34c0f616712df0f08d6b2e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::dual_frames::dual_frames</definition>
+        <argsstring>()=default</argsstring>
+        <name>dual_frames</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::dual_frames</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="426" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1dual__frames_1ad6007264942ee5dfa7790f20e435d979" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::dual_frames::dual_frames</definition>
+        <argsstring>(time_point tp, std::vector&lt; uint8_t &gt; left, std::vector&lt; uint8_t &gt; right, int w, int h, uint64_t frame_num=0, bool has_depth=false)</argsstring>
+        <name>dual_frames</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::dual_frames</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref></type>
+          <declname>tp</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> &gt;</type>
+          <declname>left</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> &gt;</type>
+          <declname>right</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>has_depth</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></defval>
+        </param>
+        <briefdescription>
+<para>Construct with raw NV12 data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="429" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="429" bodyend="438"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1dual__frames_1aa7c7aa66f1772f0314d460bf3af8b97e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::dual_frames::dual_frames</definition>
+        <argsstring>(time_point tp, GLuint left_tex, const float *left_transform, GLuint right_tex, const float *right_transform, int w, int h, uint64_t frame_num=0, bool has_depth=false)</argsstring>
+        <name>dual_frames</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::dual_frames</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref></type>
+          <declname>tp</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>left_tex</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>left_transform</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>right_tex</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>right_transform</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>has_depth</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></defval>
+        </param>
+        <briefdescription>
+<para>Construct with external OES texture handles (GL path) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="442" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="442" bodyend="451"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1dual__frames_1aecc884e092a983557f868d63875e29b1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::dual_frames::dual_frames</definition>
+        <argsstring>(time_point tp, GLuint left_tex, const float *left_transform, GLuint right_tex, const float *right_transform, GLuint left_depth_tex, const float *left_depth_transform, GLuint right_depth_tex, const float *right_depth_transform, int w, int h, uint64_t frame_num=0)</argsstring>
+        <name>dual_frames</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::dual_frames</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref></type>
+          <declname>tp</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>left_tex</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>left_transform</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>right_tex</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>right_transform</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>left_depth_tex</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>left_depth_transform</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>right_depth_tex</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>right_depth_transform</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Construct with external OES texture handles for BOTH color and depth (GL path) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="454" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="454" bodyend="466"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1dual__frames_1a34a64c3b6e488d656c7b264bf31f122c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::dual_frames::is_valid</definition>
+        <argsstring>() const</argsstring>
+        <name>is_valid</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::is_valid</qualifiedname>
+        <briefdescription>
+<para>Check if both eyes have valid data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="517" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="517" bodyend="527"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1dual__frames_1a66c85e284ee7bdeb072b38780cf225fa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::dual_frames::has_valid_depth</definition>
+        <argsstring>() const</argsstring>
+        <name>has_valid_depth</name>
+        <qualifiedname>ILLIXR::data_format::dual_frames::has_valid_depth</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="529" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="529" bodyend="538"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Dual-eye video frame for stereo VR rendering. Published by the decoder plugin, consumed by the renderer and oxr_interface.</para>
+<para>Field ownership (hardware_buffer format): left_eye / right_eye — color AHardwareBuffers, retained by this struct. left_depth / right_depth — depth AHardwareBuffers, retained by this struct. left_motion_vec / right_mv — motion-vector AHardwareBuffers, retained by this struct.</para>
+<para>The switchboard consumer (oxr_interface) must call stereo_surface_decoder::release_frame() after the Vulkan submission that reads these buffers has completed. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::dual_frames</label>
+        <link refid="structILLIXR_1_1data__format_1_1dual__frames"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::dual_frames</label>
+        <link refid="structILLIXR_1_1data__format_1_1dual__frames"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>left_depth</edgelabel>
+          <edgelabel>left_eye</edgelabel>
+          <edgelabel>right_depth</edgelabel>
+          <edgelabel>right_eye</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>render_time</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::data_format::eye_frame</label>
+        <link refid="structILLIXR_1_1data__format_1_1eye__frame"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+      <node id="4">
+        <label>ILLIXR::time_point</label>
+        <link refid="classILLIXR_1_1time__point"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="362" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="362" bodyend="546"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a1fdbde4dc34c0f616712df0f08d6b2e4" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>dual_frames</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1ad6007264942ee5dfa7790f20e435d979" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>dual_frames</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1aa7c7aa66f1772f0314d460bf3af8b97e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>dual_frames</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1aecc884e092a983557f868d63875e29b1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>dual_frames</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a89ff4c4d5f685c7fe4ee89c65d25bbfc" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>encode_time</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a0a20dd6b4b2795be424f5195303936d3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>far_z</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a1183de89698a642781fcf7353446b7e5" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>format</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a1efc1ae9531440c29ba22d01e67c3537" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>frame_number</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a90ec878b4c58d88f28ba5b862915c232" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>has_depth</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a66c85e284ee7bdeb072b38780cf225fa" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>has_valid_depth</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a8ad2fe40555ee8c45eda9cbcc4013099" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>height</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a34a64c3b6e488d656c7b264bf31f122c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>is_valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a4505e762978082c1e7b41df2e41970ef" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>left_depth</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1ac599802c0a06c54564f772d2ad2b56c3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>left_eye</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a61e17012652785114a0bf42e2ceb3321" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>near_z</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1adb2e88d6a2474a08f2aa8ee3d7c29258" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a2e63702bc294eff6427ac4214cf4d244" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>pose_id</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1aafc989cade8adecd1070a4c978a10382" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>render_time</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1ae1fa9b6e84a057a983b4d84f2b20eac8" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>right_depth</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1a87d7f90bc2fee7438f51786fd6cb0379" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>right_eye</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1dual__frames_1aaec9282811420dff02144245b561abfc" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>width</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::dual_frames</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

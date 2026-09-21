@@ -1,0 +1,89 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classILLIXR_1_1switchboard_1_1event.html" title="Virtual class for event types." alt="" coords="217,1093,366,1133"/>
+<area shape="rect" id="Node000001" href="$structILLIXR_1_1data__format_1_1boba__modal__texture.html" title=" " alt="" coords="451,69,615,109"/>
+<area shape="poly" id="edge94_Node000000_Node000001" title=" " alt="" coords="290,1080,293,885,299,747,309,598,326,448,350,311,365,251,382,198,402,154,425,119,450,101,453,105,429,123,407,156,387,200,370,252,355,312,331,449,315,598,304,747,298,885,295,1080"/>
+<area shape="rect" id="Node000002" href="$structILLIXR_1_1data__format_1_1cam__base__type.html" title=" " alt="" coords="458,133,609,173"/>
+<area shape="poly" id="edge95_Node000000_Node000002" title=" " alt="" coords="290,1079,295,896,302,767,313,628,330,489,353,362,368,306,384,256,403,215,425,184,439,171,456,162,459,167,442,175,429,187,408,218,389,258,373,307,359,363,335,490,318,628,307,767,300,896,296,1080"/>
+<area shape="rect" id="Node000008" href="$structILLIXR_1_1data__format_1_1camera__data.html" title="Data structure to hold information about the full camera system. This information is mostly constant." alt="" coords="458,197,609,237"/>
+<area shape="poly" id="edge101_Node000000_Node000008" title=" " alt="" coords="291,1080,297,907,317,658,334,530,357,412,387,315,405,277,425,248,439,235,456,226,459,231,442,239,429,251,409,279,392,317,362,413,339,531,322,659,303,907,296,1080"/>
+<area shape="rect" id="Node000009" href="$structILLIXR_1_1data__format_1_1compressed__frame.html" title=" " alt="" coords="456,261,611,301"/>
+<area shape="poly" id="edge102_Node000000_Node000009" title=" " alt="" coords="291,1080,299,919,321,689,338,571,361,463,389,373,406,338,425,312,438,300,454,291,457,296,442,304,429,315,411,341,394,375,366,464,343,572,326,690,305,919,296,1080"/>
+<area shape="rect" id="Node000010" href="$structILLIXR_1_1data__format_1_1connection__signal.html" title=" " alt="" coords="458,325,609,365"/>
+<area shape="poly" id="edge103_Node000000_Node000010" title=" " alt="" coords="292,1080,302,930,325,719,342,612,364,513,392,432,407,400,425,376,440,363,457,354,459,359,442,367,429,379,412,403,396,434,369,514,347,613,330,720,307,930,297,1080"/>
+<area shape="rect" id="Node000011" href="$structILLIXR_1_1data__format_1_1draco__type.html" title=" " alt="" coords="458,389,609,429"/>
+<area shape="poly" id="edge104_Node000000_Node000011" title=" " alt="" coords="292,1080,304,942,329,750,346,653,368,564,394,490,409,462,425,440,439,427,456,418,459,423,442,432,429,443,413,464,399,492,373,565,352,654,334,751,310,942,298,1080"/>
+<area shape="rect" id="Node000012" href="$structILLIXR_1_1data__format_1_1dual__frames.html" title=" " alt="" coords="458,453,609,493"/>
+<area shape="poly" id="edge105_Node000000_Node000012" title=" " alt="" coords="293,1079,307,953,333,781,351,694,372,614,396,549,410,523,425,503,440,491,456,483,459,487,442,496,429,507,415,526,401,551,377,616,356,695,338,782,312,954,298,1080"/>
+<area shape="rect" id="Node000013" href="$structILLIXR_1_1data__format_1_1frame__pose__id.html" title=" " alt="" coords="458,517,609,557"/>
+<area shape="poly" id="edge106_Node000000_Node000013" title=" " alt="" coords="294,1079,310,965,337,812,355,735,376,665,399,607,425,568,440,555,457,547,459,552,443,560,429,571,403,610,381,667,360,736,342,813,315,966,299,1080"/>
+<area shape="rect" id="Node000014" href="$structILLIXR_1_1data__format_1_1hologram__input.html" title=" " alt="" coords="458,581,609,621"/>
+<area shape="poly" id="edge107_Node000000_Node000014" title=" " alt="" coords="289,1080,292,991,299,934,310,871,327,807,351,743,383,684,425,631,440,620,456,611,459,616,442,624,429,635,387,687,355,746,332,808,315,872,304,934,298,991,294,1080"/>
+<area shape="rect" id="Node000015" href="$structILLIXR_1_1data__format_1_1image__handle.html" title=" " alt="" coords="458,645,609,685"/>
+<area shape="poly" id="edge108_Node000000_Node000015" title=" " alt="" coords="291,1079,298,1001,318,898,335,844,358,790,388,740,425,695,456,676,459,680,428,699,392,743,363,792,340,846,323,900,303,1002,296,1080"/>
+<area shape="rect" id="Node000016" href="$structILLIXR_1_1data__format_1_1imu__integrator__input.html" title=" " alt="" coords="450,709,617,749"/>
+<area shape="poly" id="edge109_Node000000_Node000016" title=" " alt="" coords="293,1079,304,1013,326,927,344,881,365,837,392,796,425,759,448,744,451,748,428,763,396,799,370,840,348,883,331,928,309,1014,298,1080"/>
+<area shape="rect" id="Node000017" href="$structILLIXR_1_1data__format_1_1imu__raw__type.html" title=" " alt="" coords="458,773,609,813"/>
+<area shape="poly" id="edge110_Node000000_Node000017" title=" " alt="" coords="296,1079,311,1024,336,955,373,884,397,852,425,823,456,805,459,810,428,827,401,855,377,887,340,957,316,1025,302,1080"/>
+<area shape="rect" id="Node000018" href="$structILLIXR_1_1data__format_1_1imu__type.html" title=" " alt="" coords="458,837,609,877"/>
+<area shape="poly" id="edge111_Node000000_Node000018" title=" " alt="" coords="301,1080,319,1036,345,984,380,932,425,887,456,870,459,875,428,891,385,935,350,987,324,1038,306,1082"/>
+<area shape="rect" id="Node000019" href="$structILLIXR_1_1data__format_1_1latency__ping.html" title="Ping packet structure sent over the network for latency measurement." alt="" coords="458,901,609,941"/>
+<area shape="poly" id="edge112_Node000000_Node000019" title=" " alt="" coords="309,1079,357,1014,389,980,425,951,456,936,459,940,428,956,392,984,361,1018,314,1083"/>
+<area shape="rect" id="Node000020" href="$structILLIXR_1_1data__format_1_1latency__pong.html" title="Pong packet structure sent back from server to client." alt="" coords="458,965,609,1005"/>
+<area shape="poly" id="edge113_Node000000_Node000020" title=" " alt="" coords="325,1082,371,1048,425,1015,457,1002,459,1007,428,1020,374,1052,328,1087"/>
+<area shape="rect" id="Node000021" href="$structILLIXR_1_1data__format_1_1mesh__type.html" title=" " alt="" coords="458,1029,609,1069"/>
+<area shape="poly" id="edge114_Node000000_Node000021" title=" " alt="" coords="379,1088,457,1067,458,1072,380,1093"/>
+<area shape="rect" id="Node000022" href="$structILLIXR_1_1data__format_1_1network__latency__result.html" title="Latency measurement result published to the switchboard." alt="" coords="442,1093,625,1133"/>
+<area shape="poly" id="edge115_Node000000_Node000022" title=" " alt="" coords="380,1111,442,1111,442,1116,380,1116"/>
+<area shape="rect" id="Node000023" href="$structILLIXR_1_1data__format_1_1openxr__view__frame.html" title=" " alt="" coords="454,1157,613,1197"/>
+<area shape="poly" id="edge116_Node000000_Node000023" title=" " alt="" coords="380,1134,458,1155,456,1160,379,1139"/>
+<area shape="rect" id="Node000024" href="$structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.html" title=" " alt="" coords="430,1221,637,1261"/>
+<area shape="poly" id="edge117_Node000000_Node000024" title=" " alt="" coords="328,1140,374,1175,428,1207,456,1219,454,1224,425,1212,371,1179,325,1144"/>
+<area shape="rect" id="Node000025" href="$structILLIXR_1_1data__format_1_1pose_1_1head__pose__type.html" title="Pose and velocity data for the head / HMD, with a timestamp." alt="" coords="446,2149,621,2189"/>
+<area shape="poly" id="edge118_Node000000_Node000025" title=" " alt="" coords="295,1147,297,1347,303,1490,313,1644,329,1798,353,1939,368,2002,386,2056,406,2101,429,2136,447,2151,444,2155,425,2139,401,2104,381,2058,363,2003,348,1940,324,1799,308,1644,297,1490,292,1347,290,1147"/>
+<area shape="rect" id="Node000031" href="$structILLIXR_1_1data__format_1_1pose_1_1texture__pose.html" title="Head pose paired with a rendered texture, used for asynchronous reprojection." alt="" coords="456,1285,611,1325"/>
+<area shape="poly" id="edge119_Node000000_Node000031" title=" " alt="" coords="314,1144,361,1209,392,1242,428,1271,457,1286,455,1290,425,1276,389,1246,357,1212,309,1147"/>
+<area shape="rect" id="Node000032" href="$structILLIXR_1_1data__format_1_1quest__controller__input.html" title=" " alt="" coords="446,1349,621,1389"/>
+<area shape="poly" id="edge120_Node000000_Node000032" title=" " alt="" coords="306,1145,324,1188,350,1240,385,1291,428,1335,447,1347,445,1351,425,1339,380,1295,345,1242,319,1190,301,1147"/>
+<area shape="rect" id="Node000033" href="$structILLIXR_1_1data__format_1_1rendered__frame.html" title=" " alt="" coords="458,1413,609,1453"/>
+<area shape="poly" id="edge121_Node000000_Node000033" title=" " alt="" coords="302,1146,316,1201,340,1270,377,1340,401,1371,428,1399,459,1417,456,1422,425,1403,397,1375,373,1342,336,1272,311,1203,296,1148"/>
+<area shape="rect" id="Node000034" href="$structILLIXR_1_1data__format_1_1scene__recon__path.html" title=" " alt="" coords="458,1477,609,1517"/>
+<area shape="poly" id="edge122_Node000000_Node000034" title=" " alt="" coords="298,1146,309,1213,331,1298,348,1343,370,1387,396,1428,428,1463,459,1482,456,1486,425,1467,392,1431,365,1390,344,1345,326,1300,304,1214,293,1147"/>
+<area shape="rect" id="Node000035" href="$structILLIXR_1_1data__format_1_1scene__recon__type.html" title=" " alt="" coords="458,1541,609,1581"/>
+<area shape="poly" id="edge123_Node000000_Node000035" title=" " alt="" coords="296,1147,303,1225,323,1327,340,1381,363,1434,392,1484,428,1527,459,1547,456,1551,425,1531,388,1487,358,1437,335,1383,318,1328,298,1225,291,1148"/>
+<area shape="rect" id="Node000036" href="$structILLIXR_1_1data__format_1_1semantic__frame.html" title="A single co&#45;captured, HEVC&#45;encoded RGB frame and raw depth frame, each with a matched head pose at th..." alt="" coords="458,1605,609,1645"/>
+<area shape="poly" id="edge124_Node000000_Node000036" title=" " alt="" coords="294,1147,298,1235,304,1292,315,1354,332,1418,355,1481,387,1540,429,1591,442,1603,459,1611,456,1615,440,1607,425,1595,383,1543,351,1483,327,1420,310,1356,299,1293,292,1236,289,1147"/>
+<area shape="rect" id="Node000037" href="$structILLIXR_1_1data__format_1_1semantic__xr_1_1point__cloud.html" title=" " alt="" coords="437,1669,630,1709"/>
+<area shape="poly" id="edge125_Node000000_Node000037" title=" " alt="" coords="299,1147,315,1261,342,1414,360,1490,381,1560,403,1617,429,1656,443,1667,440,1671,425,1659,399,1619,376,1562,355,1492,337,1415,310,1262,294,1148"/>
+<area shape="rect" id="Node000038" href="$structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response.html" title=" " alt="" coords="456,1734,611,1789"/>
+<area shape="poly" id="edge126_Node000000_Node000038" title=" " alt="" coords="299,1147,313,1273,340,1444,358,1531,378,1610,402,1675,429,1720,457,1741,454,1745,425,1723,397,1677,373,1611,352,1532,334,1445,308,1274,293,1148"/>
+<area shape="rect" id="Node000039" href="$structILLIXR_1_1data__format_1_1semantic__xr_1_1voice__query.html" title=" " alt="" coords="435,1813,632,1853"/>
+<area shape="poly" id="edge127_Node000000_Node000039" title=" " alt="" coords="297,1147,309,1288,333,1484,351,1583,372,1674,398,1749,413,1778,429,1800,442,1811,439,1815,425,1803,408,1780,393,1751,367,1676,345,1584,328,1484,304,1288,292,1147"/>
+<area shape="rect" id="Node000040" href="$structILLIXR_1_1data__format_1_1signal__to__quad.html" title=" " alt="" coords="458,1877,609,1917"/>
+<area shape="poly" id="edge128_Node000000_Node000040" title=" " alt="" coords="297,1147,307,1300,329,1515,346,1624,369,1725,396,1808,412,1839,429,1864,442,1875,459,1884,457,1889,440,1880,425,1867,407,1842,391,1810,363,1726,341,1625,324,1515,301,1300,291,1147"/>
+<area shape="rect" id="Node000041" href="$structILLIXR_1_1data__format_1_1stereo__frame.html" title=" " alt="" coords="458,1941,609,1981"/>
+<area shape="poly" id="edge129_Node000000_Node000041" title=" " alt="" coords="296,1147,304,1311,325,1545,342,1665,365,1775,394,1866,410,1901,429,1928,442,1939,459,1948,457,1953,439,1944,425,1931,406,1904,389,1868,360,1777,337,1666,320,1545,299,1311,291,1147"/>
+<area shape="rect" id="Node000042" href="$structILLIXR_1_1data__format_1_1vb__type.html" title=" " alt="" coords="458,2005,609,2045"/>
+<area shape="poly" id="edge130_Node000000_Node000042" title=" " alt="" coords="296,1147,302,1322,310,1444,321,1575,338,1706,361,1826,391,1925,409,1963,429,1992,442,2003,459,2012,456,2017,439,2008,425,1995,404,1965,386,1926,356,1827,333,1707,316,1576,304,1444,297,1322,290,1147"/>
+<area shape="rect" id="Node000043" href="$classILLIXR_1_1switchboard_1_1event__wrapper.html" title="Helper class for making event types." alt="" coords="427,2070,640,2125"/>
+<area shape="poly" id="edge131_Node000000_Node000043" title=" " alt="" coords="296,1147,301,1333,308,1463,320,1604,337,1745,360,1875,390,1982,408,2024,429,2056,442,2068,438,2072,425,2059,404,2026,385,1984,355,1876,331,1746,315,1605,303,1463,296,1333,290,1147"/>
+<area shape="rect" id="Node000003" href="$structILLIXR_1_1data__format_1_1binocular__cam__type.html" title=" " alt="" coords="693,5,854,45"/>
+<area shape="poly" id="edge96_Node000002_Node000003" title=" " alt="" coords="620,130,638,119,654,104,662,88,670,72,686,55,706,43,709,48,690,59,675,75,667,91,658,107,642,123,623,134"/>
+<area shape="rect" id="Node000004" href="$structILLIXR_1_1data__format_1_1cam__type__zed.html" title=" " alt="" coords="698,69,849,109"/>
+<area shape="poly" id="edge97_Node000002_Node000004" title=" " alt="" coords="622,127,697,107,699,112,623,132"/>
+<area shape="rect" id="Node000005" href="$structILLIXR_1_1data__format_1_1depth__type.html" title=" " alt="" coords="698,133,849,173"/>
+<area shape="poly" id="edge98_Node000002_Node000005" title=" " alt="" coords="623,151,698,151,698,156,623,156"/>
+<area shape="rect" id="Node000006" href="$structILLIXR_1_1data__format_1_1monocular__cam__type.html" title=" " alt="" coords="688,197,859,237"/>
+<area shape="poly" id="edge99_Node000002_Node000006" title=" " alt="" coords="623,174,699,195,697,200,622,180"/>
+<area shape="rect" id="Node000007" href="$structILLIXR_1_1data__format_1_1rgb__depth__type.html" title=" " alt="" coords="698,261,849,301"/>
+<area shape="poly" id="edge100_Node000002_Node000007" title=" " alt="" coords="623,172,642,183,658,199,667,216,675,232,690,247,709,259,706,263,686,251,670,235,662,218,654,203,638,187,620,177"/>
+<area shape="rect" id="Node000027" href="$structILLIXR_1_1data__format_1_1pose_1_1pose__base.html" title="Base struct for all pose types in ILLIXR." alt="" coords="5,2181,156,2221"/>
+<area shape="rect" id="Node000028" href="$structILLIXR_1_1data__format_1_1openxr__eye__view.html" title=" " alt="" coords="216,2085,367,2125"/>
+<area shape="poly" id="edge132_Node000027_Node000028" title=" " alt="" coords="128,2172,203,2135,232,2123,234,2128,205,2140,131,2177"/>
+<area shape="rect" id="Node000026" href="$structILLIXR_1_1data__format_1_1pose_1_1head__pose__data.html" title=" " alt="" coords="204,2149,379,2189"/>
+<area shape="poly" id="edge133_Node000027_Node000026" title=" " alt="" coords="170,2185,204,2180,204,2185,170,2190"/>
+<area shape="rect" id="Node000029" href="$structILLIXR_1_1data__format_1_1quest__controller__pose.html" title=" " alt="" coords="205,2213,378,2253"/>
+<area shape="poly" id="edge135_Node000027_Node000029" title=" " alt="" coords="170,2212,205,2218,204,2223,169,2217"/>
+<area shape="rect" id="Node000030" href="$structILLIXR_1_1data__format_1_1stereo__render__view.html" title=" " alt="" coords="212,2277,371,2317"/>
+<area shape="poly" id="edge136_Node000027_Node000030" title=" " alt="" coords="131,2226,205,2263,234,2275,232,2280,203,2268,128,2230"/>
+<area shape="poly" id="edge134_Node000026_Node000025" title=" " alt="" coords="392,2167,446,2167,446,2172,392,2172"/>
+</map>

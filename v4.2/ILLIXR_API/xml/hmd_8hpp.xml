@@ -1,0 +1,217 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="hmd_8hpp" kind="file" language="C++">
+    <compoundname>hmd.hpp</compoundname>
+    <includes local="no">array</includes>
+    <includes local="no">cstdlib</includes>
+    <includes local="no">string</includes>
+    <includes local="no">vector</includes>
+    <includedby refid="openwarp__vk_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp</includedby>
+    <includedby refid="plugins_2openwarp__vk_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/plugin.cpp</includedby>
+    <includedby refid="plugins_2timewarp__gl_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/timewarp_gl/plugin.hpp</includedby>
+    <includedby refid="timewarp__vk_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp</includedby>
+    <includedby refid="hmd_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils/hmd.cpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp</label>
+        <link refid="hmd_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>array</label>
+      </node>
+      <node id="3">
+        <label>cstdlib</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="5">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp</label>
+        <link refid="hmd_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.cpp</label>
+        <link refid="openwarp__vk_8cpp"/>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp</label>
+        <link refid="openwarp__vk_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/plugin.cpp</label>
+        <link refid="plugins_2openwarp__vk_2plugin_8cpp"/>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openwarp_vk/plugin.hpp</label>
+        <link refid="plugins_2openwarp__vk_2plugin_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/timewarp_gl/plugin.cpp</label>
+        <link refid="plugins_2timewarp__gl_2plugin_8cpp"/>
+      </node>
+      <node id="6">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/timewarp_gl/plugin.hpp</label>
+        <link refid="plugins_2timewarp__gl_2plugin_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/timewarp_vk/plugin.cpp</label>
+        <link refid="plugins_2timewarp__vk_2plugin_8cpp"/>
+      </node>
+      <node id="9">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/timewarp_vk/plugin.hpp</label>
+        <link refid="plugins_2timewarp__vk_2plugin_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp</label>
+        <link refid="timewarp__vk_8cpp"/>
+      </node>
+      <node id="8">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp</label>
+        <link refid="timewarp__vk_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils/hmd.cpp</label>
+        <link refid="hmd_8cpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1HMD" prot="public">ILLIXR::HMD</innerclass>
+    <innerclass refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t" prot="public">ILLIXR::HMD::mesh_coord2d_t</innerclass>
+    <innerclass refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t" prot="public">ILLIXR::HMD::mesh_coord3d_t</innerclass>
+    <innerclass refid="structILLIXR_1_1HMD_1_1uv__coord__t" prot="public">ILLIXR::HMD::uv_coord_t</innerclass>
+    <innerclass refid="structILLIXR_1_1HMD_1_1hmd__info__t" prot="public">ILLIXR::HMD::hmd_info_t</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" prot="public" static="no">
+        <name>FLOAT</name>
+        <initializer>float</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="20" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" bodystart="20" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdlib&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__ANDROID__)<sp/>||<sp/>defined(USE_GL)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>if<sp/>defined(_WIN32)<sp/>||<sp/>defined(_WIN64)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;windows.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;EGL/egl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;GLES/gl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;GL/gl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>define<sp/>FLOAT<sp/>GLfloat</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>define<sp/>FLOAT<sp/>float</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>HMD<sp/>utility<sp/>class<sp/>for<sp/>warp<sp/>mesh<sp/>structs,<sp/>spline<sp/>math,<sp/>etc</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="classILLIXR_1_1HMD" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1HMD" kindref="compound">HMD</ref><sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="26" refid="classILLIXR_1_1HMD_1acf308b936efa0c114d8431356677b213" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1HMD_1acf308b936efa0c114d8431356677b213" kindref="member">NUM_EYES</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="27" refid="classILLIXR_1_1HMD_1ac0424d94a982dc21230d9c48af71ceb3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1HMD_1ac0424d94a982dc21230d9c48af71ceb3" kindref="member">NUM_COLOR_CHANNELS</ref><sp/>=<sp/>3;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t" kindref="compound">mesh_coord2d_t</ref><sp/>{</highlight></codeline>
+<codeline lineno="30" refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t_1af296fb64b1680595c95162e8bb0c6a62" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref><sp/><ref refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t_1af296fb64b1680595c95162e8bb0c6a62" kindref="member">x</ref>;</highlight></codeline>
+<codeline lineno="31" refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t_1acd5187046fdd5ceeb95450d4a7747855" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref><sp/><ref refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t_1acd5187046fdd5ceeb95450d4a7747855" kindref="member">y</ref>;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34" refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t" kindref="compound">mesh_coord3d_t</ref><sp/>{</highlight></codeline>
+<codeline lineno="35" refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a905ade884e02f34526bfcda5ea71eae7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref><sp/><ref refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a905ade884e02f34526bfcda5ea71eae7" kindref="member">x</ref>;</highlight></codeline>
+<codeline lineno="36" refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a826bff768f531e36cbf374f656e1736e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref><sp/><ref refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a826bff768f531e36cbf374f656e1736e" kindref="member">y</ref>;</highlight></codeline>
+<codeline lineno="37" refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a00f863936499d8e380800c8d123a5f79" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref><sp/><ref refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t_1a00f863936499d8e380800c8d123a5f79" kindref="member">z</ref>;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="structILLIXR_1_1HMD_1_1uv__coord__t" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="structILLIXR_1_1HMD_1_1uv__coord__t" kindref="compound">uv_coord_t</ref><sp/>{</highlight></codeline>
+<codeline lineno="41" refid="structILLIXR_1_1HMD_1_1uv__coord__t_1a829d8a3c0e7703fc7869dfa188d24500" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref><sp/><ref refid="structILLIXR_1_1HMD_1_1uv__coord__t_1a829d8a3c0e7703fc7869dfa188d24500" kindref="member">u</ref>;</highlight></codeline>
+<codeline lineno="42" refid="structILLIXR_1_1HMD_1_1uv__coord__t_1ab466ef6bf5cfa4a02fe57446dc33fa1c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="hmd_8hpp_1ae8690abbffa85934d64d545920e2b108" kindref="member">FLOAT</ref><sp/><ref refid="structILLIXR_1_1HMD_1_1uv__coord__t_1ab466ef6bf5cfa4a02fe57446dc33fa1c" kindref="member">v</ref>;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="structILLIXR_1_1HMD_1_1hmd__info__t" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t" kindref="compound">hmd_info_t</ref><sp/>{</highlight></codeline>
+<codeline lineno="46" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1acfe105aeb46ca65f61f1569305087a8a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1acfe105aeb46ca65f61f1569305087a8a" kindref="member">display_pixels_wide</ref>;</highlight></codeline>
+<codeline lineno="47" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a53fea2c446ede236655657649a4f9da2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a53fea2c446ede236655657649a4f9da2" kindref="member">display_pixels_high</ref>;</highlight></codeline>
+<codeline lineno="48" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1ad00fa494958e6d85ea1fec7303ed5d86" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1ad00fa494958e6d85ea1fec7303ed5d86" kindref="member">tile_pixels_wide</ref>;</highlight></codeline>
+<codeline lineno="49" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a255de2727172cbcda6bb9e9954c120d2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a255de2727172cbcda6bb9e9954c120d2" kindref="member">tile_pixels_high</ref>;</highlight></codeline>
+<codeline lineno="50" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a149900ca195b2e86170f08769c7d57de" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a149900ca195b2e86170f08769c7d57de" kindref="member">eye_tiles_wide</ref>;</highlight></codeline>
+<codeline lineno="51" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a088194c36c5db2cf11c70e7804767b1d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a088194c36c5db2cf11c70e7804767b1d" kindref="member">eye_tiles_high</ref>;</highlight></codeline>
+<codeline lineno="52" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a3f198c8f849668b6d8881e1c2f9fb40d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a3f198c8f849668b6d8881e1c2f9fb40d" kindref="member">visible_pixels_wide</ref>;</highlight></codeline>
+<codeline lineno="53" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a57cecba42dadfcb97e93c2ad92416c86" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a57cecba42dadfcb97e93c2ad92416c86" kindref="member">visible_pixels_high</ref>;</highlight></codeline>
+<codeline lineno="54" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1abaa123099a082ee3512da66b73284c09" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1abaa123099a082ee3512da66b73284c09" kindref="member">visible_meters_wide</ref>;</highlight></codeline>
+<codeline lineno="55" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a99572548ea075e0f21e60eeac309e9c2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a99572548ea075e0f21e60eeac309e9c2" kindref="member">visible_meters_high</ref>;</highlight></codeline>
+<codeline lineno="56" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1ae14abc9c2e3bd02c1a6c2683298e8abd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1ae14abc9c2e3bd02c1a6c2683298e8abd" kindref="member">lens_separation_in_meters</ref>;</highlight></codeline>
+<codeline lineno="57" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a468c0cd49b472b278d06c30e9b819892" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a468c0cd49b472b278d06c30e9b819892" kindref="member">meters_per_tan_angle_at_center</ref>;</highlight></codeline>
+<codeline lineno="58" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a88735aef5b3a8ce37fc184ab43432d0f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a88735aef5b3a8ce37fc184ab43432d0f" kindref="member">num_knots</ref>;</highlight></codeline>
+<codeline lineno="59" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a56065f33c78f14f7748cde5038bff16e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1a56065f33c78f14f7748cde5038bff16e" kindref="member">K</ref>[11];</highlight></codeline>
+<codeline lineno="60" refid="structILLIXR_1_1HMD_1_1hmd__info__t_1aa459d855c41ace4e7c2cfaf2d14df208" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t_1aa459d855c41ace4e7c2cfaf2d14df208" kindref="member">chromatic_aberration</ref>[4];</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1HMD_1a838e4f528d5363dcc1af22b84ce75176" kindref="member">max_float</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>y);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1HMD_1a2060b43b87214f783e11ad8075eff1a3" kindref="member">min_float</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>y);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1HMD_1a4f6ccb1f8014eb3ce16651ecf8d6cbe0" kindref="member">evaluate_catmull_rom_spline</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>value,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>K,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>num_knots);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1HMD_1a50c0c6cb4a3611a2f233db63aceed6b9" kindref="member">get_default_hmd_info</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>display_pixels_wide,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>display_pixels_high,</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">display_meters_wide</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">display_meters_high</ref>,</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>lens_separation,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>meters_per_tan_angle,</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>aberration[4],<sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t" kindref="compound">hmd_info_t</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">hmd_info</ref>);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1HMD_1aac1d83b857c1e43542a17795f8fcb5b5" kindref="member">build_distortion_meshes</ref>(std::array&lt;std::array&lt;std::vector&lt;mesh_coord2d_t&gt;,<sp/><ref refid="classILLIXR_1_1HMD_1ac0424d94a982dc21230d9c48af71ceb3" kindref="member">NUM_COLOR_CHANNELS</ref>&gt;,<sp/><ref refid="classILLIXR_1_1HMD_1acf308b936efa0c114d8431356677b213" kindref="member">NUM_EYES</ref>&gt;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">distort_coords</ref>,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t" kindref="compound">hmd_info_t</ref>&amp;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">hmd_info</ref>);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="76"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,345 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="draco_8hpp" kind="file" language="C++">
+    <compoundname>draco.hpp</compoundname>
+    <includes local="yes">draco_illixr/mesh/mesh.h</includes>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includedby refid="plugins_2ada_2mesh__decompression__grey_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/ada/mesh_decompression_grey/plugin.hpp</includedby>
+    <includedby refid="plugins_2ada_2scene__management_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/ada/scene_management/plugin.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/draco.hpp</label>
+        <link refid="draco_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="6">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>any</label>
+      </node>
+      <node id="7">
+        <label>atomic</label>
+      </node>
+      <node id="33">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="8">
+        <label>cassert</label>
+      </node>
+      <node id="23">
+        <label>chrono</label>
+      </node>
+      <node id="4">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="2">
+        <label>draco_illixr/mesh/mesh.h</label>
+      </node>
+      <node id="30">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="9">
+        <label>functional</label>
+      </node>
+      <node id="15">
+        <label>iostream</label>
+      </node>
+      <node id="32">
+        <label>list</label>
+      </node>
+      <node id="16">
+        <label>memory</label>
+      </node>
+      <node id="17">
+        <label>mutex</label>
+      </node>
+      <node id="24">
+        <label>optional</label>
+      </node>
+      <node id="18">
+        <label>shared_mutex</label>
+      </node>
+      <node id="21">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="29">
+        <label>sstream</label>
+      </node>
+      <node id="10">
+        <label>stdexcept</label>
+      </node>
+      <node id="28">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>thread</label>
+      </node>
+      <node id="19">
+        <label>typeindex</label>
+      </node>
+      <node id="20">
+        <label>unordered_map</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="25">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/draco.hpp</label>
+        <link refid="draco_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/ada/mesh_decompression_grey/plugin.cpp</label>
+        <link refid="plugins_2ada_2mesh__decompression__grey_2plugin_8cpp"/>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/ada/mesh_decompression_grey/plugin.hpp</label>
+        <link refid="plugins_2ada_2mesh__decompression__grey_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/ada/scene_management/plugin.cpp</label>
+        <link refid="plugins_2ada_2scene__management_2plugin_8cpp"/>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/ada/scene_management/plugin.hpp</label>
+        <link refid="plugins_2ada_2scene__management_2plugin_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1data__format_1_1draco__type" prot="public">ILLIXR::data_format::draco_type</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;draco_illixr/mesh/mesh.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="switchboard_8hpp" kindref="compound">illixr/switchboard.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format" kindref="compound">ILLIXR::data_format</ref><sp/>{</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8" refid="namespaceILLIXR_1_1data__format_1a4e5d9dffa2bc977b072244250e38762e" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format_1a4e5d9dffa2bc977b072244250e38762e" kindref="member">VoxelBlockIndex</ref><sp/>=<sp/>std::tuple&lt;int,<sp/>int,<sp/>int&gt;;</highlight></codeline>
+<codeline lineno="9" refid="namespaceILLIXR_1_1data__format_1a5e7cfe1e0f99fd2e696d506994dbc8bb" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format_1a5e7cfe1e0f99fd2e696d506994dbc8bb" kindref="member">NewVB</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>std::tuple&lt;VoxelBlockIndex,<sp/>std::vector&lt;Eigen::Vector3d&gt;,<sp/>std::vector&lt;Eigen::Vector3d&gt;&gt;;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="structILLIXR_1_1data__format_1_1draco__type" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1draco__type" kindref="compound">draco_type</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1_1event" kindref="compound">switchboard::event</ref><sp/>{</highlight></codeline>
+<codeline lineno="12" refid="structILLIXR_1_1data__format_1_1draco__type_1a29645ac95500c5f1008d9cf9ce40830d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;draco_illixr::Mesh&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a29645ac95500c5f1008d9cf9ce40830d" kindref="member">preprocessed_mesh</ref>;</highlight></codeline>
+<codeline lineno="13" refid="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" kindref="member">frame_id</ref>;</highlight></codeline>
+<codeline lineno="14" refid="structILLIXR_1_1data__format_1_1draco__type_1a203cb1c729d405aa755843c118748ca5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a203cb1c729d405aa755843c118748ca5" kindref="member">num_vertices</ref>;</highlight></codeline>
+<codeline lineno="15" refid="structILLIXR_1_1data__format_1_1draco__type_1a8b4fb0260953363ebdf9e2325d6e52c6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a8b4fb0260953363ebdf9e2325d6e52c6" kindref="member">num_faces</ref>;</highlight></codeline>
+<codeline lineno="16" refid="structILLIXR_1_1data__format_1_1draco__type_1aa1634b19c03b072b11e098ee007e8348" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1aa1634b19c03b072b11e098ee007e8348" kindref="member">chunk_id</ref>;</highlight></codeline>
+<codeline lineno="17" refid="structILLIXR_1_1data__format_1_1draco__type_1a5f20cf93bfe333fc1c6b93ee5f788b18" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a5f20cf93bfe333fc1c6b93ee5f788b18" kindref="member">max_chunk</ref>;</highlight></codeline>
+<codeline lineno="18" refid="structILLIXR_1_1data__format_1_1draco__type_1a1c60dcae72c82ae0fcbe186863dafef9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;Eigen::Vector3d&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a1c60dcae72c82ae0fcbe186863dafef9" kindref="member">vertices</ref>;</highlight></codeline>
+<codeline lineno="19" refid="structILLIXR_1_1data__format_1_1draco__type_1a4a4699cc061329d7292d93801ce57457" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;Eigen::Vector3d&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a4a4699cc061329d7292d93801ce57457" kindref="member">colors</ref>;</highlight></codeline>
+<codeline lineno="20" refid="structILLIXR_1_1data__format_1_1draco__type_1a565c6bc57830797233e5fbc7e4d87e93" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;unsigned,<sp/>std::vector&lt;NewVB&gt;&gt;<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a565c6bc57830797233e5fbc7e4d87e93" kindref="member">scene_update_mapping</ref>;</highlight></codeline>
+<codeline lineno="21" refid="structILLIXR_1_1data__format_1_1draco__type_1a8ab6df05b26c9f5d366762016e052d26" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a8ab6df05b26c9f5d366762016e052d26" kindref="member">face_number</ref>;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>91<sp/>for<sp/>moving<sp/>scene<sp/>update<sp/>mapping</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="structILLIXR_1_1data__format_1_1draco__type_1a6ead16c8b5fc1bd062607de4a06797d2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a6ead16c8b5fc1bd062607de4a06797d2" kindref="member">draco_type</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">chunk_id_</ref>,<sp/>std::unordered_map&lt;</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal">,<sp/>std::vector&lt;NewVB&gt;&gt;&amp;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">inputUpdateMap</ref>)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" kindref="member">frame_id</ref>(id)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1aa1634b19c03b072b11e098ee007e8348" kindref="member">chunk_id</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">chunk_id_</ref>}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a565c6bc57830797233e5fbc7e4d87e93" kindref="member">scene_update_mapping</ref>(<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">move</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">inputUpdateMap</ref>))<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>527<sp/>for<sp/>moving<sp/>generatePartialMesh</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="structILLIXR_1_1data__format_1_1draco__type_1aed64bc1337077d1e4f56fd46ec80df19" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1aed64bc1337077d1e4f56fd46ec80df19" kindref="member">draco_type</ref>(std::unique_ptr&lt;draco_illixr::Mesh&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">input_mesh</ref>,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>std::vector&lt;Eigen::Vector3d&gt;&amp;<sp/>vertices_,</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;Eigen::Vector3d&gt;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">colors_</ref>,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">face_number_</ref>)</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a29645ac95500c5f1008d9cf9ce40830d" kindref="member">preprocessed_mesh</ref>(<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">move</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">input_mesh</ref>))</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" kindref="member">frame_id</ref>(id)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a1c60dcae72c82ae0fcbe186863dafef9" kindref="member">vertices</ref>{vertices_}</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a4a4699cc061329d7292d93801ce57457" kindref="member">colors</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">colors_</ref>}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a8ab6df05b26c9f5d366762016e052d26" kindref="member">face_number</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">face_number_</ref>}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="structILLIXR_1_1data__format_1_1draco__type_1a25ea9887eba7940869d5a23cb0e385f4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a25ea9887eba7940869d5a23cb0e385f4" kindref="member">draco_type</ref>(std::unique_ptr&lt;draco_illixr::Mesh&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">input_mesh</ref>,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a29645ac95500c5f1008d9cf9ce40830d" kindref="member">preprocessed_mesh</ref>(<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">move</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">input_mesh</ref>))</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" kindref="member">frame_id</ref>(id)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="structILLIXR_1_1data__format_1_1draco__type_1ae6f90ee5d3757088c1f71b2b375ecb28" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1ae6f90ee5d3757088c1f71b2b375ecb28" kindref="member">draco_type</ref>(std::unique_ptr&lt;draco_illixr::Mesh&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">input_mesh</ref>,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">chunk_id_</ref>,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">max_chunk_</ref>)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a29645ac95500c5f1008d9cf9ce40830d" kindref="member">preprocessed_mesh</ref>(<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">move</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">input_mesh</ref>))</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" kindref="member">frame_id</ref>(id)</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1aa1634b19c03b072b11e098ee007e8348" kindref="member">chunk_id</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">chunk_id_</ref>)</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a5f20cf93bfe333fc1c6b93ee5f788b18" kindref="member">max_chunk</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">max_chunk_</ref>)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="structILLIXR_1_1data__format_1_1draco__type_1a2c099b77ab81f5921c905b47ddb91b32" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a2c099b77ab81f5921c905b47ddb91b32" kindref="member">draco_type</ref>(std::unique_ptr&lt;draco_illixr::Mesh&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">input_mesh</ref>,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">num_vertices_</ref>,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">num_faces_</ref>,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">chunk_id_</ref>,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">max_chunk_</ref>)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a29645ac95500c5f1008d9cf9ce40830d" kindref="member">preprocessed_mesh</ref>(<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">move</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">input_mesh</ref>))</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" kindref="member">frame_id</ref>(id)</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a203cb1c729d405aa755843c118748ca5" kindref="member">num_vertices</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">num_vertices_</ref>)</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a8b4fb0260953363ebdf9e2325d6e52c6" kindref="member">num_faces</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">num_faces_</ref>)</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1aa1634b19c03b072b11e098ee007e8348" kindref="member">chunk_id</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">chunk_id_</ref>)</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1draco__type_1a5f20cf93bfe333fc1c6b93ee5f788b18" kindref="member">max_chunk</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">max_chunk_</ref>)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::data_format</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/draco.hpp"/>
+  </compounddef>
+</doxygen>

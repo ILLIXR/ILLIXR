@@ -1,0 +1,23 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classILLIXR_1_1switchboard_1_1writer.html" title="A handle which can publish events to a topic." alt="" coords="5,416,199,456"/>
+<area shape="rect" id="Node000001" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="267,5,464,75"/>
+<area shape="poly" id="edge138_Node000000_Node000001" title=" " alt="" coords="106,402,119,336,145,252,163,207,186,163,213,122,245,85,265,69,268,73,249,89,217,125,190,166,168,209,150,254,124,338,111,403"/>
+<area shape="rect" id="Node000002" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="266,99,465,168"/>
+<area shape="poly" id="edge139_Node000000_Node000002" title=" " alt="" coords="111,402,130,353,158,293,196,232,219,203,245,178,264,164,267,168,248,182,223,207,201,235,163,296,135,355,116,404"/>
+<area shape="rect" id="Node000003" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="258,192,473,261"/>
+<area shape="poly" id="edge140_Node000000_Node000003" title=" " alt="" coords="122,403,173,337,207,302,245,271,265,259,267,264,248,276,211,306,177,341,126,406"/>
+<area shape="rect" id="Node000004" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="255,286,475,341"/>
+<area shape="poly" id="edge141_Node000000_Node000004" title=" " alt="" coords="144,406,192,377,246,350,273,338,275,343,248,354,194,382,146,411"/>
+<area shape="rect" id="Node000005" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="257,365,473,419"/>
+<area shape="poly" id="edge142_Node000000_Node000005" title=" " alt="" coords="212,415,257,407,257,413,213,420"/>
+<area shape="rect" id="Node000006" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="274,444,457,513"/>
+<area shape="poly" id="edge143_Node000000_Node000006" title=" " alt="" coords="213,451,274,461,273,467,212,456"/>
+<area shape="rect" id="Node000007" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="273,537,457,607"/>
+<area shape="poly" id="edge144_Node000000_Node000007" title=" " alt="" coords="145,461,193,492,248,523,274,535,272,540,245,528,191,497,142,466"/>
+<area shape="rect" id="Node000008" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="274,631,457,700"/>
+<area shape="poly" id="edge145_Node000000_Node000008" title=" " alt="" coords="124,467,174,541,209,581,248,617,275,633,272,637,245,621,205,585,170,545,119,470"/>
+<area shape="rect" id="Node000009" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="274,724,457,793"/>
+<area shape="poly" id="edge146_Node000000_Node000009" title=" " alt="" coords="115,468,132,521,160,585,198,652,222,683,248,710,275,728,272,733,245,714,218,686,194,655,155,588,127,523,110,470"/>
+<area shape="rect" id="Node000010" href="$classILLIXR_1_1switchboard_1_1network__writer.html" title=" " alt="" coords="247,818,484,873"/>
+<area shape="poly" id="edge147_Node000000_Node000010" title=" " alt="" coords="110,469,121,538,146,628,164,675,187,722,215,765,248,803,264,816,261,820,245,807,211,768,182,724,159,678,141,630,116,539,104,470"/>
+</map>

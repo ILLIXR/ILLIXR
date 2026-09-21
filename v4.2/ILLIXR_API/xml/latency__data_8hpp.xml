@@ -1,0 +1,404 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="latency__data_8hpp" kind="file" language="C++">
+    <compoundname>latency_data.hpp</compoundname>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includes local="no">cstdint</includes>
+    <includedby refid="latency_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/latency.hpp</includedby>
+    <includedby refid="plugins_2network__latency_2rx_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/rx/plugin.hpp</includedby>
+    <includedby refid="plugins_2network__latency_2tx_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp</includedby>
+    <includedby refid="offload__rendering__client_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp</includedby>
+    <includedby refid="oxr__relay_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp</label>
+        <link refid="latency__data_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="5">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>any</label>
+      </node>
+      <node id="6">
+        <label>atomic</label>
+      </node>
+      <node id="32">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="33">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="7">
+        <label>cassert</label>
+      </node>
+      <node id="22">
+        <label>chrono</label>
+      </node>
+      <node id="3">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="37">
+        <label>cstdint</label>
+      </node>
+      <node id="29">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="30">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="8">
+        <label>functional</label>
+      </node>
+      <node id="14">
+        <label>iostream</label>
+      </node>
+      <node id="31">
+        <label>list</label>
+      </node>
+      <node id="15">
+        <label>memory</label>
+      </node>
+      <node id="16">
+        <label>mutex</label>
+      </node>
+      <node id="23">
+        <label>optional</label>
+      </node>
+      <node id="17">
+        <label>shared_mutex</label>
+      </node>
+      <node id="20">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="28">
+        <label>sstream</label>
+      </node>
+      <node id="9">
+        <label>stdexcept</label>
+      </node>
+      <node id="27">
+        <label>string</label>
+      </node>
+      <node id="10">
+        <label>thread</label>
+      </node>
+      <node id="18">
+        <label>typeindex</label>
+      </node>
+      <node id="19">
+        <label>unordered_map</label>
+      </node>
+      <node id="11">
+        <label>utility</label>
+      </node>
+      <node id="24">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp</label>
+        <link refid="latency__data_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/latency.hpp</label>
+        <link refid="latency_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/rx/plugin.cpp</label>
+        <link refid="plugins_2network__latency_2rx_2plugin_8cpp"/>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/rx/plugin.hpp</label>
+        <link refid="plugins_2network__latency_2rx_2plugin_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.cpp</label>
+        <link refid="plugins_2network__latency_2tx_2plugin_8cpp"/>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/network_latency/tx/plugin.hpp</label>
+        <link refid="plugins_2network__latency_2tx_2plugin_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp</label>
+        <link refid="offload__rendering__client_8cpp"/>
+      </node>
+      <node id="7">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp</label>
+        <link refid="offload__rendering__client_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_client/plugin.cpp</label>
+        <link refid="plugins_2offload__rendering__client_2plugin_8cpp"/>
+      </node>
+      <node id="11">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp</label>
+        <link refid="oxr__relay_8cpp"/>
+      </node>
+      <node id="10">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp</label>
+        <link refid="oxr__relay_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1data__format_1_1latency__ping" prot="public">ILLIXR::data_format::latency_ping</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1latency__pong" prot="public">ILLIXR::data_format::latency_pong</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1network__latency__result" prot="public">ILLIXR::data_format::network_latency_result</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="switchboard_8hpp" kindref="compound">illixr/switchboard.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format" kindref="compound">ILLIXR::data_format</ref><sp/>{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="structILLIXR_1_1data__format_1_1latency__ping" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1latency__ping" kindref="compound">latency_ping</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1_1event" kindref="compound">switchboard::event</ref><sp/>{</highlight></codeline>
+<codeline lineno="16" refid="structILLIXR_1_1data__format_1_1latency__ping_1a404a2f77de346d3ccee77667934935c9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__ping_1a404a2f77de346d3ccee77667934935c9" kindref="member">sequence_number</ref>;<sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="17" refid="structILLIXR_1_1data__format_1_1latency__ping_1a7dc61ed3442cf4989cb4297bf9bbfefb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__ping_1a7dc61ed3442cf4989cb4297bf9bbfefb" kindref="member">client_timestamp_ns</ref>;<sp/></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="structILLIXR_1_1data__format_1_1latency__ping_1ae04d1db4cbfb30e39a3a78f3a5aa0ea9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__ping_1ae04d1db4cbfb30e39a3a78f3a5aa0ea9" kindref="member">latency_ping</ref>()</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__ping_1a404a2f77de346d3ccee77667934935c9" kindref="member">sequence_number</ref>{0}</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__ping_1a7dc61ed3442cf4989cb4297bf9bbfefb" kindref="member">client_timestamp_ns</ref>{0}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23" refid="structILLIXR_1_1data__format_1_1latency__ping_1a3f39f1f17ff9208caedebc5c3ac34d84" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__ping_1a3f39f1f17ff9208caedebc5c3ac34d84" kindref="member">latency_ping</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/>seq,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ts</ref>)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__ping_1a404a2f77de346d3ccee77667934935c9" kindref="member">sequence_number</ref>{seq}</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__ping_1a7dc61ed3442cf4989cb4297bf9bbfefb" kindref="member">client_timestamp_ns</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ts</ref>}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="26"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="structILLIXR_1_1data__format_1_1latency__pong" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1latency__pong" kindref="compound">latency_pong</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1_1event" kindref="compound">switchboard::event</ref><sp/>{</highlight></codeline>
+<codeline lineno="34" refid="structILLIXR_1_1data__format_1_1latency__pong_1af9784bae2ccbb13c4148a7a1a15e6825" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1af9784bae2ccbb13c4148a7a1a15e6825" kindref="member">sequence_number</ref>;<sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="35" refid="structILLIXR_1_1data__format_1_1latency__pong_1afa07f497495c1a6644b14a0d3830fd1c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1afa07f497495c1a6644b14a0d3830fd1c" kindref="member">client_timestamp_ns</ref>;<sp/></highlight></codeline>
+<codeline lineno="36" refid="structILLIXR_1_1data__format_1_1latency__pong_1a620a94ee6328de9ed5ea025db95f3253" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1a620a94ee6328de9ed5ea025db95f3253" kindref="member">server_timestamp_ns</ref>;<sp/></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="structILLIXR_1_1data__format_1_1latency__pong_1adb01716ef0ac9323836f6a23a24d3b94" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1adb01716ef0ac9323836f6a23a24d3b94" kindref="member">latency_pong</ref>()</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1af9784bae2ccbb13c4148a7a1a15e6825" kindref="member">sequence_number</ref>{0}</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1afa07f497495c1a6644b14a0d3830fd1c" kindref="member">client_timestamp_ns</ref>{0}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1a620a94ee6328de9ed5ea025db95f3253" kindref="member">server_timestamp_ns</ref>{0}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="structILLIXR_1_1data__format_1_1latency__pong_1a1929247f2cfecd7bc175352e69311262" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1a1929247f2cfecd7bc175352e69311262" kindref="member">latency_pong</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/>seq,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_ts</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_ts</ref>)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1af9784bae2ccbb13c4148a7a1a15e6825" kindref="member">sequence_number</ref>{seq}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1afa07f497495c1a6644b14a0d3830fd1c" kindref="member">client_timestamp_ns</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_ts</ref>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1latency__pong_1a620a94ee6328de9ed5ea025db95f3253" kindref="member">server_timestamp_ns</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_ts</ref>}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="structILLIXR_1_1data__format_1_1network__latency__result" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1network__latency__result" kindref="compound">network_latency_result</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1_1event" kindref="compound">switchboard::event</ref><sp/>{</highlight></codeline>
+<codeline lineno="64" refid="structILLIXR_1_1data__format_1_1network__latency__result_1afa2f3cd617878fec39673c1864f4d55d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1afa2f3cd617878fec39673c1864f4d55d" kindref="member">sequence_number</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="65" refid="structILLIXR_1_1data__format_1_1network__latency__result_1aa6ddba8d435a7749fed486d3251ead71" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1aa6ddba8d435a7749fed486d3251ead71" kindref="member">round_trip_time_ms</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="66" refid="structILLIXR_1_1data__format_1_1network__latency__result_1ae7a4208dd0e9dd381bfec0a2cf03f783" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1ae7a4208dd0e9dd381bfec0a2cf03f783" kindref="member">estimated_one_way_latency_ms</ref>;<sp/></highlight></codeline>
+<codeline lineno="67" refid="structILLIXR_1_1data__format_1_1network__latency__result_1a3804021c0492a6562fd549acc93ef963" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a3804021c0492a6562fd549acc93ef963" kindref="member">client_to_server_ms</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="68" refid="structILLIXR_1_1data__format_1_1network__latency__result_1a0d4dc3e21fc9cfb762d1cf553773b9f4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a0d4dc3e21fc9cfb762d1cf553773b9f4" kindref="member">server_to_client_ms</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="69" refid="structILLIXR_1_1data__format_1_1network__latency__result_1a54445c1b33d275bd2648473d61972e5d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a54445c1b33d275bd2648473d61972e5d" kindref="member">estimated_clock_offset_ms</ref>;<sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="70" refid="structILLIXR_1_1data__format_1_1network__latency__result_1af63dd7abd70fb9215eaa0ca31d1b2c64" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1af63dd7abd70fb9215eaa0ca31d1b2c64" kindref="member">smoothed_clock_offset_ms</ref>;<sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="71" refid="structILLIXR_1_1data__format_1_1network__latency__result_1a3d57d2145f64d5e8c63b744f7a25d903" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a3d57d2145f64d5e8c63b744f7a25d903" kindref="member">smoothed_rtt_ms</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="72" refid="structILLIXR_1_1data__format_1_1network__latency__result_1a1ccf53a99a21fcd2d124b022112120a4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a1ccf53a99a21fcd2d124b022112120a4" kindref="member">measurement_timestamp_ns</ref>;<sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="structILLIXR_1_1data__format_1_1network__latency__result_1a2b62de9662e3e90476c3aaa64c6cb64d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a2b62de9662e3e90476c3aaa64c6cb64d" kindref="member">network_latency_result</ref>()</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1afa2f3cd617878fec39673c1864f4d55d" kindref="member">sequence_number</ref>{0}</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1aa6ddba8d435a7749fed486d3251ead71" kindref="member">round_trip_time_ms</ref>{0.0}</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1ae7a4208dd0e9dd381bfec0a2cf03f783" kindref="member">estimated_one_way_latency_ms</ref>{0.0}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a3804021c0492a6562fd549acc93ef963" kindref="member">client_to_server_ms</ref>{0.0}</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a0d4dc3e21fc9cfb762d1cf553773b9f4" kindref="member">server_to_client_ms</ref>{0.0}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a54445c1b33d275bd2648473d61972e5d" kindref="member">estimated_clock_offset_ms</ref>{0.0}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1af63dd7abd70fb9215eaa0ca31d1b2c64" kindref="member">smoothed_clock_offset_ms</ref>{0.0}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a3d57d2145f64d5e8c63b744f7a25d903" kindref="member">smoothed_rtt_ms</ref>{0.0}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a1ccf53a99a21fcd2d124b022112120a4" kindref="member">measurement_timestamp_ns</ref>{0}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85" refid="structILLIXR_1_1data__format_1_1network__latency__result_1a99c888525741fa3f3bc46ddb9b13f29a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a99c888525741fa3f3bc46ddb9b13f29a" kindref="member">network_latency_result</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/>seq,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rtt_ms</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">c2s_ms</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">s2c_ms</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">clock_offset_ms</ref>,</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">smoothed_offset</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">smoothed_rtt</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ts</ref>)</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1afa2f3cd617878fec39673c1864f4d55d" kindref="member">sequence_number</ref>{seq}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1aa6ddba8d435a7749fed486d3251ead71" kindref="member">round_trip_time_ms</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rtt_ms</ref>}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1ae7a4208dd0e9dd381bfec0a2cf03f783" kindref="member">estimated_one_way_latency_ms</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rtt_ms</ref><sp/>/<sp/>2.0}</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a3804021c0492a6562fd549acc93ef963" kindref="member">client_to_server_ms</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">c2s_ms</ref>}</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a0d4dc3e21fc9cfb762d1cf553773b9f4" kindref="member">server_to_client_ms</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">s2c_ms</ref>}</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a54445c1b33d275bd2648473d61972e5d" kindref="member">estimated_clock_offset_ms</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">clock_offset_ms</ref>}</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1af63dd7abd70fb9215eaa0ca31d1b2c64" kindref="member">smoothed_clock_offset_ms</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">smoothed_offset</ref>}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a3d57d2145f64d5e8c63b744f7a25d903" kindref="member">smoothed_rtt_ms</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">smoothed_rtt</ref>}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="structILLIXR_1_1data__format_1_1network__latency__result_1a1ccf53a99a21fcd2d124b022112120a4" kindref="member">measurement_timestamp_ns</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ts</ref>}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="96"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="97"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::data_format</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/latency_data.hpp"/>
+  </compounddef>
+</doxygen>

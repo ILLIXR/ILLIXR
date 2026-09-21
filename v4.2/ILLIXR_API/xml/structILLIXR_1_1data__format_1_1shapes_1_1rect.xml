@@ -1,0 +1,369 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1shapes_1_1rect" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::shapes::rect</compoundname>
+    <includes refid="shape_8hpp" local="no">shape.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a1c333837b8be48d6508f2f7910614d29" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::data_format::shapes::rect::x_center</definition>
+        <argsstring></argsstring>
+        <name>x_center</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::x_center</qualifiedname>
+        <briefdescription>
+<para>x-coordinate of the rectangle&apos;s center </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="13" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a6beeaa597110e578784c1fe9eacc9b32" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::data_format::shapes::rect::y_center</definition>
+        <argsstring></argsstring>
+        <name>y_center</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::y_center</qualifiedname>
+        <briefdescription>
+<para>y-coordinate of the rectangle&apos;s center </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="14" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a0288c36533349703e9b99b5b683d795b" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::data_format::shapes::rect::width</definition>
+        <argsstring></argsstring>
+        <name>width</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::width</qualifiedname>
+        <briefdescription>
+<para>width of the rectangle (parallel to x-axis when rotation angle is 0) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="15" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1abe464e3aed2eb50360bf6bdaaa26cb41" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::data_format::shapes::rect::height</definition>
+        <argsstring></argsstring>
+        <name>height</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::height</qualifiedname>
+        <briefdescription>
+<para>height of the rectangle (parallel to y-axis when rotation angle is 0) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="16" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1afc1a3bd94092686516e806c4127f72a1" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::data_format::shapes::rect::rotation</definition>
+        <argsstring></argsstring>
+        <name>rotation</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::rotation</qualifiedname>
+        <briefdescription>
+<para>rotation angle of the rectangle in radians </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="17" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1af68abd9826db7c19623fffd4631b4b73" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::shapes::rect::valid</definition>
+        <argsstring></argsstring>
+        <name>valid</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::valid</qualifiedname>
+        <briefdescription>
+<para>if the rectangle is valid </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="18" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1ad1ee62950d9a21e7ec8a9c5af8bc78f3" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::shapes::rect::normalized</definition>
+        <argsstring></argsstring>
+        <name>normalized</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::normalized</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="19" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1aaf84fbb8a99c85ccce312b4e429d74f0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::shapes::rect::rect</definition>
+        <argsstring>()</argsstring>
+        <name>rect</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::rect</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Generic constructor which sets all values to 0 </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="24" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="24" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1abfbfe8f87e91d501c606d4de57ee1fff" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::shapes::rect::rect</definition>
+        <argsstring>(rect *other)</argsstring>
+        <name>rect</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::rect</qualifiedname>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1shapes_1_1rect" kindref="compound">rect</ref> *</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy constructor <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The rect to copy </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="37" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="37" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a0fa72688e080f06dea246179983a7fc2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::shapes::rect::rect</definition>
+        <argsstring>(const double xc, const double yc, const double w, const double h, const double r, bool normal=false)</argsstring>
+        <name>rect</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::rect</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>xc</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>yc</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>normal</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>General constructor <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>xc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the x-coordinate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>yc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the y-coordinate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the width </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>h</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the height </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>rotation angle </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="57" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="57" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a3fc3865d03a956eacbe19905c83831fd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::data_format::shapes::rect::set</definition>
+        <argsstring>(const double xc, const double yc, const double w, const double h, const double r, bool normal=false)</argsstring>
+        <name>set</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::set</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>xc</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>yc</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>normal</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Set the rect&apos;s values after construction <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>xc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the x-coordinate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>yc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the y-coordinate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the width </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>h</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the height </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>rotation angle </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="74" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="74" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1shapes_1_1rect_1ac360daa7df53951d9b62d9f73a413e0d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::data_format::shapes::rect::flip_y</definition>
+        <argsstring>(const uint32_t im_height=0)</argsstring>
+        <name>flip_y</name>
+        <qualifiedname>ILLIXR::data_format::shapes::rect::flip_y</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref></type>
+          <declname>im_height</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Flip the y-coordinate about the center axis <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>im_height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="88" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="88" bodyend="96"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Struct which defines a representation of a rectangle </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="12" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" bodystart="12" bodyend="97"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1ac360daa7df53951d9b62d9f73a413e0d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>flip_y</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1abe464e3aed2eb50360bf6bdaaa26cb41" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>height</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1ad1ee62950d9a21e7ec8a9c5af8bc78f3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>normalized</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1aaf84fbb8a99c85ccce312b4e429d74f0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>rect</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1abfbfe8f87e91d501c606d4de57ee1fff" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>rect</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a0fa72688e080f06dea246179983a7fc2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>rect</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1afc1a3bd94092686516e806c4127f72a1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>rotation</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a3fc3865d03a956eacbe19905c83831fd" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>set</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1af68abd9826db7c19623fffd4631b4b73" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a0288c36533349703e9b99b5b683d795b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>width</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a1c333837b8be48d6508f2f7910614d29" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>x_center</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1shapes_1_1rect_1a6beeaa597110e578784c1fe9eacc9b32" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::shapes::rect</scope><name>y_center</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

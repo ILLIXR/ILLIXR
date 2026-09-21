@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1pose__history__entry" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::pose_history_entry</compoundname>
+    <includes refid="oxr__relay_8hpp" local="no">oxr_relay.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1pose__history__entry_1a86911120f5b435ff07aefae56847f29e" prot="public" static="no" mutable="no">
+        <type>data_format::pose::xrt_space_relation</type>
+        <definition>data_format::pose::xrt_space_relation ILLIXR::pose_history_entry::pose</definition>
+        <argsstring></argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::pose_history_entry::pose</qualifiedname>
+        <briefdescription>
+<para>Head pose. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="47" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1pose__history__entry_1a12397465c9b8803ee6beb0aaf2b6daf0" prot="public" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref></type>
+        <definition>time_point ILLIXR::pose_history_entry::generated_time</definition>
+        <argsstring></argsstring>
+        <name>generated_time</name>
+        <qualifiedname>ILLIXR::pose_history_entry::generated_time</qualifiedname>
+        <briefdescription>
+<para>Wall-clock time the pose was generated. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="48" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1pose__history__entry_1a6e552608bf99de248058f8269eca9551" prot="public" static="no" mutable="no">
+        <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+        <definition>XrTime ILLIXR::pose_history_entry::xr_time</definition>
+        <argsstring></argsstring>
+        <name>xr_time</name>
+        <qualifiedname>ILLIXR::pose_history_entry::xr_time</qualifiedname>
+        <briefdescription>
+<para>predictedDisplayTime this pose was located for </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="49" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Entry in the headset pose history map, used by oxr_interface to correlate received frames back to the original pose measurement. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::pose_history_entry</label>
+        <link refid="structILLIXR_1_1pose__history__entry"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>generated_time</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::time_point</label>
+        <link refid="classILLIXR_1_1time__point"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="46" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="46" bodyend="50"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1pose__history__entry_1a12397465c9b8803ee6beb0aaf2b6daf0" prot="public" virt="non-virtual"><scope>ILLIXR::pose_history_entry</scope><name>generated_time</name></member>
+      <member refid="structILLIXR_1_1pose__history__entry_1a86911120f5b435ff07aefae56847f29e" prot="public" virt="non-virtual"><scope>ILLIXR::pose_history_entry</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1pose__history__entry_1a6e552608bf99de248058f8269eca9551" prot="public" virt="non-virtual"><scope>ILLIXR::pose_history_entry</scope><name>xr_time</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

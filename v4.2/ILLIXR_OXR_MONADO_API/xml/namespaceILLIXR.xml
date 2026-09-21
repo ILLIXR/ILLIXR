@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR" kind="namespace" language="C++">
+    <compoundname>ILLIXR</compoundname>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1detail">ILLIXR::detail</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/combined_pose.hpp" line="8" column="1"/>
+  </compounddef>
+</doxygen>

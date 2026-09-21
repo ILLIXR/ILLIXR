@@ -1,0 +1,334 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dynamic__lib_8hpp" kind="file" language="C++">
+    <compoundname>dynamic_lib.hpp</compoundname>
+    <includes refid="error__util_8hpp" local="yes">error_util.hpp</includes>
+    <includes local="no">dlfcn.h</includes>
+    <includes local="no">functional</includes>
+    <includes local="no">iostream</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">spdlog/spdlog.h</includes>
+    <includes local="no">string</includes>
+    <includes local="no">utility</includes>
+    <includedby refid="runtime__impl_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/runtime_impl.cpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp</label>
+        <link refid="dynamic__lib_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>error_util.hpp</label>
+        <link refid="error__util_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="3">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>headset_fov.hpp</label>
+        <link refid="headset__fov_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>algorithm</label>
+      </node>
+      <node id="5">
+        <label>array</label>
+      </node>
+      <node id="12">
+        <label>cassert</label>
+      </node>
+      <node id="20">
+        <label>chrono</label>
+      </node>
+      <node id="23">
+        <label>cmath</label>
+      </node>
+      <node id="6">
+        <label>cstdlib</label>
+      </node>
+      <node id="24">
+        <label>dlfcn.h</label>
+      </node>
+      <node id="25">
+        <label>functional</label>
+      </node>
+      <node id="13">
+        <label>iostream</label>
+      </node>
+      <node id="14">
+        <label>memory</label>
+      </node>
+      <node id="15">
+        <label>mutex</label>
+      </node>
+      <node id="21">
+        <label>ratio</label>
+      </node>
+      <node id="16">
+        <label>shared_mutex</label>
+      </node>
+      <node id="19">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="7">
+        <label>stdexcept</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="17">
+        <label>typeindex</label>
+      </node>
+      <node id="18">
+        <label>unordered_map</label>
+      </node>
+      <node id="26">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp</label>
+        <link refid="dynamic__lib_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/runtime_impl.cpp</label>
+        <link refid="runtime__impl_8cpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1dynamic__lib" prot="public">ILLIXR::dynamic_lib</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="error__util_8hpp" kindref="compound">error_util.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(_WIN32)<sp/>||<sp/>defined(_WIN64)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;Windows.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;dlfcn.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;functional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;spdlog/spdlog.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;utility&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="namespaceILLIXR" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="namespaceILLIXR_1a2947c02ad28d8cf173856c9fd1b04e04" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a2947c02ad28d8cf173856c9fd1b04e04" kindref="member">void_ptr</ref><sp/>=<sp/>std::unique_ptr&lt;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>,<sp/>std::function&lt;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*)&gt;&gt;;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="22"><highlight class="comment">Usage:</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/><sp/><sp/><sp/>void*<sp/>thing;</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/><sp/><sp/><sp/>void_ptr<sp/>wrapped_thing<sp/>=<sp/>{thing,<sp/>[](void*<sp/>thing)<sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>destructor<sp/>goes<sp/>here.</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/><sp/><sp/><sp/>}}</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>//<sp/>wrapped_thing.get()<sp/>returns<sp/>underlying<sp/>thing.</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="classILLIXR_1_1dynamic__lib" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref><sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="32" refid="classILLIXR_1_1dynamic__lib_1af9a2507ec525a6b50587c3fb7e575a32" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1dynamic__lib_1af9a2507ec525a6b50587c3fb7e575a32" kindref="member">dynamic_lib</ref>(<ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref>&amp;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">other</ref>)<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">noexcept</ref></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" kindref="member">handle_</ref>{std::move(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">other</ref>.handle_)}</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" kindref="member">library_path_</ref>{std::move(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">other</ref>.library_path_)}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="classILLIXR_1_1dynamic__lib_1a6801b7d463fbe1177d4ebb579d9e1886" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref>&amp;<sp/><ref refid="classILLIXR_1_1dynamic__lib_1a6801b7d463fbe1177d4ebb579d9e1886" kindref="member">operator=</ref>(<ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref>&amp;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">other</ref>)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>!=<sp/>&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">other</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" kindref="member">handle_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>std::move(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">other</ref>.handle_);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" kindref="member">library_path_</ref><sp/>=<sp/>std::move(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">other</ref>.library_path_);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="classILLIXR_1_1dynamic__lib_1ac6d97c0774d0146b7d8a30272a867359" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1dynamic__lib_1ac6d97c0774d0146b7d8a30272a867359" kindref="member">~dynamic_lib</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>NDEBUG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" kindref="member">library_path_</ref>.empty())<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;debug(</highlight><highlight class="stringliteral">&quot;[dynamic_lib]<sp/>Destructing<sp/>library<sp/>:<sp/>{}&quot;</highlight><highlight class="normal">,<sp/><ref refid="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" kindref="member">library_path_</ref>);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="classILLIXR_1_1dynamic__lib_1a721f13feae90c4b5b7141b405fdfed84" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref><sp/><ref refid="classILLIXR_1_1dynamic__lib_1a721f13feae90c4b5b7141b405fdfed84" kindref="member">create</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>path)<sp/>{</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1dynamic__lib_1a721f13feae90c4b5b7141b405fdfed84" kindref="member">dynamic_lib::create</ref>(std::string_view{path});</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="classILLIXR_1_1dynamic__lib_1a488ab93b3743bbd764f705052ed2e7ca" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref><sp/><ref refid="classILLIXR_1_1dynamic__lib_1a488ab93b3743bbd764f705052ed2e7ca" kindref="member">create</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string_view&amp;<sp/>path)<sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(_WIN32)<sp/>||<sp/>defined(_WIN64)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">HMODULE</ref><sp/>handle<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">LoadLibrary</ref>(path.data());</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!handle)<sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">DWORD</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GetLastError</ref>();</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error(</highlight><highlight class="stringliteral">&quot;LoadLibrary(\&quot;&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::string{path}<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;\&quot;):<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>));</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>dlopen<sp/>man<sp/>page<sp/>says<sp/>that<sp/>it<sp/>can<sp/>set<sp/>errno<sp/>sp</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error__util_8hpp_1af3826debdc7e3ffbf0a6c5df033a0583" kindref="member">RAC_ERRNO_MSG</ref>(</highlight><highlight class="stringliteral">&quot;dynamic_lib<sp/>before<sp/>dlopen&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>handle<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dlopen</ref>(path.data(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">RTLD_LAZY</ref><sp/>|<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">RTLD_LOCAL</ref>);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error__util_8hpp_1af3826debdc7e3ffbf0a6c5df033a0583" kindref="member">RAC_ERRNO_MSG</ref>(</highlight><highlight class="stringliteral">&quot;dynamic_lib<sp/>after<sp/>dlopen&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dlerror</ref>())<sp/>||<sp/>!handle)<sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(std::string{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>});</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error{</highlight><highlight class="stringliteral">&quot;dlopen(\&quot;&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::string{path}<sp/>+</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;\&quot;):<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"><sp/>?<sp/></highlight><highlight class="stringliteral">&quot;NULL&quot;</highlight><highlight class="normal"><sp/>:<sp/>std::string{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>})};</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref><sp/>{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a2947c02ad28d8cf173856c9fd1b04e04" kindref="member">void_ptr</ref>{handle,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[](</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>handle)<sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error__util_8hpp_1a40f7944fc46db77778d106ff61ceb4c5" kindref="member">RAC_ERRNO</ref>();</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(_WIN32)<sp/>||<sp/>defined(_WIN64)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ret</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">FreeLibrary</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">HMODULE</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(handle));</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ret</ref><sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">DWORD</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GetLastError</ref>();</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">msg_error</ref>{</highlight><highlight class="stringliteral">&quot;dlclose():<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>)};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ret</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dlclose</ref>(handle);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dlerror</ref>())<sp/>||<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ret</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">msg_error</ref>{</highlight><highlight class="stringliteral">&quot;dlclose():<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"><sp/>?<sp/></highlight><highlight class="stringliteral">&quot;NULL&quot;</highlight><highlight class="normal"><sp/>:<sp/>std::string{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>})};</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(</highlight><highlight class="stringliteral">&quot;[dynamic_lib]<sp/>{}&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">msg_error</ref>);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">msg_error</ref>};</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}},</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/>{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>path</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104" refid="classILLIXR_1_1dynamic__lib_1a5f48c5a75a158ad02d622f37cfdda016" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classILLIXR_1_1dynamic__lib_1a5f48c5a75a158ad02d622f37cfdda016" kindref="member">operator[]</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol_name</ref>)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error__util_8hpp_1af3826debdc7e3ffbf0a6c5df033a0583" kindref="member">RAC_ERRNO_MSG</ref>(</highlight><highlight class="stringliteral">&quot;dynamic_lib<sp/>at<sp/>start<sp/>of<sp/>operator[]&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(_WIN32)<sp/>||<sp/>defined(_WIN64)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GetProcAddress</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">HMODULE</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" kindref="member">handle_</ref>.get()),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol_name</ref>.c_str());</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">DWORD</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GetLastError</ref>();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error{</highlight><highlight class="stringliteral">&quot;dlsym(\&quot;&quot;</highlight><highlight class="normal"><sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol_name</ref><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;\&quot;):<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>)};</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dlsym</ref>(<ref refid="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" kindref="member">handle_</ref>.get(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol_name</ref>.c_str());</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dlerror</ref>()))<sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error{</highlight><highlight class="stringliteral">&quot;dlsym(\&quot;&quot;</highlight><highlight class="normal"><sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol_name</ref><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;\&quot;):<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::string{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>}};</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol</ref>;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="124" refid="classILLIXR_1_1dynamic__lib_1a5a4455724a3bb32277f6600500841dca" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref><sp/><ref refid="classILLIXR_1_1dynamic__lib_1a5a4455724a3bb32277f6600500841dca" kindref="member">get</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol_name</ref>)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">obj</ref><sp/>=<sp/>(*this)[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">symbol_name</ref>];</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>return<sp/>reinterpret_cast&lt;const<sp/>T&gt;((*this)[symbol_name]);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref>)<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">obj</ref>;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="131" refid="classILLIXR_1_1dynamic__lib_1a110fc1e4f46e057346e11d6b18edf274" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1dynamic__lib_1a110fc1e4f46e057346e11d6b18edf274" kindref="member">dynamic_lib</ref>(<ref refid="namespaceILLIXR_1a2947c02ad28d8cf173856c9fd1b04e04" kindref="member">void_ptr</ref>&amp;&amp;<sp/>handle,<sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lib_path</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" kindref="member">handle_</ref>{<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">move</ref>(handle)}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/><ref refid="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" kindref="member">library_path_</ref>{<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">move</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lib_path</ref>)}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135" refid="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a2947c02ad28d8cf173856c9fd1b04e04" kindref="member">void_ptr</ref><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" kindref="member">handle_</ref>;</highlight></codeline>
+<codeline lineno="136" refid="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" kindref="member">library_path_</ref>;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp"/>
+  </compounddef>
+</doxygen>

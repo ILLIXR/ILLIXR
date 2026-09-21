@@ -1,0 +1,35 @@
+:root {
+    --md-primary-fg-color:               #4C83D6;
+    --md-primary-fg-color--light:        #4C83D6;
+    --md-primary-fg-color--dark:         #4C83D6;
+    --md-primary-bg-color:               hsla(0, 0%, 100%, 1);
+    --md-primary-bg-color--light:        hsla(0, 0%, 100%, 0.7);
+    --md-accent-fg-color:                #e94b27;
+    --md-accent-fg-color--transparent:   #e94b27;
+    --md-accent-bg-color:                hsla(0, 0%, 100%, 1);
+    --md-accent-bg-color--light:         hsla(0, 0%, 100%, 0.7);
+
+    --md-nav-hdr-color:                 #4C83D6;
+    --md-nav-hdr-fg-color:              #F3F6FC;
+    --md-nav-list-color:                #F7C1B5;
+    --md-nav-list-lt-color:             #FAD5CC;
+    --md-nav-list-ltlt-color:           #FCE8E3;
+    --md-nav-list-ltltlt-color:         #FEF7F6;
+    --md-nav-item-active:               #A22C10;
+    --md-admonition-icon--exceptions: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 3h4v11h-4zm0 18v-4h4v4z"/></svg>')
+}
+
+.md-typeset .admonition.exceptions,
+.md-typeset details.exceptions {
+    border-color: rgb(233, 167, 61);
+}
+.md-typeset .exceptions > .admonition-title,
+.md-typeset .exceptions > summary {
+    background-color: rgba(233, 167, 61, 0.1);
+}
+.md-typeset .exceptions > .admonition-title::before,
+.md-typeset .exceptions > summary::before {
+    background-color: rgb(233, 167, 61);
+    -webkit-mask-image: var(--md-admonition-icon--exceptions);
+    mask-image: var(--md-admonition-icon--exceptions);
+}
