@@ -1,9 +1,0 @@
-<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/offload_rendering_server.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/offload_rendering_server.hpp">
-<area shape="rect" id="Node000001" title=" " alt="" coords="117,5,307,89"/>
-<area shape="rect" id="Node000002" href="$offload__rendering__server_8cpp.html" title="Offload Rendering Server Implementation." alt="" coords="5,137,195,221"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="170,101,138,139,134,135,166,98"/>
-<area shape="rect" id="Node000003" href="$plugins_2offload__rendering__server_2plugin_8hpp.html" title=" " alt="" coords="219,145,429,214"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="258,98,297,143,293,146,254,101"/>
-<area shape="rect" id="Node000004" href="$plugins_2offload__rendering__server_2plugin_8cpp.html" title="Offload Rendering Server Plugin Implementation." alt="" coords="219,269,429,339"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="327,227,327,269,321,269,321,227"/>
-</map>

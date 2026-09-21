@@ -1,7 +1,0 @@
-<map id="ILLIXR::data_format::pose::xrt_space_relation" name="ILLIXR::data_format::pose::xrt_space_relation">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,37,195,77"/>
-<area shape="rect" id="Node000002" href="$structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose.html" title="Pose, gesture&#45;strength value, and readiness flag for a single hand interaction action space." alt="" coords="243,5,459,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,41,242,37,243,42,208,46"/>
-<area shape="rect" id="Node000003" href="$structILLIXR_1_1data__format_1_1pose_1_1palm__pose.html" title="Palm pose and velocity information." alt="" coords="275,69,426,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="208,68,276,77,275,82,208,74"/>
-</map>

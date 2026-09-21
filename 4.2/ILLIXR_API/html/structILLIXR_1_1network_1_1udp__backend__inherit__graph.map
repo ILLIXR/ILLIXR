@@ -1,9 +1,0 @@
-<map id="ILLIXR::network::udp_backend" name="ILLIXR::network::udp_backend">
-<area shape="rect" id="Node000001" title="Phonebook registration key for the UDP network backend." alt="" coords="20,181,175,221"/>
-<area shape="rect" id="Node000004" href="$classILLIXR_1_1udp__network__backend.html" title=" " alt="" coords="20,269,175,309"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="100,235,100,269,95,269,95,235"/>
-<area shape="rect" id="Node000002" href="$classILLIXR_1_1network_1_1network__backend.html" title=" " alt="" coords="5,93,189,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,147,100,181,95,181,95,147"/>
-<area shape="rect" id="Node000003" href="$classILLIXR_1_1phonebook_1_1service.html" title="A &#39;service&#39; that can be registered in the phonebook." alt="" coords="22,5,173,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="100,59,100,93,95,93,95,59"/>
-</map>

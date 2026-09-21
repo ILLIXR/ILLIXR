@@ -1,5 +1,0 @@
-<map id="ILLIXR::data_format::pose::palm_pose" name="ILLIXR::data_format::pose::palm_pose">
-<area shape="rect" id="Node000001" title="Palm pose and velocity information." alt="" coords="25,93,175,133"/>
-<area shape="rect" id="Node000002" href="$structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation.html" title=" " alt="" coords="5,5,195,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,59,103,93,97,93,97,59"/>
-</map>

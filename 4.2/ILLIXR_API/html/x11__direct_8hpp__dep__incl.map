@@ -1,9 +1,0 @@
-<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/display/x11_direct.hpp">
-<area shape="rect" id="Node000001" title=" " alt="" coords="113,5,281,75"/>
-<area shape="rect" id="Node000002" href="$x11__direct_8cpp.html" title=" " alt="" coords="5,123,173,192"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,87,123,124,119,121,154,83"/>
-<area shape="rect" id="Node000003" href="$vulkan__display_8hpp.html" title=" " alt="" coords="198,130,415,185"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="241,83,284,128,280,132,237,87"/>
-<area shape="rect" id="Node000004" href="$runtime__impl_8cpp.html" title=" " alt="" coords="203,240,410,295"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="309,199,309,240,304,240,304,199"/>
-</map>

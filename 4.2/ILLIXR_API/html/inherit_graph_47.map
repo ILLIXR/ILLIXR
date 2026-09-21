@@ -1,9 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classILLIXR_1_1display_1_1display__backend.html" title=" " alt="" coords="5,63,176,103"/>
-<area shape="rect" id="Node000001" href="$classILLIXR_1_1display_1_1glfw__extended.html" title=" " alt="" coords="239,5,391,45"/>
-<area shape="poly" id="edge90_Node000000_Node000001" title=" " alt="" coords="182,57,238,42,240,47,184,62"/>
-<area shape="rect" id="Node000002" href="$classILLIXR_1_1display_1_1headless.html" title=" " alt="" coords="224,70,407,95"/>
-<area shape="poly" id="edge91_Node000000_Node000002" title=" " alt="" coords="190,80,224,80,224,85,190,85"/>
-<area shape="rect" id="Node000003" href="$classILLIXR_1_1display_1_1x11__direct.html" title=" " alt="" coords="241,120,389,160"/>
-<area shape="poly" id="edge92_Node000000_Node000003" title=" " alt="" coords="184,104,242,119,241,124,182,109"/>
-</map>

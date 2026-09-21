@@ -1,4 +1,0 @@
-var searchData=
-[
-  ['is_5fvalid_0',['is_valid',['../structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses.html#ab3e8ce5e918526dc436bb1bc0df4ad76',1,'ILLIXR::data_format::pose::hand_interaction_poses::is_valid()'],['../structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair.html#a3dd33627e295ffed014d88013b07f2f5',1,'ILLIXR::data_format::pose::hand_interaction_poses_pair::is_valid()'],['../structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.html#a6eecf9389acd3ee2807cdaaf9454b312',1,'ILLIXR::data_format::pose::fast_head_pose_type::is_valid()'],['../structILLIXR_1_1data__format_1_1pose_1_1palm__pose.html#a5cb4f5060f2b3b3f4589d48a77641177',1,'ILLIXR::data_format::pose::palm_pose::is_valid()'],['../structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair.html#a5e02a5cd3916340640919a710508004a',1,'ILLIXR::data_format::pose::palm_poses_pair::is_valid()']]]
-];

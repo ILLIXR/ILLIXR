@@ -1,7 +1,0 @@
-<map id="ILLIXR::data_format::pose::head_pose_data" name="ILLIXR::data_format::pose::head_pose_data">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,93,180,133"/>
-<area shape="rect" id="Node000003" href="$structILLIXR_1_1data__format_1_1pose_1_1head__pose__type.html" title="Pose and velocity data for the head / HMD, with a timestamp." alt="" coords="5,181,180,221"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="95,147,95,181,90,181,90,147"/>
-<area shape="rect" id="Node000002" href="$structILLIXR_1_1data__format_1_1pose_1_1pose__base.html" title="Base struct for all pose types in ILLIXR." alt="" coords="17,5,168,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,59,95,93,90,93,90,59"/>
-</map>

@@ -1,7 +1,0 @@
-<map id="ILLIXR::video_encoder" name="ILLIXR::video_encoder">
-<area shape="rect" id="Node000001" title=" " alt="" coords="130,5,295,31"/>
-<area shape="rect" id="Node000002" href="$classILLIXR_1_1ada__video__encoder.html" title=" " alt="" coords="5,79,201,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="185,40,123,81,120,76,182,36"/>
-<area shape="rect" id="Node000003" href="$classILLIXR_1_1vio__video__encoder.html" title=" " alt="" coords="226,79,418,104"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="243,36,306,76,303,81,240,40"/>
-</map>
