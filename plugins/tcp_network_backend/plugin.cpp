@@ -113,9 +113,6 @@ void tcp_network_backend::start() {
     });
 }
 
-tcp_network_backend::~tcp_network_backend() {
-    spdlog::get("illixr")->debug("Destroying tcp_network");
-}
 #else
 
 void tcp_network_backend::start_client() {
