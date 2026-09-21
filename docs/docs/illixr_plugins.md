@@ -442,7 +442,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C22]
 
-## quest3.controller
+## quest3.controller ![Linux Logo](images/tux.png)
 
 Provides an interface to the Quest 3 hand controller
 
@@ -688,11 +688,11 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P37]:  plugin_README/README_quest3_unity.md
 
-[P38]:   plugin_README/README_semantic_python.md
+[P38]:  plugin_README/README_semantic_python.md
 
-[P40]:   plugin_README/README_boba.md
+[P40]:  plugin_README/README_boba.md
 
-[S10]:   illixr_services.md#pose_prediction
+[S10]:  illixr_services.md#pose_prediction
 
 
 [//]: # (- external -)

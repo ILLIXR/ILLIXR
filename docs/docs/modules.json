@@ -531,7 +531,7 @@
         "openxr"
       ],
       "OS": [
-        "android"
+        "linux"
       ]
     },
     {
