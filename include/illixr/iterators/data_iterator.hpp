@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+namespace ILLIXR::iterator {
+
 class data_row {
 public:
     data_row(char delim)
@@ -43,7 +45,7 @@ private:
     const char               delimiter;
 };
 
-std::istream& operator>>(std::istream& str, data_row& data) {
+inline std::istream& operator>>(std::istream& str, data_row& data) {
     data.read_next_row(str);
     return str;
 }
@@ -99,11 +101,11 @@ public:
         return &row_;
     }
 
-    bool operator==(data_iterator const& rhs) {
+    bool operator==(data_iterator const& rhs) const {
         return ((this == &rhs) || ((this->stream_ == nullptr) && (rhs.stream_ == nullptr)));
     }
 
-    bool operator!=(data_iterator const& rhs) {
+    bool operator!=(data_iterator const& rhs) const {
         return !((*this) == rhs);
     }
 
@@ -115,3 +117,4 @@ private:
     std::istream* stream_;
     data_row      row_;
 };
+}

@@ -20,6 +20,9 @@ add_illixr_unit_test(include
                      includes/test_string_utils.cpp
                      includes/test_switchboard.cpp
                      includes/test_threadloop.cpp
+                     includes/iterators/test_data_iterator.cpp
+                     includes/iterators/test_csv_iterator.cpp
+                     includes/iterators/test_ssv_iterator.cpp
                      INCLUDES phonebook.hpp
                      cpu_timer.hpp
                      dynamic_lib.hpp
@@ -34,4 +37,7 @@ add_illixr_unit_test(include
                      runge-kutta.hpp
                      switchboard.hpp
                      threadloop.hpp
+                     iterators/data_iterator.hpp
+                     iterators/csv_iterator.hpp
+                     iterators/ssv_iterator.hpp
 )

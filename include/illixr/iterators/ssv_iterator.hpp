@@ -2,6 +2,7 @@
 
 #include "data_iterator.hpp"
 
+namespace ILLIXR::iterator {
 class ssv_iterator : public data_iterator {
 public:
     explicit ssv_iterator(std::istream& str, std::size_t skip = 0)
@@ -10,3 +11,4 @@ public:
     ssv_iterator()
         : data_iterator(' ') { }
 };
+} // namespace ILLIXR::iterator

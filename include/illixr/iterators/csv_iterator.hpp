@@ -2,6 +2,8 @@
 
 #include "data_iterator.hpp"
 
+namespace ILLIXR::iterator {
+
 class csv_iterator : public data_iterator {
 public:
     explicit csv_iterator(std::istream& str, std::size_t skip = 0)
@@ -10,3 +12,5 @@ public:
     csv_iterator()
         : data_iterator(',') { }
 };
+
+}

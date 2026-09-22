@@ -7,6 +7,7 @@
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
+using namespace ILLIXR::iterator;
 
 inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const std::string& file_name) {
     (void) file_name;

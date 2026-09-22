@@ -9,6 +9,7 @@
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
+using namespace ILLIXR::iterator;
 
 // combine two maps into one
 std::map<ullong, sensor_types> make_map(const std::map<ullong, LAZY_TYPE>& cam0, const std::map<ullong, LAZY_TYPE>& cam1) {
