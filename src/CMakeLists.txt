@@ -190,6 +190,7 @@ else()
                               plugin.openxr_interface${ILLIXR_BUILD_SUFFIX}
                               #plugin.quest3.unity${ILLIXR_BUILD_SUFFIX}
                               #unity_android_interface${ILLIXR_BUILD_SUFFIX}
+                              plugin.record_pose.replay${ILLIXR_BUILD_SUFFIX}
                               android
                               native_app_glue
                               EGL

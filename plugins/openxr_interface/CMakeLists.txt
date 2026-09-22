@@ -61,37 +61,47 @@ endif()
 compile_shader(depth.frag depth_frag_spv "${SPIRV_DIR}/depth_frag_spv.h")
 compile_shader(motion_vec.frag motion_vec_frag_spv "${SPIRV_DIR}/motion_vec_frag_spv.h")
 
-add_library(${PLUGIN_NAME} SHARED
-        plugin.cpp
-        plugin.hpp
-        stereo_renderer.cpp
-        stereo_renderer.hpp
+if(USE_POSE_INJECTOR)
+    set(POSE_XR_FILES "")
+else()
+    set(POSE_XR_FILES
         oxr_relay.cpp
         oxr_relay.hpp
-        ${SPIRV_DIR}/color_vert_spv.h   # ensures custom commands run
-        ${SPIRV_DIR}/color_frag_spv.h
-        ${SPIRV_DIR}/depth_frag_spv.h
-        ${SPIRV_DIR}/motion_vec_frag_spv.h
-        ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/quest3_params.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/misc.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/combined_pose.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hand_interaction_pose.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hand_pose.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/head_pose.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/openxr.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/palm_pose.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/pose_base.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/vulkan_context.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_context_provider.hpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/misc.cpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/combined_pose.cpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/hand_interaction_pose.cpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/hand_pose.cpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/head_pose.cpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/palm_pose.cpp
+    )
+endif()
+
+add_library(${PLUGIN_NAME} SHARED
+            plugin.cpp
+            plugin.hpp
+            stereo_renderer.cpp
+            stereo_renderer.hpp
+            oxr_defs.hpp
+            ${POSE_XR_FILES}
+            ${SPIRV_DIR}/color_vert_spv.h   # ensures custom commands run
+            ${SPIRV_DIR}/color_frag_spv.h
+            ${SPIRV_DIR}/depth_frag_spv.h
+            ${SPIRV_DIR}/motion_vec_frag_spv.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/oxr_relay_type.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/quest3_params.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/combined_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hand_interaction_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hand_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/head_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/openxr.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/palm_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/pose_base.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/vulkan_context.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_context_provider.hpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/misc.cpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/combined_pose.cpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/hand_interaction_pose.cpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/hand_pose.cpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/head_pose.cpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/palm_pose.cpp
 )
 
 if(ILLIXR_ENABLE_BOBA)
@@ -131,3 +141,20 @@ target_link_libraries(${PLUGIN_NAME} PUBLIC
         ${VULKAN_LIB}          # libvulkan.so
         mediandk                     # AImageReader
 )
+
+if(USE_POSE_CAPTURE)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC
+                               USE_POSE_CAPTURE
+    )
+endif()
+if(USE_POSE_INJECTOR)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC
+                               USE_POSE_INJECTOR
+    )
+    target_include_directories(${PLUGIN_NAME} PUBLIC
+                               ${ILLIXR_SOURCE_DIR}/plugins
+    )
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          plugin.pose_injector${ILLIXR_BUILD_SUFFIX}
+    )
+endif()

@@ -42,10 +42,14 @@ ILLIXR::data_format::quest_controller_profile controller_profile_from_path(const
 
 oxr_relay::oxr_relay(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
+    , oxr_relay_type()
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , combined_pose_writer_{switchboard_->get_network_writer<data_format::pose::combined_pose>(
           "combined_pose", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
+#ifdef USE_POSE_CAPTURE
+    , combined_pose_capture_writer_{switchboard_->get_writer<data_format::pose::combined_pose>("combined_pose_capture")}
+#endif
 #ifdef ILLIXR_ENABLE_BOBA
     , quest_controller_writer_{switchboard_->get_network_writer<data_format::quest_controller_input>(
           "quest_controller", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
@@ -484,6 +488,14 @@ void oxr_relay::push_poses(XrTime predicted_time) {
     combined_pose_writer_.put(std::make_shared<pose::combined_pose>(
         current_pose, current_hand_poses_, current_palm_poses_, current_hand_interactions_, pose_id, predicted_time,
         xr_to_monotonic_offset_ns_, monotonic_to_system_offset_ns_, smoothed_offset, smoothed_rtt));
+#ifdef USE_POSE_CAPTURE
+    spdlog::get("illixr")->debug("[pose_capture] sending pose: {}", pose_id);
+    combined_pose_capture_writer_.put(std::make_shared<pose::combined_pose>(current_pose, current_hand_poses_, current_palm_poses_,
+                                                                            current_hand_interactions_, pose_id,
+                                                                            predicted_time, xr_to_monotonic_offset_ns_,
+                                                                            monotonic_to_system_offset_ns_, smoothed_offset,
+                                                                            smoothed_rtt));
+#endif
 }
 
 bool oxr_relay::init_hand_interaction() {
@@ -1324,14 +1336,4 @@ void oxr_relay::calibrate_time_offsets() {
             xr_to_monotonic_offset_ns_     / 1'000'000'000.0,
             monotonic_to_system_offset_ns_ / 1'000'000'000.0);
             */
-}
-
-bool oxr_relay::get_pose_history(uint64_t id, pose_history_entry& out_entry) const {
-    std::lock_guard<std::mutex> lock(pose_history_mutex_);
-    auto                        it = pose_history_.find(id);
-    if (it == pose_history_.end()) {
-        return false;
-    }
-    out_entry = it->second;
-    return true;
 }

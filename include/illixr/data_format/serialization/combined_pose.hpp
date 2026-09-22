@@ -6,6 +6,8 @@
 #include "illixr/data_format/serialization/head_pose.hpp"
 #include "illixr/data_format/serialization/palm_pose.hpp"
 
+#include <boost/serialization/tracking.hpp>
+
 namespace boost::serialization {
 
 #ifdef USING_OPENXR
@@ -31,5 +33,5 @@ void serialize(Archive& ar, ILLIXR::data_format::pose::combined_pose& data, cons
 
 #ifdef USING_OPENXR
 BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::pose::combined_pose)
-
+BOOST_CLASS_TRACKING(ILLIXR::data_format::pose::combined_pose, boost::serialization::track_never)
 #endif

@@ -176,7 +176,7 @@ if(USE_NVENC_ENCODER)
         endif()
     endif()
 
-    if(UNIX)
+    if(UNIX AND NOT CODEC_SDK_FOUND)
         find_path(NVENC_INCLUDE_DIR nvEncodeAPI.h
                   PATHS
                   /usr/local/cuda/include

@@ -488,6 +488,26 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P24]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C24]
 
+## record_pose.capture ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
+
+Provides a way to capture and record head and hand poses from a headset
+
+Topic details:
+
+-  Synchronously *reads* [`combined_pose`][A38] from `combined_pose` topic.
+
+&nbsp;&nbsp;[**Details**][P41]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C48]
+
+## record_pose.replay ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
+
+Reads poses from disk and injects them into the switchboard.
+
+Topic details:
+
+-  *Publishes* [`combined_pose`][A38] to `combined_pose` topic.
+
+&nbsp;&nbsp;[**Details**][P41]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C49]
+
 ## record_rgb_depth ![Linux Logo](images/tux.png)
 
 Writes [`rgb_depth_type`][A13] data to disk.
@@ -692,6 +712,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P40]:  plugin_README/README_boba.md
 
+[P41]:   plugin_README/README_record_pose.md
+
 [S10]:  illixr_services.md#pose_prediction
 
 
@@ -808,6 +830,10 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C47]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/boba_streaming_server
 
+[C48]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/record_pose.capture
+
+[C49]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/record_pose.injection
+
 [//]: # (- Internal -)
 
 [I10]:   working_with/writing_your_plugin.md
@@ -893,3 +919,5 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [A36]:   api/structILLIXR_1_1data__format_1_1boba__modal__texture.md
 
 [A37]:   api/structILLIXR_1_1data__format_1_1compressed__frame.md
+
+[A38]:   api/structILLIXR_1_1data__format_1_1poses_1_1combined_pose.md

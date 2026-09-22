@@ -125,8 +125,8 @@ private:
 
 /// Bounded history of poses in Monado timebase, oldest to newest.
 #ifdef USING_OPENXR
-    std::vector<pose_point> current_poses_;
-    uint64_t                last_pose_id_ = 0;
+    mutable std::vector<pose_point> current_poses_;
+    uint64_t                        last_pose_id_ = 0;
 #else
     POSE_TYPE current_pose_;
 #endif
@@ -157,6 +157,8 @@ private:
     bool use_hand_tracking_     = false;
     bool use_palm_poses_        = false;
     bool use_hand_interactions_ = false;
+    bool poses_are_injected_    = false;
+    mutable XrTime injected_pose_base_time_{0};
 #endif
     bool            do_pose_prediction_{false};
     velocity_filter velocity_filter_;

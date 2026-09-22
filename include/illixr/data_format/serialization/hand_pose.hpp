@@ -3,20 +3,20 @@
 #include "illixr/data_format/poses/hand_pose.hpp"
 #include "illixr/data_format/serialization/pose_base.hpp"
 
+#include <boost/serialization/tracking.hpp>
+
 namespace boost::serialization {
 
 #ifdef USING_OPENXR
 
 template<class Archive>
-void serialize(Archive& ar, HAND_JOINT_TYPE& joint, const unsigned int version) {
-    (void) version;
+void serialize(Archive& ar, HAND_JOINT_TYPE& joint, const unsigned int) {
     ar & joint.relation;
     ar & joint.radius;
 }
 
 template<class Archive>
-void serialize(Archive& ar, HAND_JOINT_SET& hand, const unsigned int version) {
-    (void) version;
+void serialize(Archive& ar, HAND_JOINT_SET& hand, const unsigned int) {
     for (size_t i = 0; i < HAND_JOINT_COUNT; ++i) {
 #    ifdef ENABLE_MONADO
         ar & hand.values.hand_joint_set_default[i];
@@ -29,9 +29,7 @@ void serialize(Archive& ar, HAND_JOINT_SET& hand, const unsigned int version) {
 }
 
 template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::pose::hand_joint_poses_pair& data, const unsigned int version) {
-    (void) version;
-
+void serialize(Archive& ar, ILLIXR::data_format::pose::hand_joint_poses_pair& data, const unsigned int) {
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(data);
     ar & data.hands[ILLIXR::data_format::pose::LEFT];
     ar & data.hands[ILLIXR::data_format::pose::RIGHT];
@@ -42,4 +40,5 @@ void serialize(Archive& ar, ILLIXR::data_format::pose::hand_joint_poses_pair& da
 
 #ifdef USING_OPENXR
 BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::pose::hand_joint_poses_pair)
+BOOST_CLASS_TRACKING(ILLIXR::data_format::pose::hand_joint_poses_pair, boost::serialization::track_never)
 #endif

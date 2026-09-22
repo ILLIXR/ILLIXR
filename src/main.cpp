@@ -139,6 +139,9 @@ int main(int argc, const char* argv[]) {
         setenv("ILLIXR_IS_CLIENT", "1", true);
         setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
         setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);
+        setenv("ILLIXR_POSE_CAPTURE_FILE", "pose_capture", true);
+        setenv("ILLIXR_POSE_INJECTOR_FILE", "pose_capture.hpose", true);
+        setenv("ILLIXR_DUMMY_INJECTOR", "0", true);
 #        ifndef ILLIXR_ENABLE_BOBA
         setenv("ILLIXR_OVERSCAN", "1.1", true); // overscanning
 #        endif

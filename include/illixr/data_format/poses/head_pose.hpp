@@ -20,6 +20,11 @@
 
 namespace ILLIXR::data_format::pose {
 
+enum class pose_capture_type : int32_t {
+    FULL_POSE = 1,
+    HEAD_ONLY_POSE = 2
+};
+
 /**
  * @brief Pose data for the head / HMD.
  *
@@ -205,6 +210,17 @@ struct fast_head_pose_type : public switchboard::event {
         return pose.valid;
     }
 #endif
+};
+
+struct head_pose_capture : public switchboard::event {
+    head_pose_type pose;
+    time_point offset_time;
+    TIME_POINT target_time;
+    uint64_t id;
+    int64_t xr_to_monotonic_offset_ns = 0;
+    int64_t monotonic_to_system_offset_ns = 0;
+    double smoothed_clock_offset_ns = 0.;
+    double smoothed_rtt_ns = 0.0;
 };
 
 /**

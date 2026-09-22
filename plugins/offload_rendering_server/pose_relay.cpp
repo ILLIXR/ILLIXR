@@ -115,6 +115,7 @@ pose_relay::pose_relay(const std::string& name, phonebook* pb)
     use_hand_tracking_     = switchboard_->get_env_bool("ILLIXR_USE_HAND_TRACKING", "true");
     use_palm_poses_        = switchboard_->get_env_bool("ILLIXR_USE_PALM_POSES", "false");
     use_hand_interactions_ = switchboard_->get_env_bool("ILLIXR_USE_HAND_INTERACTIONS", "false");
+    poses_are_injected_    = switchboard_->get_env_bool("ILLIXR_INJECT_POSES", "false");
 
     log_->info(use_hand_tracking_ ? "Hand tracking forwarding enabled" : "Hand tracking forwarding disabled");
     log_->info(use_palm_poses_ ? "Palm pose forwarding enabled" : "Palm pose forwarding disabled");
@@ -181,10 +182,16 @@ void pose_relay::_p_one_iteration() {
     //   + smoothed_clock_offset_ns        → server system_clock (Unix epoch ns)
     //   - windows_epoch_offset_ns_        → Monado time (os_monotonic_get_ns)
     // ----------------------------------------------------------------
-    int64_t monado_time_ns = pose_data->pose_xr_time_ns + pose_data->xr_to_monotonic_offset_ns +
-        pose_data->monotonic_to_system_offset_ns + static_cast<int64_t>(pose_data->smoothed_clock_offset_ns) -
-        windows_epoch_offset_ns_;
-
+    int64_t monado_time_ns;
+    if (poses_are_injected_) {
+        monado_time_ns = pose_data->pose_xr_time_ns + injected_pose_base_time_ + pose_data->xr_to_monotonic_offset_ns +
+            pose_data->monotonic_to_system_offset_ns + static_cast<int64_t>(pose_data->smoothed_clock_offset_ns) -
+            windows_epoch_offset_ns_;
+    } else {
+        monado_time_ns = pose_data->pose_xr_time_ns + pose_data->xr_to_monotonic_offset_ns +
+            pose_data->monotonic_to_system_offset_ns + static_cast<int64_t>(pose_data->smoothed_clock_offset_ns) -
+            windows_epoch_offset_ns_;
+    }
     // Cache smoothed_rtt_ns for use in get_pose() without requiring
     // a reader access from within the mutex
     smoothed_rtt_ns_.store(pose_data->smoothed_rtt_ns);
@@ -364,6 +371,13 @@ xrt_space_relation pose_relay::get_pose(XrTime future_time) const {
         relation.pose.orientation.w = 1.0f;
         relation.relation_flags     = XRT_SPACE_RELATION_BITMASK_NONE;
         return relation;
+    }
+
+    if (poses_are_injected_ && injected_pose_base_time_ == 0) {
+        XrTime last_time = current_poses_.back().time;
+        injected_pose_base_time_ = future_time - last_time;
+        for (auto& item : current_poses_)
+            item.time += injected_pose_base_time_;
     }
 
     // Check cache first

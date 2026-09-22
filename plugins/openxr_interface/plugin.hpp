@@ -18,7 +18,14 @@
 #    include "illixr/switchboard.hpp"
 #    include "illixr/threadloop.hpp"
 #    include "illixr/vk/vulkan_context_provider.hpp"
-#    include "oxr_relay.hpp"
+
+#    ifdef USE_POSE_INJECTOR
+#        include "pose_injector/plugin.hpp"
+#        define OXR_RELAY_TYPE pose_injector
+#    else
+#        include "oxr_relay.hpp"
+#        define OXR_RELAY_TYPE oxr_relay
+#    endif
 #    include "stereo_renderer.hpp"
 
 #    include <openxr/openxr.h>
@@ -183,7 +190,7 @@ private:
     // True when the runtime reports XR_FB_SPACE_WARP_EXTENSION_NAME.
     bool spacewarp_supported_{false};
 
-    std::shared_ptr<oxr_relay> oxr_relay_;
+    std::shared_ptr<OXR_RELAY_TYPE> oxr_relay_;
     // std::atomic<uint64_t> next_frame_id_{0};
 #    ifdef ILLIXR_ENABLE_BOBA
     int headset_width_  = NATIVE_STREAM_EYE_WIDTH;

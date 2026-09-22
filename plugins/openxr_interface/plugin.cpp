@@ -1,5 +1,6 @@
 #ifdef USING_OPENXR
 #    include "plugin.hpp"
+#    include "oxr_defs.hpp"
 
 #    include <algorithm>
 #    include <array>
@@ -58,7 +59,7 @@ static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
 #    ifdef ILLIXR_ENABLE_BOBA
     , boba_client_control_reader_{switchboard_->get_reader<switchboard::event_wrapper<std::string>>("boba_client_control")}
 #    endif
-    , oxr_relay_{std::make_shared<oxr_relay>(name_, pb_)} {
+    , oxr_relay_{std::make_shared<OXR_RELAY_TYPE>(name_, pb_)} {
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
 #    ifndef ILLIXR_ENABLE_BOBA
     overscan_ = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
@@ -497,6 +498,8 @@ void oxr_interface::run_frame() {
             // Import AHardwareBuffers into Vulkan (cached — no-op if buffer unchanged).
             renderer_->receive_frame(*current_frames_);
 
+            XrSpaceLocation loc = {XR_TYPE_SPACE_LOCATION};
+#    ifndef USE_POSE_INJECTOR
             // Look up the original pose measurement that was used to render this
             // frame so we can log the end-to-end pose tracking latency.
             {
@@ -513,7 +516,6 @@ void oxr_interface::run_frame() {
                         // Age of the pose at display time
                         auto age_ns =
                             std::chrono::duration_cast<std::chrono::nanoseconds>(now_tp - history_entry.generated_time).count();
-                        XrSpaceLocation loc = {XR_TYPE_SPACE_LOCATION};
 
                         OXR(xrLocateSpace(view_space_, local_space_, frame_state.predictedDisplayTime, &loc))
                         spdlog::get("illixr")->info(
@@ -552,6 +554,10 @@ void oxr_interface::run_frame() {
                     spdlog::get("illixr")->debug("[pose_tracker]  No current pose");
                 }
             }
+#    else
+            OXR(xrLocateSpace(view_space_, local_space_, frame_state.predictedDisplayTime, &loc))
+            float diff = (abs(current_frames_->pose[1].position.x) + abs(current_frames_->pose[0].position.x)) / 2.f;
+#    endif
 #    ifdef ILLIXR_ENABLE_BOBA
             const bool render_as_panel =
                 current_frames_->presentation_mode != data_format::stereo_presentation_mode::stereo_fullscreen;
@@ -615,7 +621,17 @@ void oxr_interface::run_frame() {
 #    endif
 
                 // Set up projection layer
+#ifdef USE_POSE_INJECTOR
+                projectionViews[eye].pose = loc.pose;
+
+                if (eye == 0) {
+                    projectionViews[eye].pose.position.x -= diff;
+                } else {
+                    projectionViews[eye].pose.position.x += diff;
+                }
+#else
                 projectionViews[eye].pose = current_frames_->pose[eye];
+#endif
                 // Use the render FOV from the server if available (supports overdraw margins).
                 // Fall back to the headset's native FOV if not yet received.
                 if (current_frames_->fov_left[eye] != 0.0f) {
