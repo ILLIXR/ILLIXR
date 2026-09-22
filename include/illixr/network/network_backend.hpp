@@ -1,10 +1,16 @@
 #pragma once
 
 #include "illixr/phonebook.hpp"
+#include "latency_injector.hpp"
 #include "topic_config.hpp"
 
+#include <map>
 #include <memory>
 #include <vector>
+
+namespace ILLIXR {
+class switchboard;
+}
 
 namespace ILLIXR::network {
 class network_backend : public phonebook::service {
@@ -42,7 +48,19 @@ public:
 
     virtual void start_server() = 0;
 #endif
-    [[nodiscard]] virtual network::topic_config::TransportMethod transport_method() const = 0;
+    [[maybe_unused]] [[nodiscard]] virtual network::topic_config::TransportMethod transport_method() const = 0;
+
+    [[maybe_unused]] [[nodiscard]] float get_latency(const std::string& topic_name) const {
+        return static_cast<float>(latency_map_.at(topic_name)->get_latency());
+    }
+
+    void set_latency(const std::shared_ptr<ILLIXR::switchboard>& sb, const std::string topic_name,
+                     const std::string& transport);
+
+    std::map<std::string, std::shared_ptr<latency_injector>> latency_map_;
+
+private:
+    void set_default(const std::string& topic_name, bool warn = false, const std::string val = "");
 };
 
 /**

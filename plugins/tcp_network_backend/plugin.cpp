@@ -212,6 +212,8 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
 void tcp_network_backend::topic_create(std::string topic_name, network::topic_config& config) {
     networked_topics_.push_back(topic_name);
     networked_topics_configs_[topic_name] = config;
+    set_latency(switchboard_, topic_name, "TCP");
+
     std::string serialization;
     if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
         serialization = "BOOST";
@@ -231,6 +233,7 @@ void tcp_network_backend::topic_send(std::string topic_name, std::string&& messa
         std::cout << "Topic not networked" << std::endl;
         return;
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(latency_map_[topic_name]->get_latency()));
     send_to_peer(topic_name, std::move(message));
 }
 

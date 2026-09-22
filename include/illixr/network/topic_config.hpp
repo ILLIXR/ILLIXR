@@ -14,21 +14,24 @@ struct topic_config {
     bool                                                  retransmit         = false;
     bool                                                  allow_out_of_order = false;
     packetization_type                                    packetization      = DEFAULT;
-    std::optional<std::chrono::duration<long, std::nano>> latency;
 
     enum SerializationMethod { BOOST, PROTOBUF } serialization_method;
 
     enum TransportMethod { TCP, UDP } transport_method;
+
+    float min_latency_ms = 0.f;
+    float max_latency_ms = 0.f;
 
     topic_config()
         : serialization_method{BOOST}
         , transport_method{TCP} { }
 
     explicit topic_config(SerializationMethod method, TransportMethod transport = TCP,
-                          std::chrono::duration<long, std::nano> late = std::chrono::duration<long, std::nano>{})
-        : latency{late}
-        , serialization_method{method}
-        , transport_method{transport} { }
+                          float min_latency = 0.f, float max_latency = 0.f)
+        : serialization_method{method}
+        , transport_method{transport}
+        , min_latency_ms{min_latency}
+        , max_latency_ms{max_latency} { }
 };
 
 } // namespace ILLIXR::network

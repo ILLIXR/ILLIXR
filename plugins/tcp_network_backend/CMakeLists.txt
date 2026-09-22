@@ -13,6 +13,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/utils/network_backend.cpp
 )
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES

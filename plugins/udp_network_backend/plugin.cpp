@@ -72,7 +72,7 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         peer_socket_ = socket;
 
         spdlog::get("illixr")->info("[udp_network_backend] Connecting to {}:{}", server_ip_, server_port_);
-        // UDP is connectionless � set_peer() is sufficient; no connect() needed
+        // UDP is connectionless - set_peer() is sufficient; no connect() needed
         spdlog::get("illixr")->info("[udp_network_backend] Client ready");
 #else
         io_thread_ = std::thread([this]() {
@@ -87,7 +87,7 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
 #endif
     } else {
         client = false;
-        // Android needs to handl;e the threads differently
+        // Android needs to handle the threads differently
 #ifdef __ANDROID__
         auto* socket = new network::UDPSocket();
         socket->socket_set_reuseaddr();
@@ -191,6 +191,8 @@ void udp_network_backend::read_loop(network::UDPSocket* socket) {
 void udp_network_backend::topic_create(std::string topic_name, network::topic_config& config) {
     networked_topics_.push_back(topic_name);
     networked_topics_configs_[topic_name] = config;
+    set_latency(switchboard_, topic_name, "UDP");
+
     spdlog::get("illixr")->info("[udp_network_backend] topic_create: {}", topic_name);
     // Notify the peer of the new topic and its serialization method, mirroring
     // the TCP backend's illixr_control handshake.  Since UDP is unreliable we
@@ -218,6 +220,7 @@ void udp_network_backend::topic_send(std::string topic_name, std::string&& messa
         spdlog::get("illixr")->warn("[udp_network_backend] topic_send: {} not networked", topic_name);
         return;
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(latency_map_[topic_name]->get_latency()));
     // Packet format: total_length(4) | topic_name_length(4) | topic_name | message
     auto     topic_name_length = static_cast<uint32_t>(topic_name.size());
     uint32_t total_length      = 8u + topic_name_length + static_cast<uint32_t>(message.size());

@@ -83,3 +83,57 @@ To configure a network topic to use UDP with Boost serialization:
 ``` c++
  combined_pose_writer_{switchboard_->get_network_writer<data_format::pose::combined_pose>("combined_pose", {.serialization_method=network::topic_config::BOOST, .transport_method=network::topic_config::UDP})}
 ```
+
+### Latency Injection
+
+The ILLIXR network plugins support artificial latency injection, intended to simulate network latency. The latency
+injection is done on the sending side and can be applied in several methods to the network traffic:
+
+- To all network traffic
+- To all network traffic of a specific type (UDP or TCP)
+- To all network traffic of a specific topic
+
+All latency injection is controlled via environment variables.
+
+- `ILLIXR_LATENCY` controls latency for *all* network traffic
+- `TCP_LATENCY` and `UDP_LATENCY` control the latency for all TCP and UDP traffic, respectively
+- `<TOPIC_NAME>_LATENCY` (all caps) controls the latency of a specific topic
+
+These methods are not exclusive, the code first searches for a latency environment variable tied to the topic, then
+it searches for one tied to the transport method (TCP/UDP), then for `ILLIXR_LATENCY`. The first one found  
+will be applied. This allows for maximum flexibility when applying latencies.
+
+The latency has three modes:
+
+- None - no latency is injected, the default mode
+- Constant - inject a constant latency to outgoing traffic, given as a single floating point argument to the environment variable
+- Random - inject a random amount of latency, given as a comma-separated pair of floating point values, denoting the lower and upper limits of the range
+
+All values are in milliseconds.
+
+#### Examples
+
+##### Example 1
+
+Using the following environment variable setup:
+
+``` bash
+export TCP_LATENCY=5
+export HEAD_POSE_LATENCY=2,8
+```
+
+will result in all traffic from the `head_pose` topic having latencies between 2 and 8 ms added, regardless of transport
+method, and all TCP based traffic will have a constant 5ms latency added. All other traffic will not have any added latency.
+
+##### Example 2
+
+A more complex example with:
+
+``` bash
+export ILLIXR_LATENCY=15
+export UDP_LATENCY=2,5
+export HEAD_POSE_LATENCY=0
+```
+
+will result in all traffic from the `head_pose` topic having no latency added, all UDP traffic will have between 2 and 5ms
+of latency added, and all other traffic having a constant 15ms of latency added.
