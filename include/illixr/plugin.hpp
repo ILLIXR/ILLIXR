@@ -32,6 +32,13 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
+enum plugin_type {
+    PLUGIN,
+    THREADLOOP,
+    TCP,
+    UDP
+};
+
 /*
  * This gets included, but it is functionally 'private'.
  */
@@ -48,11 +55,12 @@ const record_header _plugin_start_header{
  */
 class plugin {
 public:
-    plugin(std::string name, phonebook* pb)
+    plugin(std::string name, phonebook* pb, plugin_type type = PLUGIN)
         : name_{std::move(name)}
         , phonebook_{pb}
         , record_logger_{phonebook_->lookup_impl<record_logger>()}
-        , id_{pb->get_next_id()} { }
+        , id_{pb->get_next_id()}
+    , type_{type} { }
 
     virtual ~plugin() = default;
 
@@ -137,12 +145,26 @@ public:
         plugin_logger_->sinks()[sink_count - 1]->set_pattern("%v");
     }
 
+    [[nodiscard]] bool is_entry_point() const {
+        return entry_point_;
+    }
+
+    [[nodiscard]] std::size_t get_id() const {
+        return id_;
+    }
+
+    [[nodiscard]] plugin_type get_type() const {
+        return type_;
+    }
+
 protected:
     std::string                          name_;
     const phonebook*                     phonebook_;
     const std::shared_ptr<record_logger> record_logger_;
     const std::size_t                    id_;
     std::shared_ptr<spdlog::logger>      plugin_logger_;
+    bool                                 entry_point_{false};
+    plugin_type                          type_;
 };
 
 #define PLUGIN_MAIN(PLUGIN_CLASS)                                         \

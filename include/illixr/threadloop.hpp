@@ -39,7 +39,7 @@ const record_header _threadloop_iteration_header{
 class threadloop : public plugin {
 public:
     threadloop(const std::string& name, phonebook* pb)
-        : plugin{name, pb}
+        : plugin{name, pb, THREADLOOP}
         , stoplight_{pb->lookup_impl<stoplight>()} { }
 
     /**
@@ -146,7 +146,8 @@ private:
         // This is currently not possible because relative_clock is required in
         // some setup functions, and relative_clock is only guaranteed to be
         // available once `wait_for_ready()` unblocks.
-        stoplight_->wait_for_ready();
+        if (!is_entry_point())
+            stoplight_->wait_for_ready();
         _p_thread_setup();
 
         while (!stoplight_->check_should_stop() && !should_terminate()) {

@@ -633,6 +633,8 @@ public:
         explicit writer(topic& topic)
             : topic_{topic} { }
 
+        virtual ~writer() = default;
+
         /**
          * @brief Like `new`/`malloc` but more efficient for this specific case.
          *
@@ -861,6 +863,22 @@ public:
         return _default;
     }
 
+    void set_tcp(bool value) {
+        use_tcp_ = value;
+    }
+
+    void set_udp(bool value) {
+        use_udp_ = value;
+    }
+
+    bool use_tcp() const {
+        return use_tcp_;
+    }
+
+    bool use_udp() const {
+        return use_udp_;
+    }
+
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
      *
@@ -989,6 +1007,8 @@ private:
     std::shared_mutex                            registry_lock_;
     std::shared_ptr<record_logger>               record_logger_;
     std::unordered_map<std::string, std::string> env_vars_;
+    bool use_tcp_{false};
+    bool use_udp_{false};
 #ifdef __ANDROID__
     android_app* app_ = nullptr;
 #endif
