@@ -14,6 +14,15 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
+namespace {
+// Resolved once in JNI_OnLoad, which runs with the classloader that was active when this
+// library was loaded. Looking this up lazily from init_network_config_panel() instead risks a
+// ClassNotFoundException: that runs on a native worker thread, whose attached classloader
+// context can default to the system/bootstrap classloader rather than the app's own -- the same
+// issue the original dialog-based NetworkConfigDialog lookup had to work around this same way.
+jclass g_network_config_panel_class = nullptr;
+} // namespace
+
 #    ifdef ILLIXR_ENABLE_BOBA
 constexpr float BOBA_PANEL_DISTANCE_METERS = 1.1F;
 constexpr float BOBA_PANEL_WIDTH_METERS    = 1.2F;
@@ -46,6 +55,20 @@ static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
 }
 #    endif
 
+// A fixed pose, far outside any normal play area, used to hide a fingertip marker whose hand
+// isn't currently tracked. Deliberately NOT achieved by omitting the marker's layer from a given
+// frame's xrEndFrame submission: doing that (only including a marker once its hand becomes
+// tracked, rather than always including it) is what produced the freeze this works around --
+// some runtimes appear to dislike the *set* of composition layers changing shape between frames
+// mid-session, even though a constant set (as when both hands are tracked from the first frame)
+// works fine indefinitely. Keeping the layer count constant and just relocating an unused marker
+// sidesteps that without depending on a full explanation of why the runtime reacts that way.
+static XrPosef parked_marker_pose() {
+    XrPosef pose = identity_pose();
+    pose.position.y = -100.0f;
+    return pose;
+}
+
 [[maybe_unused]] oxr_interface::oxr_interface(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
@@ -72,6 +95,7 @@ static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
     oxr_relay_->initialize(instance_, session_, local_space_, view_space_);
     create_swapchains();
     spdlog::get("illixr")->info("oxr_interface: Vulkan session ready");
+    entry_point_ = true;
 }
 
 void oxr_interface::_p_thread_setup() {
@@ -95,6 +119,24 @@ void oxr_interface::_p_thread_setup() {
 }
 
 void oxr_interface::start() {
+    use_tcp_ = switchboard_->use_tcp();
+    use_udp_ = switchboard_->use_udp();
+    spdlog::get("illixr")->debug("[oxr startup] {}  {}", use_tcp_, use_udp_);
+
+    // Gather network configuration from the user via an in-VR quad-layer panel before any other
+    // plugin's start() runs -- in particular the TCP/UDP network backends, which now make their
+    // actual connections from start() rather than their constructors. This relies on external
+    // guarantees that oxr_interface::start() runs before every other plugin's start(), since all
+    // plugins are constructed before any of them are started.
+    //
+    // Must run before threadloop::start(): that spawns the render thread which drives this same
+    // session's ordinary xrWaitFrame/xrBeginFrame/xrEndFrame loop via _p_one_iteration(), and a
+    // session's frame loop can only be driven by one thread at a time. Running the config loop
+    // afterward would mean two threads both trying to drive it concurrently.
+    init_network_config_panel();
+    run_network_config_loop();
+    destroy_network_config_panel();
+
     threadloop::start();
     oxr_relay_->start();
 }
@@ -456,6 +498,11 @@ void oxr_interface::run_frame() {
     // stack and chained onto projectionViews[eye].next when spacewarp is active.
     XrCompositionLayerSpaceWarpInfoFB spacewarp_infos[2]{{XR_TYPE_COMPOSITION_LAYER_SPACE_WARP_INFO_FB},
                                                          {XR_TYPE_COMPOSITION_LAYER_SPACE_WARP_INFO_FB}};
+
+    // Used only before the first valid frame ever arrives; see the current_frames_ validity
+    // check below. Reuses network_config_swapchain_/_quad_pose_/_quad_width_m_/_height_m_ --
+    // the same quad the network config panel used -- rather than a full projection layer.
+    XrCompositionLayerQuad log_quad_layer = {XR_TYPE_COMPOSITION_LAYER_QUAD};
 
     int                                 layer_count = 0;
     const XrCompositionLayerBaseHeader* layers[1]   = {nullptr};
@@ -941,6 +988,486 @@ void oxr_interface::create_swapchains() {
     }
 }
 
+
+// =====================================================================================
+// Network Config Panel
+// =====================================================================================
+
+void oxr_interface::init_network_config_panel() {
+    JavaVM* vm = app_->activity->vm;
+    if (vm->GetEnv(reinterpret_cast<void**>(&network_config_env_), JNI_VERSION_1_6) != JNI_OK) {
+        vm->AttachCurrentThread(&network_config_env_, nullptr);
+        network_config_did_attach_ = true;
+    }
+    JNIEnv* env = network_config_env_;
+
+    if (g_network_config_panel_class == nullptr) {
+        throw std::runtime_error(
+            "oxr_interface: JNI_OnLoad did not cache NetworkConfigPanel's class -- either "
+            "it wasn't called (check for a conflicting second JNI_OnLoad elsewhere in this "
+            ".so; only one is allowed per shared library) or FindClass itself failed there "
+            "(double check the class name/package/nesting)");
+    }
+    // Process-lifetime global ref cached by JNI_OnLoad; not owned per-instance, so no
+    // NewGlobalRef here and no DeleteGlobalRef in destroy_network_config_panel().
+    network_config_panel_class_ = g_network_config_panel_class;
+
+    jmethodID ctor = env->GetMethodID(network_config_panel_class_, "<init>", "(Landroid/app/Activity;ZZ)V");
+
+    // Confirms whether use_tcp_/use_udp_ are actually true here, in oxr_interface itself, before
+    // anything JNI-related is even involved -- if this prints false/false (or wrong values),
+    // the bug is upstream of this function entirely (wherever these get set relative to when
+    // start() runs), not in the JNI call or the Java side.
+    spdlog::get("illixr")->info("oxr_interface: constructing NetworkConfigPanel with use_tcp_={} use_udp_={}",
+                                use_tcp_, use_udp_);
+
+    // NewObject is variadic, exactly like CallXXXMethod: boolean args must be widened to jint,
+    // per the same JNI-spec rule that bit us earlier in the dialog-based version.
+    jobject local_obj = env->NewObject(network_config_panel_class_, ctor, app_->activity->clazz,
+                                       static_cast<jint>(use_tcp_), static_cast<jint>(use_udp_));
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        throw std::runtime_error("oxr_interface: NetworkConfigPanel constructor threw a Java exception");
+    }
+    network_config_panel_ = env->NewGlobalRef(local_obj);
+    env->DeleteLocalRef(local_obj);
+
+    panel_render_method_        = env->GetMethodID(network_config_panel_class_, "render", "()Z");
+    panel_get_bitmap_method_    = env->GetMethodID(network_config_panel_class_, "getBitmap", "()Landroid/graphics/Bitmap;");
+    panel_handle_poke_method_   = env->GetMethodID(network_config_panel_class_, "handlePoke", "(FFZ)V");
+    panel_update_hover_method_  = env->GetMethodID(network_config_panel_class_, "updateHover", "(IFFZ)V");
+    panel_is_finished_method_   = env->GetMethodID(network_config_panel_class_, "isFinished", "()Z");
+    panel_is_confirmed_method_  = env->GetMethodID(network_config_panel_class_, "isConfirmed", "()Z");
+    panel_get_result_method_    = env->GetMethodID(network_config_panel_class_, "getResult", "()Ljava/lang/String;");
+    panel_get_width_method_     = env->GetMethodID(network_config_panel_class_, "getPanelWidthPx", "()I");
+    panel_get_height_method_    = env->GetMethodID(network_config_panel_class_, "getPanelHeightPx", "()I");
+
+    auto panel_width  = static_cast<uint32_t>(env->CallIntMethod(network_config_panel_, panel_get_width_method_));
+    auto panel_height = static_cast<uint32_t>(env->CallIntMethod(network_config_panel_, panel_get_height_method_));
+
+    //  Quad swapchain, sized to match the panel bitmap
+    network_config_swapchain_.width  = panel_width;
+    network_config_swapchain_.height = panel_height;
+    network_config_swapchain_.format = VK_FORMAT_R8G8B8A8_UNORM; // matches Bitmap.Config.ARGB_8888's actual byte layout (RGBA)
+
+    XrSwapchainCreateInfo swapchain_info = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
+    swapchain_info.arraySize   = 1;
+    swapchain_info.format      = static_cast<int64_t>(network_config_swapchain_.format);
+    swapchain_info.width       = panel_width;
+    swapchain_info.height      = panel_height;
+    swapchain_info.mipCount    = 1;
+    swapchain_info.faceCount   = 1;
+    swapchain_info.sampleCount = 1;
+    // COLOR_ATTACHMENT_BIT is required here even though nothing renders into this image via a
+    // render pass: upload_bitmap_to_quad_swapchain() ends by transitioning to
+    // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (matching what the runtime expects for
+    // composited color images, same as the eye swapchains), and that layout is only valid for
+    // images actually created with this usage.
+    swapchain_info.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_TRANSFER_DST_BIT |
+        XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+    OXR(xrCreateSwapchain(session_, &swapchain_info, &network_config_swapchain_.swapchain))
+
+    uint32_t image_count = 0;
+    OXR(xrEnumerateSwapchainImages(network_config_swapchain_.swapchain, 0, &image_count, nullptr))
+    network_config_swapchain_.images.resize(image_count, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR});
+    OXR(xrEnumerateSwapchainImages(network_config_swapchain_.swapchain, image_count, &image_count,
+                                   reinterpret_cast<XrSwapchainImageBaseHeader*>(network_config_swapchain_.images.data())))
+
+    spdlog::get("illixr")->info("oxr_interface: network config quad swapchain {}x{}, images={}",
+                                panel_width, panel_height, image_count);
+
+    //  Small dedicated Vulkan resources for the bitmap upload (stereo_renderer_ doesn't exist
+    //  yet -- it's created in _p_thread_setup(), on a different thread, after this constructor
+    //  has already returned).
+    VkCommandPoolCreateInfo pool_info = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
+    pool_info.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    pool_info.queueFamilyIndex = vk_queue_family_;
+    if (vkCreateCommandPool(vk_device_, &pool_info, nullptr, &network_config_cmd_pool_) != VK_SUCCESS) {
+        throw std::runtime_error("oxr_interface: failed to create network config command pool");
+    }
+
+    VkCommandBufferAllocateInfo cmd_alloc_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
+    cmd_alloc_info.commandPool        = network_config_cmd_pool_;
+    cmd_alloc_info.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmd_alloc_info.commandBufferCount = 1;
+    if (vkAllocateCommandBuffers(vk_device_, &cmd_alloc_info, &network_config_cmd_buffer_) != VK_SUCCESS) {
+        throw std::runtime_error("oxr_interface: failed to allocate network config command buffer");
+    }
+
+    VkFenceCreateInfo fence_info = {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+    if (vkCreateFence(vk_device_, &fence_info, nullptr, &network_config_fence_) != VK_SUCCESS) {
+        throw std::runtime_error("oxr_interface: failed to create network config fence");
+    }
+
+    network_config_staging_size_ = static_cast<VkDeviceSize>(panel_width) * panel_height * 4;
+
+    VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+    buffer_info.size        = network_config_staging_size_;
+    buffer_info.usage       = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+    buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    if (vkCreateBuffer(vk_device_, &buffer_info, nullptr, &network_config_staging_buf_) != VK_SUCCESS) {
+        throw std::runtime_error("oxr_interface: failed to create network config staging buffer");
+    }
+
+    VkMemoryRequirements mem_reqs{};
+    vkGetBufferMemoryRequirements(vk_device_, network_config_staging_buf_, &mem_reqs);
+
+    VkPhysicalDeviceMemoryProperties mem_props{};
+    vkGetPhysicalDeviceMemoryProperties(vk_physical_device_, &mem_props);
+
+    uint32_t memory_type_index = UINT32_MAX;
+    constexpr VkMemoryPropertyFlags kRequired =
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    for (uint32_t i = 0; i < mem_props.memoryTypeCount; i++) {
+        if ((mem_reqs.memoryTypeBits & (1u << i)) &&
+            (mem_props.memoryTypes[i].propertyFlags & kRequired) == kRequired) {
+            memory_type_index = i;
+            break;
+        }
+    }
+    if (memory_type_index == UINT32_MAX) {
+        throw std::runtime_error("oxr_interface: no suitable host-visible memory type for staging buffer");
+    }
+
+    VkMemoryAllocateInfo alloc_info = {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
+    alloc_info.allocationSize  = mem_reqs.size;
+    alloc_info.memoryTypeIndex = memory_type_index;
+    if (vkAllocateMemory(vk_device_, &alloc_info, nullptr, &network_config_staging_mem_) != VK_SUCCESS) {
+        throw std::runtime_error("oxr_interface: failed to allocate network config staging memory");
+    }
+    vkBindBufferMemory(vk_device_, network_config_staging_buf_, network_config_staging_mem_, 0);
+
+    create_fingertip_markers();
+
+    spdlog::get("illixr")->info("oxr_interface: network config panel ready");
+}
+
+void oxr_interface::initialize_quad_pose(XrTime time) {
+    XrSpaceLocation view_loc = {XR_TYPE_SPACE_LOCATION};
+    OXR(xrLocateSpace(view_space_, local_space_, time, &view_loc))
+
+    const XrPosef view_pose = (view_loc.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)
+        ? view_loc.pose
+        : identity_pose();
+
+    const XrQuaternionf& q = view_pose.orientation;
+    // forward = R(q) * (0, 0, -1)
+    const float fx = -2.0f * (q.x * q.z + q.w * q.y);
+    const float fy = -2.0f * (q.y * q.z - q.w * q.x);
+    const float fz = -(1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+
+    constexpr float kDistanceMeters = 0.5f; // was 0.6f; moved 10cm closer per feedback
+    network_config_quad_pose_.orientation = view_pose.orientation;
+    network_config_quad_pose_.position.x  = view_pose.position.x + fx * kDistanceMeters;
+    network_config_quad_pose_.position.y  = view_pose.position.y + fy * kDistanceMeters;
+    network_config_quad_pose_.position.z  = view_pose.position.z + fz * kDistanceMeters;
+}
+
+void oxr_interface::world_to_quad_local(float world_x, float world_y, float world_z, float& local_x, float& local_y,
+                                        float& local_z) const {
+    const float dx = world_x - network_config_quad_pose_.position.x;
+    const float dy = world_y - network_config_quad_pose_.position.y;
+    const float dz = world_z - network_config_quad_pose_.position.z;
+
+    // Rotate (dx, dy, dz) into the quad's local frame by the conjugate of its orientation.
+    const XrQuaternionf& q  = network_config_quad_pose_.orientation;
+    const float           cx = -q.x;
+    const float           cy = -q.y;
+    const float           cz = -q.z;
+    const float           cw = q.w;
+    local_x = (1 - 2 * (cy * cy + cz * cz)) * dx + (2 * (cx * cy - cz * cw)) * dy + (2 * (cx * cz + cy * cw)) * dz;
+    local_y = (2 * (cx * cy + cz * cw)) * dx + (1 - 2 * (cx * cx + cz * cz)) * dy + (2 * (cy * cz - cx * cw)) * dz;
+    local_z = (2 * (cx * cz - cy * cw)) * dx + (2 * (cy * cz + cx * cw)) * dy + (1 - 2 * (cx * cx + cy * cy)) * dz;
+}
+
+void oxr_interface::update_network_config_input(XrTime predicted_display_time) {
+    // Reuses oxr_relay_'s action set and poke_pose action spaces (accessible via `friend
+    // oxr_interface` in oxr_relay.hpp) rather than a second, duplicate action set for the same
+    // interaction profile -- see the comment on poke_engaged_ in the header for why.
+    if (oxr_relay_->hand_interaction_action_set_ == XR_NULL_HANDLE) {
+        return; // XR_EXT_hand_interaction not supported/initialized; no input possible for this panel
+    }
+
+    XrActiveActionSet active_set{oxr_relay_->hand_interaction_action_set_, XR_NULL_PATH};
+    XrActionsSyncInfo sync_info = {XR_TYPE_ACTIONS_SYNC_INFO};
+    sync_info.countActiveActionSets = 1;
+    sync_info.activeActionSets      = &active_set;
+    OXR(xrSyncActions(session_, &sync_info))
+
+    const float half_width  = network_config_quad_width_m_ * 0.5f;
+    const float half_height = network_config_quad_height_m_ * 0.5f;
+
+    // Widened again from a prior round (0.20/0.35/0.45): logged data showed one genuine touch
+    // reaching z~0.0 and another, elsewhere in the same session, sitting at z~0.2 without
+    // registering -- a 20cm spread that's too large to be pure tracking jitter, and too large to
+    // paper over by nudging the number slightly. This wider margin is a stopgap, not a resolved
+    // calibration; if taps are still inconsistent, the more likely culprit is something other
+    // than the threshold value itself (e.g. a within_xy/hit-rect issue for whichever specific
+    // widget was being pressed), not something further threshold-widening will fix.
+    //
+    // Direction fixed from an earlier round: the quad's orientation is copied directly from
+    // the view pose in initialize_quad_pose(), and OpenXR's view pose has -Z as the direction
+    // the user is looking (into the distance, away from the user) -- so the quad's +Z, not -Z,
+    // points back toward the user. "Close to the panel" is therefore small/near-zero local_z,
+    // and "retreated far away" is large *positive* local_z -- the reverse of what the
+    // comparisons below originally checked, which is why engagement almost never released once
+    // triggered: retreating by pulling the hand back increases local_z, but the old disengage
+    // condition required local_z to become more negative (i.e. pushing further through the
+    // panel), which normal retreat never does.
+    constexpr float kEngageDistanceMeters     = 0.02f;
+    constexpr float kDisengageDistanceMeters  = 0.06f;
+    constexpr float kCursorShowDistanceMeters = 0.55f;
+
+    for (int hand = 0; hand < 2; hand++) {
+        const XrSpace poke_space = oxr_relay_->interaction_pose_spaces_[hand][pose::POKE];
+        if (poke_space == XR_NULL_HANDLE) {
+            continue;
+        }
+
+        XrSpaceLocation loc = {XR_TYPE_SPACE_LOCATION};
+        OXR(xrLocateSpace(poke_space, local_space_, predicted_display_time, &loc))
+        if (!(loc.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)) {
+            jvalue hover_args[4];
+            hover_args[0].i = hand;
+            hover_args[1].f = 0.0f;
+            hover_args[2].f = 0.0f;
+            hover_args[3].z = JNI_FALSE;
+            network_config_env_->CallVoidMethodA(network_config_panel_, panel_update_hover_method_, hover_args);
+            // Parked rather than simply "not visible": this hand's marker is still submitted
+            // every frame (see run_network_config_loop()), just relocated somewhere unseen,
+            // rather than removed from that frame's layer list.
+            fingertip_marker_pose_[hand] = parked_marker_pose();
+            continue;
+        }
+
+        // The fingertip depth marker uses the real, un-projected pose directly -- it's meant to
+        // show the actual 3D gap between the finger and the panel, unlike the 2D cursor (baked
+        // into the panel bitmap, and thus always flush with the panel's own depth).
+        // Position tracks the real fingertip so depth is still meaningful; orientation
+        // deliberately does NOT come from the poke pose's own rotation. The poke pose's
+        // orientation follows the hand, and there are hand angles where that puts the marker
+        // quad edge-on (or facing away) from the user, making it disappear. Using the panel's
+        // own fixed orientation instead keeps the marker always facing the same way the panel
+        // does -- behaving like a stable "pointer" reticle rather than a twisting flag.
+        fingertip_marker_pose_[hand].position    = loc.pose.position;
+        fingertip_marker_pose_[hand].orientation = network_config_quad_pose_.orientation;
+
+        float local_x, local_y, local_z;
+        world_to_quad_local(loc.pose.position.x, loc.pose.position.y, loc.pose.position.z, local_x, local_y, local_z);
+
+        const bool within_xy      = (std::abs(local_x) <= half_width) && (std::abs(local_y) <= half_height);
+        const bool near_plane     = within_xy && (local_z <= kEngageDistanceMeters);
+        const bool far_from_plane = local_z > kDisengageDistanceMeters;
+
+        //spdlog::get("illixr")->debug(
+        //        "oxr_interface: poke hand={} local=({:.3f},{:.3f},{:.3f}) within_xy={} near={} far={} engaged={}",
+        //        hand, local_x, local_y, local_z, within_xy, near_plane, far_from_plane, poke_engaged_[hand]);
+
+        const float u = (local_x + half_width) / network_config_quad_width_m_;
+        const float v = (half_height - local_y) / network_config_quad_height_m_; // OpenXR Y-up → bitmap Y-down
+
+        // Cursor visibility uses a much more generous distance than the poke engage/disengage
+        // thresholds, so the marker appears as the hand approaches rather than only at the
+        // moment of a tap.
+        const bool show_cursor = within_xy && (local_z <= kCursorShowDistanceMeters);
+
+        {
+            // Using CallVoidMethodA (jvalue array) rather than the variadic CallVoidMethod, for
+            // the same reason as the poke call below: float/boolean arguments through a
+            // variadic JNI call are subject to default-argument-promotion ambiguity that the
+            // jvalue-array form sidesteps entirely.
+            jvalue hover_args[4];
+            hover_args[0].i = hand;
+            hover_args[1].f = u;
+            hover_args[2].f = v;
+            hover_args[3].z = static_cast<jboolean>(show_cursor);
+            network_config_env_->CallVoidMethodA(network_config_panel_, panel_update_hover_method_, hover_args);
+        }
+
+        if (!poke_engaged_[hand] && near_plane) {
+            poke_engaged_[hand] = true;
+
+            // Using CallVoidMethodA (jvalue array) rather than the variadic CallVoidMethod:
+            // float arguments passed through a variadic JNI call are subject to the same kind
+            // of default-argument-promotion ambiguity that bit the jboolean case earlier, and
+            // the jvalue-array form sidesteps the question entirely rather than relying on
+            // platform-specific promotion behavior.
+            jvalue args[3];
+            args[0].f = u;
+            args[1].f = v;
+            args[2].z = JNI_TRUE;
+            network_config_env_->CallVoidMethodA(network_config_panel_, panel_handle_poke_method_, args);
+        } else if (poke_engaged_[hand] && far_from_plane) {
+            poke_engaged_[hand] = false;
+
+            jvalue args[3];
+            args[0].f = u;
+            args[1].f = v;
+            args[2].z = JNI_FALSE;
+            network_config_env_->CallVoidMethodA(network_config_panel_, panel_handle_poke_method_, args);
+        }
+
+        // Pinch-select: click at this SAME (u, v) position -- the one the cursor is already
+        // showing -- gated only by whether it's within the panel and by the pinch gesture
+        // value, independent of how far the hand is from the panel. Deliberately does not use
+        // a separate aim-ray pose for targeting (an earlier version did): that could land
+        // somewhere different from what the yellow cursor showed, which is confusing since the
+        // cursor is the only on-screen indication of where a pinch will actually act. "Pinch
+        // clicks whatever the cursor is over" is the intended behavior, at any distance.
+        //
+        // kPinchValueIndex=0 is AIM's slot in oxr_relay_'s interaction_value_actions_ ordering
+        // (see the Doxygen comment on interaction_pose_actions_ in oxr_relay.hpp: AIM=0, GRIP=1,
+        // PINCH=2 for value/ready actions). Kept as AIM rather than switched to the PINCH slot
+        // deliberately: AIM's value is already confirmed reliable from prior testing (isActive
+        // consistently true, currentState cleanly reaching 0/1), and only the pose half of AIM
+        // (the ray-cast target) is being dropped here, not the value half.
+        constexpr int   kPinchValueIndex       = 0;
+        constexpr float kPinchActivateThreshold = 0.5f;
+
+        XrActionStateGetInfo pinch_value_info = {XR_TYPE_ACTION_STATE_GET_INFO};
+        pinch_value_info.action        = oxr_relay_->interaction_value_actions_[kPinchValueIndex];
+        pinch_value_info.subactionPath = oxr_relay_->hand_subaction_paths_[hand];
+
+        XrActionStateFloat pinch_value_state = {XR_TYPE_ACTION_STATE_FLOAT};
+        OXR(xrGetActionStateFloat(session_, &pinch_value_info, &pinch_value_state))
+
+        const bool pinch_gesture_active = pinch_value_state.isActive &&
+            pinch_value_state.currentState >= kPinchActivateThreshold;
+        const bool pinch_down = within_xy && pinch_gesture_active;
+
+        //spdlog::get("illixr")->debug(
+        //        "oxr_interface: pinch hand={} within_xy={} currentState={:.3f} pinch_down={} engaged={}",
+        //        hand, within_xy, pinch_value_state.currentState, pinch_down, pinch_engaged_[hand]);
+
+        if (!pinch_engaged_[hand] && pinch_down) {
+            pinch_engaged_[hand] = true;
+            jvalue args[3];
+            args[0].f = u;
+            args[1].f = v;
+            args[2].z = JNI_TRUE;
+            network_config_env_->CallVoidMethodA(network_config_panel_, panel_handle_poke_method_, args);
+        } else if (pinch_engaged_[hand] && !pinch_down) {
+            pinch_engaged_[hand] = false;
+            jvalue args[3];
+            args[0].f = u;
+            args[1].f = v;
+            args[2].z = JNI_FALSE;
+            network_config_env_->CallVoidMethodA(network_config_panel_, panel_handle_poke_method_, args);
+        }
+    }
+}
+
+void oxr_interface::upload_bitmap_to_quad_swapchain(jobject bitmap) {
+    JNIEnv* env = network_config_env_;
+
+    AndroidBitmapInfo info{};
+    if (AndroidBitmap_getInfo(env, bitmap, &info) != ANDROID_BITMAP_RESULT_SUCCESS) {
+        spdlog::get("illixr")->error("oxr_interface: AndroidBitmap_getInfo failed");
+        return;
+    }
+    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+        spdlog::get("illixr")->error("oxr_interface: expected RGBA_8888 bitmap, got format {}",
+                                     static_cast<int>(info.format));
+        return;
+    }
+
+    void* src_pixels = nullptr;
+    if (AndroidBitmap_lockPixels(env, bitmap, &src_pixels) != ANDROID_BITMAP_RESULT_SUCCESS) {
+        spdlog::get("illixr")->error("oxr_interface: AndroidBitmap_lockPixels failed");
+        return;
+    }
+
+    upload_pixels_to_swapchain_image(network_config_swapchain_, static_cast<uint8_t*>(src_pixels), info.stride,
+                                     network_config_cmd_pool_, network_config_cmd_buffer_, network_config_fence_,
+                                     network_config_staging_buf_, network_config_staging_mem_);
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+}
+
+void oxr_interface::upload_pixels_to_swapchain_image(swapchain_info& sc, const uint8_t* src_pixels,
+                                                     uint32_t src_stride_bytes, VkCommandPool cmd_pool,
+                                                     VkCommandBuffer cmd_buffer, VkFence fence, VkBuffer staging_buf,
+                                                     VkDeviceMemory staging_mem) {
+    (void) cmd_pool; // not directly used here (the buffer is already allocated from it), kept as
+                     // a parameter so callers document/own which pool their buffer came from
+    void* mapped = nullptr;
+    vkMapMemory(vk_device_, staging_mem, 0, static_cast<VkDeviceSize>(sc.width) * sc.height * 4, 0, &mapped);
+    // src_stride_bytes may exceed width*4 (row padding, e.g. from AndroidBitmap_getInfo); copy
+    // row by row rather than assume tight packing between the source and the staging buffer.
+    auto*          dst       = static_cast<uint8_t*>(mapped);
+    const uint32_t row_bytes = sc.width * 4;
+    for (uint32_t row = 0; row < sc.height; row++) {
+        memcpy(dst + row * row_bytes, src_pixels + row * src_stride_bytes, row_bytes);
+    }
+    vkUnmapMemory(vk_device_, staging_mem);
+
+    uint32_t                    image_index  = 0;
+    XrSwapchainImageAcquireInfo acquire_info = {XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
+    OXR(xrAcquireSwapchainImage(sc.swapchain, &acquire_info, &image_index))
+
+    XrSwapchainImageWaitInfo wait_info = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
+    wait_info.timeout = XR_INFINITE_DURATION;
+    OXR(xrWaitSwapchainImage(sc.swapchain, &wait_info))
+
+    VkImage image = sc.images[image_index].image;
+
+    vkResetCommandBuffer(cmd_buffer, 0);
+    VkCommandBufferBeginInfo begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
+    begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    vkBeginCommandBuffer(cmd_buffer, &begin_info);
+
+    VkImageMemoryBarrier to_transfer{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+    to_transfer.oldLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
+    to_transfer.newLayout            = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    to_transfer.srcQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
+    to_transfer.dstQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
+    to_transfer.image                = image;
+    to_transfer.subresourceRange     = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    to_transfer.srcAccessMask        = 0;
+    to_transfer.dstAccessMask        = VK_ACCESS_TRANSFER_WRITE_BIT;
+    vkCmdPipelineBarrier(cmd_buffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                         VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &to_transfer);
+
+    VkBufferImageCopy region{};
+    region.bufferOffset      = 0;
+    region.bufferRowLength   = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource  = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
+    region.imageOffset       = {0, 0, 0};
+    region.imageExtent       = {sc.width, sc.height, 1};
+    vkCmdCopyBufferToImage(cmd_buffer, staging_buf, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+    VkImageMemoryBarrier to_color{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+    to_color.oldLayout           = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    to_color.newLayout           = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; // matches the runtime's expectation for color swapchain images
+    to_color.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    to_color.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    to_color.image               = image;
+    to_color.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    to_color.srcAccessMask       = VK_ACCESS_TRANSFER_WRITE_BIT;
+    to_color.dstAccessMask       = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    vkCmdPipelineBarrier(cmd_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, &to_color);
+
+    vkEndCommandBuffer(cmd_buffer);
+
+    vkResetFences(vk_device_, 1, &fence);
+    VkSubmitInfo submit_info{VK_STRUCTURE_TYPE_SUBMIT_INFO};
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers    = &cmd_buffer;
+    vkQueueSubmit(vk_queue_, 1, &submit_info, fence);
+    // Blocking on a fence per upload is simplicity over throughput: fine for the panel (a
+    // handful of redraws while it's up) and acceptable for the log display (only runs until the
+    // first valid frame arrives), but not something to reach for on stereo_renderer_'s own
+    // steady-state per-frame path.
+    vkWaitForFences(vk_device_, 1, &fence, VK_TRUE, UINT64_MAX);
+
+    XrSwapchainImageReleaseInfo release_info = {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
+    OXR(xrReleaseSwapchainImage(sc.swapchain, &release_info))
+}
+
+
 extern "C" plugin* this_plugin_factory(phonebook* pb) {
     auto* obj = new oxr_interface("openxr_interface", pb);
     // The runtime owns the plugin returned by this factory. Register a non-owning
@@ -948,5 +1475,27 @@ extern "C" plugin* this_plugin_factory(phonebook* pb) {
     pb->register_impl<vk::vulkan_context_provider>(std::shared_ptr<vk::vulkan_context_provider>(
         static_cast<vk::vulkan_context_provider*>(obj), [](vk::vulkan_context_provider*) { }));
     return obj;
+}
+
+// NOTE: only one JNI_OnLoad is permitted per shared library. If another translation unit
+// linked into this same .so already defines one (e.g. a leftover from the earlier
+// dialog-based approach, if that file is still part of the build), this will be a duplicate
+// symbol at link time -- move this caching logic into that existing JNI_OnLoad instead of
+// keeping both.
+extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*reserved*/) {
+    JNIEnv* env = nullptr;
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
+
+    jclass local_class = env->FindClass("com/example/ILLIXR/ILLIXRNativeActivity$NetworkConfigPanel");
+    if (local_class == nullptr) {
+        return JNI_ERR;
+    }
+    g_network_config_panel_class = static_cast<jclass>(env->NewGlobalRef(local_class));
+    env->DeleteLocalRef(local_class);
+
+
+    return JNI_VERSION_1_6;
 }
 #endif

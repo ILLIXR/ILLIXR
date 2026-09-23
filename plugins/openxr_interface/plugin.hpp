@@ -26,6 +26,10 @@
 #    include <vulkan/vulkan.h>
 #    include <vulkan/vulkan_android.h>
 
+#include <android/bitmap.h>
+#include <jni.h>
+#include <mutex>
+
 #    ifdef ILLIXR_DUMP_FRAMES
 #        include "frame_dumper.hpp"
 #    endif
@@ -71,6 +75,15 @@ protected:
     void stop() override;
 
 private:
+    // Swapchains
+    struct swapchain_info {
+        XrSwapchain                             swapchain = XR_NULL_HANDLE;
+        uint32_t                                width     = 0;
+        uint32_t                                height    = 0;
+        std::vector<XrSwapchainImageVulkan2KHR> images;
+        VkFormat                                format = VK_FORMAT_R8G8B8A8_UNORM;
+    };
+
     // Swapchain management
     void create_swapchains();
 
@@ -80,7 +93,95 @@ private:
     void poll_events();
     void run_frame();
 
-    // void rx_latency(const switchboard::ptr<const data_format::network_latency_result>& datum);
+    // ==================== Network Config Panel ====================
+    // Runs entirely inside the constructor, before create_swapchains() or _p_thread_setup(),
+    // since the network backend plugins that need the resulting env vars are constructed
+    // immediately after this plugin returns from its constructor.
+
+    /// Constructs the Java NetworkConfigPanel via JNI, resolves its method IDs, creates the
+    /// quad swapchain and the small Vulkan resources used to upload its bitmap. Does NOT place
+    /// the quad -- that needs a valid XrTime, which isn't available until the first
+    /// xrWaitFrame inside run_network_config_loop().
+    void init_network_config_panel();
+
+    /// One-time placement of the quad ~0.6m in front of wherever the user was looking when the
+    /// panel opened, using the first valid predicted display time from run_network_config_loop().
+    void initialize_quad_pose(XrTime time);
+
+    /// Blocks (via its own xrWaitFrame/xrBeginFrame/xrEndFrame loop, submitting only the quad
+    /// layer) until NetworkConfigPanel.isFinished() is true.
+    void run_network_config_loop();
+
+    /// Polls the poke_pose_ action for both hands, hit-tests against the quad's plane, and
+    /// calls NetworkConfigPanel.handlePoke() on down/up transitions. Also updates the fingertip
+    /// depth markers' live pose/visibility (see create_fingertip_markers()), and checks the
+    /// pinch gesture value at this same (poke-derived) position -- see the comment inside the
+    /// per-hand loop in the .cpp for why pinch deliberately reuses poke's position rather than
+    /// a separate aim-ray target.
+    void update_network_config_input(XrTime predicted_display_time);
+
+    /// Transforms a world-space (local_space_) position into the quad's own local frame.
+    /// Shared by the poke hit-test and the pinch-select ray-plane intersection so both use
+    /// identical (and identically-verified-or-not) axis conventions rather than duplicated math.
+    void world_to_quad_local(float world_x, float world_y, float world_z,
+                             float& local_x, float& local_y, float& local_z) const;
+
+    /// Locks the given Bitmap's pixels via the NDK Bitmap API and copies them into the quad
+    /// swapchain's current image via a small dedicated command buffer.
+    void upload_bitmap_to_quad_swapchain(jobject bitmap);
+
+    /// Shared Vulkan upload path (staging buffer -> barrier -> copy -> barrier -> submit).
+    /// Takes the command pool/buffer/fence and staging buffer/memory as parameters rather than
+    /// hardcoding a specific set, since it's used both by the network config panel (its own,
+    /// panel-sized resources, destroyed once the panel closes) and by the connection log display
+    /// (separately-sized resources matching the eye swapchains' resolution, needed later and
+    /// independently of whether the panel ever ran).
+    void upload_pixels_to_swapchain_image(swapchain_info& sc, const uint8_t* src_pixels, uint32_t src_stride_bytes,
+                                          VkCommandPool cmd_pool, VkCommandBuffer cmd_buffer, VkFence fence,
+                                          VkBuffer staging_buf, VkDeviceMemory staging_mem);
+
+    /// Creates two small (32x32) quad swapchains, one per hand, holding a static solid-dot
+    /// texture uploaded once. Their poses are updated every frame in update_network_config_input()
+    /// to the hand's actual, un-projected fingertip position, so the user can see via ordinary
+    /// stereo depth perception how far they still need to reach to touch the panel -- unlike the
+    /// 2D cursor baked into the panel bitmap, which is always flush with the panel's own depth.
+    void create_fingertip_markers();
+
+    /// Parses NetworkConfigPanel.getResult()'s pipe-delimited wire format and setenv()s the
+    /// resulting values, mirroring the field layout used by the original dialog-based version.
+    void apply_network_config_result(const std::string& result);
+
+    /// Destroys the fingertip marker swapchains and releases the JNI global ref to the panel's
+    /// Java object -- but deliberately NOT network_config_swapchain_ or its Vulkan upload
+    /// resources, which are reused by the connection log display until the first valid frame
+    /// arrives; see destroy_connection_log_display().
+    void destroy_network_config_panel();
+
+    // ==================== Connection Log Display ====================
+    // Shown as a quad (reusing the network config panel's own swapchain, pose, and size) until
+    // the first valid frame ever arrives from the network; see run_frame()'s current_frames_
+    // validity check. Chosen over a full projection layer since the config panel phase itself
+    // only ever submitted quad layers and never showed a "frozen background" problem -- a
+    // quad-only submission appears to composite correctly on this runtime, and reusing the
+    // panel's existing swapchain/resources avoids needing a second, separately-sized Vulkan
+    // resource set just for this brief waiting period.
+
+    /// One-time setup, called from _p_thread_setup() (the render thread -- a different thread
+    /// than the one that ran start()/the network config panel, hence its own JNI attachment).
+    /// Reuses network_config_swapchain_ and its Vulkan resources rather than allocating new
+    /// ones; does nothing (logging why) if that swapchain isn't available for some reason.
+    void init_connection_log_display();
+
+    /// Builds the display text from connection_log_lines_ (under lock), updates the Java panel
+    /// if it changed, and uploads its bitmap into the reused network_config_swapchain_.
+    void render_connection_log_quad();
+
+    /// Final teardown of network_config_swapchain_ and its Vulkan upload resources (deferred
+    /// from destroy_network_config_panel(), which stopped destroying them so the log display
+    /// could reuse them) plus the log display's own JNI state. Called once, the first time a
+    /// valid frame ever arrives (see run_frame()) -- or from the destructor, if the app exits
+    /// while still waiting for one. Idempotent, so it's safe to call from both places.
+    void destroy_connection_log_display();
 
     // ==================== Member Variables ====================
 
@@ -135,15 +236,6 @@ private:
     std::vector<XrApiLayerProperties>                   layer_properties_;
     std::vector<const char*>                            required_extensions_;
     std::vector<XrExtensionProperties>                  extension_properties_;
-
-    // Swapchains
-    struct swapchain_info {
-        XrSwapchain                             swapchain = XR_NULL_HANDLE;
-        uint32_t                                width     = 0;
-        uint32_t                                height    = 0;
-        std::vector<XrSwapchainImageVulkan2KHR> images;
-        VkFormat                                format = VK_FORMAT_R8G8B8A8_UNORM;
-    };
 
     std::array<swapchain_info, 2> swapchains_{};
 
