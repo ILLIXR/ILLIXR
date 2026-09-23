@@ -84,6 +84,7 @@ static XrPosef parked_marker_pose() {
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
 #    endif
     , frame_reader_{switchboard_->get_reader<dual_frames>("unity_rendered_frame")}
+    , signal_reader_{switchboard_->get_reader<illixr_signal>("offload_signal")}
 #    ifdef ILLIXR_ENABLE_BOBA
     , boba_client_control_reader_{switchboard_->get_reader<switchboard::event_wrapper<std::string>>("boba_client_control")}
 #    endif
@@ -158,6 +159,9 @@ void oxr_interface::start() {
     run_network_config_loop();
     destroy_network_config_panel();
 
+    config_writer_.emplace(switchboard_->get_network_writer<hmd_config_data>("hmd_config",
+                                                                             network::topic_config{network::topic_config::BOOST, network::topic_config::UDP}
+    ));
     threadloop::start();
     oxr_relay_->start();
 }
@@ -387,6 +391,8 @@ void oxr_interface::create_session() {
     view_configs_[1].type = XR_TYPE_VIEW_CONFIGURATION_VIEW;
     OXR(xrEnumerateViewConfigurationViews(instance_, system_id_, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, 2, &view_count,
                                           view_configs_))
+    hmd_config_.recommended_image_height = view_configs_[0].recommendedImageRectHeight;
+    hmd_config_.recommended_image_width = view_configs_[0].recommendedImageRectWidth;
 
     XrReferenceSpaceCreateInfo rsi{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
     rsi.poseInReferenceSpace = identity_pose();
@@ -553,6 +559,25 @@ void oxr_interface::run_frame() {
                                            frame_state.shouldRender, view_state.viewStateFlags, views_, view_configs_);
 #    endif
 
+            std::shared_ptr<const illixr_signal> server_signal = signal_reader_.get_ro_nullable();
+            if (server_signal != nullptr && server_signal->illixr_ready == AWAITING_CONFIG) {
+                for (auto i = 0; i < 2; i++) {
+                    hmd_config_.fov_angle_left[i] = views_[i].fov.angleLeft;
+                    hmd_config_.fov_angle_right[i] = views_[i].fov.angleRight;
+                    hmd_config_.fov_angle_up[i] = views_[i].fov.angleUp;
+                    hmd_config_.fov_angle_down[i] = views_[i].fov.angleDown;
+                }
+                config_writer_->put(std::make_shared<hmd_config_data>(hmd_config_));
+            }
+
+            float dx = views_[1].pose.position.x - views_[0].pose.position.x;
+            float dy = views_[1].pose.position.y - views_[0].pose.position.y;
+            float dz = views_[1].pose.position.z - views_[0].pose.position.z;
+            float ipd_m = std::sqrt(dx * dx + dy * dy + dz * dz);
+            if (ipd_m != current_ipd_) {
+                current_ipd_ = ipd_m;
+                oxr_relay_->set_ipd(current_ipd_);
+            }
         } else {
             spdlog::get("illixr")->warn("xrLocateViews failed or returned {} views: {}", view_count,
                                         static_cast<int>(locate_views_result));

@@ -490,14 +490,14 @@ void oxr_relay::push_poses(XrTime predicted_time) {
     // spdlog::get("illixr")->debug("[oxr_relay] pushing pose {}", pose_id);
     combined_pose_writer_->put(std::make_shared<pose::combined_pose>(
         current_pose, current_hand_poses_, current_palm_poses_, current_hand_interactions_, pose_id, predicted_time,
-        xr_to_monotonic_offset_ns_, monotonic_to_system_offset_ns_, smoothed_offset, smoothed_rtt));
+        xr_to_monotonic_offset_ns_, monotonic_to_system_offset_ns_, smoothed_offset, smoothed_rtt, current_ipd_));
 #ifdef USE_POSE_CAPTURE
     spdlog::get("illixr")->debug("[pose_capture] sending pose: {}", pose_id);
     combined_pose_capture_writer_->put(std::make_shared<pose::combined_pose>(current_pose, current_hand_poses_, current_palm_poses_,
                                                                             current_hand_interactions_, pose_id,
                                                                             predicted_time, xr_to_monotonic_offset_ns_,
                                                                             monotonic_to_system_offset_ns_, smoothed_offset,
-                                                                            smoothed_rtt));
+                                                                            smoothed_rtt, current_ipd_));
 #endif
 }
 

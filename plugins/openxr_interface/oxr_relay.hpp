@@ -40,6 +40,9 @@ public:
 
     void start() override;
 
+    void set_ipd(const float new_ipd) {
+        current_ipd_ = new_ipd;
+    }
 #ifdef ILLIXR_ENABLE_BOBA
     /** Publish a coherent Quest controller + stereo-view sample for Boba. */
     void publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
@@ -323,10 +326,11 @@ private:
     std::atomic<std::uint64_t> boba_input_sequence_{0};
 #endif
 
-    bool                                  initialized_{false};
-    bool                                  xr_time_verified_{false};
-    uint64_t                              counter_{0};
-    data_format::pose::head_pose_type     last_pose_{};
+    bool                              initialized_{false};
+    bool                              xr_time_verified_{false};
+    uint64_t                          counter_{0};
+    data_format::pose::head_pose_type last_pose_{};
+    float                             current_ipd_{64.f};
 };
 
 } // namespace ILLIXR

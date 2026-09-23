@@ -87,6 +87,15 @@ add_library(${PLUGIN_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/oxr_relay_type.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/quest3_params.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/hmd_config.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/combined_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/hand_interaction_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/hand_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/palm_pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/pose_base.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hmd_config.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/misc.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/combined_pose.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hand_interaction_pose.hpp
@@ -97,6 +106,7 @@ add_library(${PLUGIN_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/pose_base.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/vulkan_context.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_context_provider.hpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/hmd_config.cpp
             ${CMAKE_SOURCE_DIR}/utils/serialization/misc.cpp
             ${CMAKE_SOURCE_DIR}/utils/serialization/combined_pose.cpp
             ${CMAKE_SOURCE_DIR}/utils/serialization/hand_interaction_pose.cpp

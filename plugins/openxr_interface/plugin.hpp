@@ -9,6 +9,7 @@
 #    endif
 
 #    include "illixr/data_format/frame.hpp"
+#    include "illixr/data_format/hmd_config.hpp"
 #    include "illixr/data_format/latency_data.hpp"
 #    include "illixr/data_format/misc.hpp"
 #    include "illixr/data_format/poses/combined_pose.hpp"
@@ -203,7 +204,10 @@ private:
 #    endif
 
     // Frame reading
-    switchboard::reader<data_format::dual_frames> frame_reader_;
+    switchboard::reader<data_format::dual_frames>   frame_reader_;
+    switchboard::reader<data_format::illixr_signal> signal_reader_;
+
+    std::optional<switchboad::network_writer<data_format::hmd_config_data>> config_writer_;
 #    ifdef ILLIXR_ENABLE_BOBA
     // Host lifecycle message delivered over the reliable network backend.
     switchboard::reader<switchboard::event_wrapper<std::string>> boba_client_control_reader_;
@@ -392,6 +396,9 @@ private:
     // No separate Vulkan resources here: the log display reuses network_config_swapchain_ and
     // network_config_cmd_pool_/cmd_buffer_/fence_/staging_buf_/staging_mem_ (declared above),
     // which destroy_network_config_panel() deliberately leaves alive for exactly this purpose.
+
+    float current_ipd_{64.};   // IPD in mm
+    hmd_config hmd_config_{};
 };
 
 } // namespace ILLIXR
