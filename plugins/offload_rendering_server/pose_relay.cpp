@@ -109,8 +109,11 @@ pose_relay::pose_relay(const std::string& name, phonebook* pb)
     , hand_interaction_writer_{switchboard_->get_writer<pose::hand_interaction_poses_pair>("hand_interactions")}
     , palm_pose_writer_{switchboard_->get_writer<pose::palm_poses_pair>("palm_poses")} {
 #else
-    , render_pose_{switchboard_->get_reader<pose::fast_head_pose_type>("render_pose")} {
+    , render_pose_{switchboard_->get_reader<pose::fast_head_pose_type>("render_pose")}
 #endif
+    , hmd_reader_{switchboard_->get_reader<hmd_config_data>("hmd_config")},
+        hmd_relay_{switchboard_->get_writer<hmd_config_data>("hmd_config_relay")},
+        ipd_writer_{switchboard_->get_writer<ipd>("current_ipd")} {
 #ifdef USING_OPENXR
     use_hand_tracking_     = switchboard_->get_env_bool("ILLIXR_USE_HAND_TRACKING", "true");
     use_palm_poses_        = switchboard_->get_env_bool("ILLIXR_USE_PALM_POSES", "false");
@@ -132,6 +135,11 @@ pose_relay::pose_relay(const std::string& name, phonebook* pb)
                velocity_deadband_ang_);
 }
 
+void pose_relay::start() {
+    ipd_writer_.put(std::make_shared<ipd>(64.f));
+    threadloop::start();
+}
+
 threadloop::skip_option pose_relay::_p_should_skip() {
     std::this_thread::sleep_for(std::chrono::milliseconds(7));
     return skip_option::run;
@@ -146,6 +154,25 @@ bool pose_relay::fast_pose_reliable() const {
 }
 
 void pose_relay::_p_one_iteration() {
+    if (!rx_hmd_config_) {
+#ifdef USING_OPENXR
+        auto hmd_data = hmd_reader_.get_ro_nullable();
+        if (hmd_data != nullptr) {
+            hmd_config_data hmd(hmd_data->config, hmd_data->ipd);
+            hmd_relay_.put(std::make_shared<hmd_config_data>(hmd));
+            last_ipd_ = hmd_data->ipd;
+            ipd_writer_.put(std::make_shared<ipd>(last_ipd_));
+            spdlog::get("illixr")->debug("Initial IPD {}", last_ipd_);
+            rx_hmd_config_ = true;
+        }
+#else
+        last_ipd_ = 64.f;
+        ipd_writer_.put(std::make_shared<ipd>(last_ipd_));
+        spdlog::get("illixr")->debug("Initial IPD {}", last_ipd_);
+        rx_hmd_config_ = true;
+#endif
+    }
+
 #ifdef USING_OPENXR
     // Try to get the latest pose_with_hands data
     auto pose_data = combined_pose_.get_ro_nullable();
@@ -196,6 +223,11 @@ void pose_relay::_p_one_iteration() {
     // a reader access from within the mutex
     smoothed_rtt_ns_.store(pose_data->smoothed_rtt_ns);
 
+
+    if (abs(1.f - (last_ipd_ / pose_data->ipd_)) > 0.015f) {
+        last_ipd_ = pose_data->ipd_;
+        ipd_writer_.put(std::make_shared<ipd>(last_ipd_));
+    }
     // Store in bounded pose history, oldest to newest
     constexpr size_t MAX_POSE_HISTORY = 10;
     {
@@ -307,8 +339,8 @@ void pose_relay::_p_one_iteration() {
                 log_->debug("[palm_pose] {} | "
                             "pos=({:.3f},{:.3f},{:.3f}) | "
                             "ori=({:.3f},{:.3f},{:.3f},{:.3f})",
-                            hand_names[h], pd.pose.position.x, pd.pose.position.y, pd.pose.position.z, pd.pose.orientation.x,
-                            pd.pose.orientation.y, pd.pose.orientation.z, pd.pose.orientation.w);
+                            hand_names[h], pd.pose.position.x, pd.pose.position.y, pd.pose.position.z,
+                            pd.pose.orientation.x, pd.pose.orientation.y, pd.pose.orientation.z, pd.pose.orientation.w);
             }
         }
     }
@@ -337,13 +369,14 @@ void pose_relay::_p_one_iteration() {
                     if (type_enums[t] == pose::POKE) {
                         log_->debug("[hand_interaction] {} {} | "
                                     "pos=({:.3f},{:.3f},{:.3f})",
-                                    hand_names[h], type_names[t], ip.pose.position.x, ip.pose.position.y, ip.pose.position.z);
+                                    hand_names[h], type_names[t], ip.pose.position.x, ip.pose.position.y,
+                                    ip.pose.position.z);
                     } else {
                         log_->debug("[hand_interaction] {} {} | "
                                     "pos=({:.3f},{:.3f},{:.3f}) | "
                                     "value={:.3f} ready={}",
-                                    hand_names[h], type_names[t], ip.pose.position.x, ip.pose.position.y, ip.pose.position.z,
-                                    ip.value, ip.ready ? "true" : "false");
+                                    hand_names[h], type_names[t], ip.pose.position.x, ip.pose.position.y,
+                                    ip.pose.position.z, ip.value, ip.ready ? "true" : "false");
                     }
                 }
             }

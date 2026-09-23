@@ -11,6 +11,7 @@
 #    include "illixr/data_format/poses/head_pose.hpp"
 #endif
 
+#include "illixr/data_format/hmd_config.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -83,6 +84,7 @@ public:
     std::chrono::steady_clock::time_point get_pose_time(uint64_t id) const;
 #endif
 
+    void start() override;
 protected:
     threadloop::skip_option _p_should_skip() override;
 
@@ -117,6 +119,9 @@ private:
 #else
     switchboard::reader<POSE_TYPE> render_pose_;
 #endif
+    switchboard::reader<data_format::hmd_config_data>         hmd_reader_;
+    mutable switchboard::writer<data_format::hmd_config_data> hmd_relay_;
+    mutable switchboard::writer<data_format::ipd>             ipd_writer_;
 
     // Pipeline latency constants (will be replaced with measured values later)
     static constexpr double ENCODE_LATENCY_NS = 9.0 * 1'000'000.0;
@@ -154,10 +159,10 @@ private:
     std::chrono::steady_clock::time_point                     last_offset_calibration_{};
     std::map<uint64_t, std::chrono::steady_clock::time_point> pose_time_{};
 #ifdef USING_OPENXR
-    bool use_hand_tracking_     = false;
-    bool use_palm_poses_        = false;
-    bool use_hand_interactions_ = false;
-    bool poses_are_injected_    = false;
+    bool           use_hand_tracking_     = false;
+    bool           use_palm_poses_        = false;
+    bool           use_hand_interactions_ = false;
+    bool           poses_are_injected_    = false;
     mutable XrTime injected_pose_base_time_{0};
 #endif
     bool            do_pose_prediction_{false};
@@ -165,6 +170,8 @@ private:
     int             velocity_window_size_  = 8; // set from env in ctor
     float           velocity_deadband_lin_ = 0.05f;
     float           velocity_deadband_ang_ = 0.03f;
+    float           last_ipd_{64.f};
+    bool            rx_hmd_config_{false};
 };
 
 } // namespace ILLIXR
