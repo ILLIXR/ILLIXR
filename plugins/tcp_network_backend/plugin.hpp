@@ -58,6 +58,8 @@ private:
     std::atomic<bool>            running_ = true;
 #ifndef __ANDROID__
     std::atomic<bool> ready_ = false;
+#else
+    switchboard::writer<data_format::message_type> log_writer_;
 #endif
     network::TCPSocket* peer_socket_ = nullptr;
     // Owned network loop and stream-wide packet serialization.

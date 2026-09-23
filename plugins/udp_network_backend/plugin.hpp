@@ -3,6 +3,10 @@
 #include "illixr/network/udpsocket.hpp"
 // clang-format on
 
+#ifdef __ANDROID__
+#include "illixr/data_format/misc.hpp"
+#endif
+
 #include "illixr/network/network_backend.hpp"
 #include "illixr/network/topic_config.hpp"
 #include "illixr/plugin.hpp"
@@ -63,6 +67,9 @@ private:
     std::atomic<bool> ready_ = false;
 #endif
     network::UDPSocket* peer_socket_ = nullptr;
+#ifdef __ANDROID__
+    switchboard::writer<data_format::message_type> log_writer_;
+#endif
     std::thread         io_thread_;
 
     std::string server_ip_;

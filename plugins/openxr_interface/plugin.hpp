@@ -10,6 +10,7 @@
 
 #    include "illixr/data_format/frame.hpp"
 #    include "illixr/data_format/latency_data.hpp"
+#    include "illixr/data_format/misc.hpp"
 #    include "illixr/data_format/poses/combined_pose.hpp"
 #    include "illixr/data_format/vulkan_context.hpp"
 #    ifdef ILLIXR_ENABLE_BOBA
@@ -66,6 +67,8 @@ public:
     XrInstance instance() const {
         return instance_;
     }
+
+    void log_callback(const switchboard::ptr<const data_format::message_type>& datum);
 
 protected:
     void _p_one_iteration() override;
@@ -286,6 +289,102 @@ private:
     int    headset_height_ = HEADSET_HEIGHT;
     double overscan_;
 #    endif
+
+    bool use_tcp_{false};
+    bool use_udp_{false};
+    // ==================== Network Config Panel ====================
+
+    // JNI bridge to com.example.ILLIXR.ILLIXRNativeActivity$NetworkConfigPanel.
+    // Cached for the duration of the config-gathering loop; all JNI calls happen from the same
+    // thread that runs the oxr_interface constructor, so caching env_ here (rather than
+    // re-resolving it per call) is safe.
+    JNIEnv* network_config_env_        = nullptr;
+    bool    network_config_did_attach_ = false;
+    jclass  network_config_panel_class_ = nullptr;
+    jobject network_config_panel_       = nullptr;
+    jmethodID panel_render_method_       = nullptr;
+    jmethodID panel_get_bitmap_method_   = nullptr;
+    jmethodID panel_handle_poke_method_  = nullptr;
+    jmethodID panel_update_hover_method_ = nullptr;
+    jmethodID panel_is_finished_method_  = nullptr;
+    jmethodID panel_is_confirmed_method_ = nullptr;
+    jmethodID panel_get_result_method_   = nullptr;
+    jmethodID panel_get_width_method_    = nullptr;
+    jmethodID panel_get_height_method_   = nullptr;
+
+    // Poke pose comes from oxr_relay_'s own XR_EXT_hand_interaction action set (it's declared
+    // `friend oxr_interface`), rather than a second action set here: a session only permits a
+    // single xrAttachSessionActionSets call in its lifetime, and oxr_relay_->initialize()
+    // (called from this class's constructor, before start() runs) already makes that call for
+    // its own aim/grip/pinch/poke actions -- which already include poke, per hand, on exactly
+    // the same interaction profile this would otherwise have duplicated.
+    /// Debounced poke engagement state per hand; see update_network_config_input().
+    bool poke_engaged_[2] = {false, false};
+
+    /// Debounced pinch-select engagement state per hand; see the pinch check inside
+    /// update_network_config_input()'s per-hand loop.
+    bool pinch_engaged_[2] = {false, false};
+
+    // Two small (32x32) quad swapchains holding a static dot texture, one per hand, whose
+    // pose is updated every frame in update_network_config_input() to the hand's actual
+    // (un-projected) fingertip position when tracked, or a fixed off-screen "parked" position
+    // when not -- see create_fingertip_markers() and parked_marker_pose(). Always submitted
+    // (never omitted from a frame's layer list), since varying which layers are submitted
+    // frame-to-frame is what caused a freeze; see the comment on parked_marker_pose() in
+    // plugin.cpp.
+    swapchain_info fingertip_marker_swapchain_[2];
+    XrPosef        fingertip_marker_pose_[2]{};
+
+    // Quad layer swapchain for the panel; reuses the same swapchain_info shape as the eye
+    // swapchains even though it only needs a single (non-array) image.
+    swapchain_info network_config_swapchain_;
+    XrPosef         network_config_quad_pose_{};
+    // Reduced 25% per feedback ("size of everything too large"). Pixel dimensions
+    // (PANEL_WIDTH_PX/PANEL_HEIGHT_PX in NetworkConfigPanel.java) are unchanged, so this just
+    // increases effective DPI -- everything drawn on the panel shrinks uniformly along with it,
+    // without needing any Java-side layout changes.
+    float           network_config_quad_width_m_  = 0.45f;   // was 0.6f
+    float           network_config_quad_height_m_ = 0.4875f; // was 0.65f
+
+    // Minimal Vulkan resources for uploading the panel's bitmap into the quad swapchain image.
+    // Deliberately separate from stereo_renderer_, which isn't constructed until
+    // _p_thread_setup() runs on the (different) render thread -- this upload happens earlier,
+    // synchronously inside the constructor.
+    VkCommandPool   network_config_cmd_pool_    = VK_NULL_HANDLE;
+    VkCommandBuffer network_config_cmd_buffer_  = VK_NULL_HANDLE;
+    VkFence         network_config_fence_       = VK_NULL_HANDLE;
+    VkBuffer        network_config_staging_buf_ = VK_NULL_HANDLE;
+    VkDeviceMemory  network_config_staging_mem_ = VK_NULL_HANDLE;
+    VkDeviceSize    network_config_staging_size_ = 0;
+
+    std::vector<std::string> log_messages_;
+    std::mutex log_mtx_;
+
+    // ==================== Connection Log Display ====================
+
+    /// Set once current_frames_ is ever valid; gates run_frame()'s choice between the log
+    /// display and real rendering. Deliberately a one-way latch (never reset to false), so a
+    /// later transient invalid frame doesn't flicker the display back to the log screen.
+    bool first_valid_frame_received_ = false;
+
+    /// Avoids rebuilding/re-sending the same joined text to Java every frame when nothing new
+    /// has been logged since the last check.
+    std::string              last_sent_connection_log_;
+
+    // JNI bridge to com.example.ILLIXR.ILLIXRNativeActivity$LogDisplayPanel. Uses its own
+    // JNIEnv*, separate from network_config_env_: this all runs on the render thread (spawned by
+    // threadloop::start()), a different thread than the one that ran start() and the network
+    // config panel, and a JNIEnv* is only valid on the thread it was obtained on.
+    JNIEnv* render_thread_env_        = nullptr;
+    bool    render_thread_did_attach_ = false;
+    jobject log_display_panel_        = nullptr;
+    jmethodID log_panel_set_text_method_   = nullptr;
+    jmethodID log_panel_render_method_     = nullptr;
+    jmethodID log_panel_get_bitmap_method_ = nullptr;
+
+    // No separate Vulkan resources here: the log display reuses network_config_swapchain_ and
+    // network_config_cmd_pool_/cmd_buffer_/fence_/staging_buf_/staging_mem_ (declared above),
+    // which destroy_network_config_panel() deliberately leaves alive for exactly this purpose.
 };
 
 } // namespace ILLIXR

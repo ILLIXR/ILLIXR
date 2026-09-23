@@ -3,7 +3,9 @@
 
 #    include <algorithm>
 #    include <array>
+#    include <cmath>
 #    include <spdlog/spdlog.h>
+#    include <sstream>
 #    include <vector>
 
 #    ifdef COMBINED_ENCODING
@@ -21,6 +23,9 @@ namespace {
 // context can default to the system/bootstrap classloader rather than the app's own -- the same
 // issue the original dialog-based NetworkConfigDialog lookup had to work around this same way.
 jclass g_network_config_panel_class = nullptr;
+// Same reasoning, for the connection log display's nested class; init_connection_log_display()
+// runs on the render thread, which has the identical classloader concern.
+jclass g_log_display_panel_class = nullptr;
 } // namespace
 
 #    ifdef ILLIXR_ENABLE_BOBA
@@ -96,6 +101,15 @@ static XrPosef parked_marker_pose() {
     create_swapchains();
     spdlog::get("illixr")->info("oxr_interface: Vulkan session ready");
     entry_point_ = true;
+    switchboard_->schedule<message_type>(id_, "oxr_log_message", [&](const switchboard::ptr<const message_type>& datum, size_t) {
+        log_callback(datum);
+    });
+}
+
+void oxr_interface::log_callback(const switchboard::ptr<const message_type>& datum) {
+    std::lock_guard<std::mutex> guard(log_mtx_);
+    spdlog::get("illixr")->debug("[oxr] rx: {}", datum->message);
+    log_messages_.push_back(datum->message);
 }
 
 void oxr_interface::_p_thread_setup() {
@@ -116,6 +130,12 @@ void oxr_interface::_p_thread_setup() {
     spdlog::get("illixr")->info("oxr_interface: combined encoding mode enabled in renderer");
 #    endif
     spdlog::get("illixr")->info("oxr_interface: Vulkan renderer ready on render thread");
+
+    // Must happen here, not in start(): this is the render thread, a different one than start()
+    // ran on, and the JNI env/global-ref'd Java object this sets up are only usable correctly
+    // when driven from the thread that will actually call into them each frame (run_frame(),
+    // which _p_one_iteration() calls, which only ever runs on this thread).
+    init_connection_log_display();
 }
 
 void oxr_interface::start() {
@@ -426,6 +446,12 @@ oxr_interface::~oxr_interface() {
         }
     }
 
+    // Safety net: if the app exits while still waiting for a first valid frame, this is never
+    // called from run_frame()'s transition edge, so network_config_swapchain_ and its Vulkan
+    // resources (reused for the connection log display) would otherwise leak. Idempotent, so
+    // this is a no-op if it already ran.
+    destroy_connection_log_display();
+
     // Destroy Vulkan objects
     if (vk_device_ != VK_NULL_HANDLE) {
         vkDeviceWaitIdle(vk_device_);
@@ -541,6 +567,12 @@ void oxr_interface::run_frame() {
         // current_frames_ retains last valid frame if nothing new arrived
 
         if (current_frames_ && current_frames_->is_valid()) {
+            if (!first_valid_frame_received_) {
+                first_valid_frame_received_ = true;
+                destroy_connection_log_display(); // one-time: frees network_config_swapchain_
+                                                  // and its Vulkan resources for good, now that
+                                                  // real content is about to start rendering
+            }
             // Import AHardwareBuffers into Vulkan (cached — no-op if buffer unchanged).
             renderer_->receive_frame(*current_frames_);
 
@@ -773,7 +805,35 @@ void oxr_interface::run_frame() {
                 layers[0] = reinterpret_cast<XrCompositionLayerBaseHeader*>(&projectionLayer);
             }
             layer_count = 1;
+        } else if (!first_valid_frame_received_) {
+            // Haven't received a single valid frame yet: show a black background with recent
+            // connection-status log lines instead of leaving the compositor to freeze on
+            // whatever was last displayed -- observed behavior when zero layers are submitted
+            // (e.g. right after the network config panel's teardown, before this plugin has
+            // ever rendered anything of its own). Reuses the network config panel's own quad
+            // (pose, size, swapchain) rather than building a full projection layer: the config
+            // panel phase itself only ever submitted quad layers, never a projection layer, and
+            // never showed a "frozen background" problem -- so a quad-only submission appears
+            // to composite correctly on this runtime, and reusing it avoids needing a second,
+            // separately-sized Vulkan resource set just for this brief waiting period.
+            render_connection_log_quad();
+
+            log_quad_layer.space = local_space_;
+            log_quad_layer.pose  = network_config_quad_pose_;
+            log_quad_layer.size  = {network_config_quad_width_m_, network_config_quad_height_m_};
+            log_quad_layer.subImage.swapchain               = network_config_swapchain_.swapchain;
+            log_quad_layer.subImage.imageRect.offset        = {0, 0};
+            log_quad_layer.subImage.imageRect.extent.width  = static_cast<int32_t>(network_config_swapchain_.width);
+            log_quad_layer.subImage.imageRect.extent.height = static_cast<int32_t>(network_config_swapchain_.height);
+            log_quad_layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+
+            layers[0]   = reinterpret_cast<const XrCompositionLayerBaseHeader*>(&log_quad_layer);
+            layer_count = 1;
         }
+        // else: first_valid_frame_received_ is already true, but current_frames_ isn't valid
+        // this particular frame (e.g. a transient bad frame arrived) -- matches the original,
+        // pre-existing behavior of submitting nothing that frame, rather than either rendering
+        // garbage frame data or flickering back to the log display.
     }
     // End frame (normally you'd submit layers here)
     XrFrameEndInfo endInfo       = {XR_TYPE_FRAME_END_INFO};
@@ -1467,6 +1527,392 @@ void oxr_interface::upload_pixels_to_swapchain_image(swapchain_info& sc, const u
     OXR(xrReleaseSwapchainImage(sc.swapchain, &release_info))
 }
 
+void oxr_interface::init_connection_log_display() {
+    JavaVM* vm = app_->activity->vm;
+    if (vm->GetEnv(reinterpret_cast<void**>(&render_thread_env_), JNI_VERSION_1_6) != JNI_OK) {
+        vm->AttachCurrentThread(&render_thread_env_, nullptr);
+        render_thread_did_attach_ = true;
+    }
+    JNIEnv* env = render_thread_env_;
+
+    if (g_log_display_panel_class == nullptr) {
+        spdlog::get("illixr")->error(
+            "oxr_interface: JNI_OnLoad did not cache LogDisplayPanel's class; connection log "
+            "display will not be available (real rendering is unaffected once frames arrive)");
+        return;
+    }
+    if (network_config_swapchain_.swapchain == XR_NULL_HANDLE) {
+        spdlog::get("illixr")->error(
+            "oxr_interface: network_config_swapchain_ isn't available to reuse for the "
+            "connection log display (was destroy_network_config_panel() changed to destroy "
+            "it again?); connection log display will not be available");
+        return;
+    }
+
+    jmethodID ctor = env->GetMethodID(g_log_display_panel_class, "<init>", "(Landroid/app/Activity;II)V");
+    // NewObject is variadic: int args here are already a "safe" (non-narrower-than-int) type,
+    // unlike the boolean case elsewhere in this file, so no special widening cast is needed.
+    //
+    // Sized to network_config_swapchain_'s resolution (the panel's, not the eye buffers') --
+    // reusing that swapchain and its Vulkan upload resources (see below) means this must match
+    // exactly, since the upload path does a direct row-by-row copy with no scaling.
+    jobject local_obj = env->NewObject(g_log_display_panel_class, ctor, app_->activity->clazz,
+                                       static_cast<jint>(network_config_swapchain_.width),
+                                       static_cast<jint>(network_config_swapchain_.height));
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        spdlog::get("illixr")->error("oxr_interface: LogDisplayPanel constructor threw a Java exception");
+        return;
+    }
+    log_display_panel_ = env->NewGlobalRef(local_obj);
+    env->DeleteLocalRef(local_obj);
+
+    log_panel_set_text_method_   = env->GetMethodID(g_log_display_panel_class, "setLogText", "(Ljava/lang/String;)V");
+    log_panel_render_method_     = env->GetMethodID(g_log_display_panel_class, "render", "()Z");
+    log_panel_get_bitmap_method_ = env->GetMethodID(g_log_display_panel_class, "getBitmap", "()Landroid/graphics/Bitmap;");
+
+    // Deliberately no new Vulkan resources here: network_config_cmd_pool_/cmd_buffer_/fence_/
+    // staging_buf_/staging_mem_ are still alive (destroy_network_config_panel() stopped
+    // destroying them) and are reused directly, sized correctly already for
+    // network_config_swapchain_'s resolution.
+
+    spdlog::get("illixr")->info("oxr_interface: connection log display ready ({}x{}, reusing the network config quad)",
+                                network_config_swapchain_.width, network_config_swapchain_.height);
+}
+
+void oxr_interface::render_connection_log_quad() {
+    if (log_display_panel_ == nullptr) {
+        return; // init_connection_log_display() failed; nothing to do (real rendering is unaffected)
+    }
+    JNIEnv* env = render_thread_env_;
+
+    std::string joined;
+    {
+        std::lock_guard<std::mutex> lock(log_mtx_);
+        constexpr size_t kMaxDisplayedLines = 40;
+        const size_t     start = log_messages_.size() > kMaxDisplayedLines
+            ? log_messages_.size() - kMaxDisplayedLines
+            : 0;
+        for (size_t i = start; i < log_messages_.size(); i++) {
+            joined += log_messages_[i];
+            joined += "\n";
+        }
+    }
+
+    if (joined != last_sent_connection_log_) {
+        jstring jtext = env->NewStringUTF(joined.c_str());
+        env->CallVoidMethod(log_display_panel_, log_panel_set_text_method_, jtext);
+        env->DeleteLocalRef(jtext);
+        last_sent_connection_log_ = joined;
+    }
+
+    const jboolean redrew = env->CallBooleanMethod(log_display_panel_, log_panel_render_method_);
+    if (!redrew) {
+        return; // bitmap unchanged since the last frame; the quad's swapchain image already shows it
+    }
+
+    jobject bitmap = env->CallObjectMethod(log_display_panel_, log_panel_get_bitmap_method_);
+
+    AndroidBitmapInfo info{};
+    if (AndroidBitmap_getInfo(env, bitmap, &info) != ANDROID_BITMAP_RESULT_SUCCESS) {
+        spdlog::get("illixr")->error("oxr_interface: AndroidBitmap_getInfo failed for log display");
+        env->DeleteLocalRef(bitmap);
+        return;
+    }
+
+    void* src_pixels = nullptr;
+    if (AndroidBitmap_lockPixels(env, bitmap, &src_pixels) != ANDROID_BITMAP_RESULT_SUCCESS) {
+        spdlog::get("illixr")->error("oxr_interface: AndroidBitmap_lockPixels failed for log display");
+        env->DeleteLocalRef(bitmap);
+        return;
+    }
+
+    // Single quad, reusing network_config_swapchain_ and its Vulkan upload resources -- see
+    // destroy_network_config_panel()'s comment for why these are still alive at this point.
+    upload_pixels_to_swapchain_image(network_config_swapchain_, static_cast<uint8_t*>(src_pixels), info.stride,
+                                     network_config_cmd_pool_, network_config_cmd_buffer_, network_config_fence_,
+                                     network_config_staging_buf_, network_config_staging_mem_);
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+    env->DeleteLocalRef(bitmap);
+}
+
+void oxr_interface::create_fingertip_markers() {
+    // A small, solid, semi-transparent-edged dot. Uploaded once per hand; only the marker's
+    // pose changes thereafter (see update_network_config_input()), so there's no need to keep
+    // regenerating or re-uploading this texture every frame.
+    constexpr uint32_t kMarkerTexSize = 32;
+    std::vector<uint8_t> dot_pixels(static_cast<size_t>(kMarkerTexSize) * kMarkerTexSize * 4, 0);
+    const float center = (kMarkerTexSize - 1) / 2.0f;
+    const float radius = kMarkerTexSize / 2.0f - 1.0f;
+    for (uint32_t y = 0; y < kMarkerTexSize; y++) {
+        for (uint32_t x = 0; x < kMarkerTexSize; x++) {
+            const float dx = static_cast<float>(x) - center;
+            const float dy = static_cast<float>(y) - center;
+            uint8_t*    px = &dot_pixels[(static_cast<size_t>(y) * kMarkerTexSize + x) * 4];
+            if (dx * dx + dy * dy <= radius * radius) {
+                px[0] = 255;
+                px[1] = 60;
+                px[2] = 60;
+                px[3] = 255; // solid red
+            }
+            // else left at (0,0,0,0): transparent
+        }
+    }
+
+    for (int hand = 0; hand < 2; hand++) {
+        swapchain_info& sc = fingertip_marker_swapchain_[hand];
+        sc.width  = kMarkerTexSize;
+        sc.height = kMarkerTexSize;
+        sc.format = VK_FORMAT_R8G8B8A8_UNORM;
+
+        XrSwapchainCreateInfo sci = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
+        sci.arraySize   = 1;
+        sci.format      = static_cast<int64_t>(sc.format);
+        sci.width       = kMarkerTexSize;
+        sci.height      = kMarkerTexSize;
+        sci.mipCount    = 1;
+        sci.faceCount   = 1;
+        sci.sampleCount = 1;
+        sci.usageFlags  = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_TRANSFER_DST_BIT |
+            XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+        OXR(xrCreateSwapchain(session_, &sci, &sc.swapchain))
+
+        uint32_t image_count = 0;
+        OXR(xrEnumerateSwapchainImages(sc.swapchain, 0, &image_count, nullptr))
+        sc.images.resize(image_count, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR});
+        OXR(xrEnumerateSwapchainImages(sc.swapchain, image_count, &image_count,
+                                       reinterpret_cast<XrSwapchainImageBaseHeader*>(sc.images.data())))
+
+        upload_pixels_to_swapchain_image(sc, dot_pixels.data(), kMarkerTexSize * 4,
+                                         network_config_cmd_pool_, network_config_cmd_buffer_, network_config_fence_,
+                                         network_config_staging_buf_, network_config_staging_mem_);
+    }
+
+    spdlog::get("illixr")->info("oxr_interface: fingertip depth markers ready");
+}
+
+void oxr_interface::run_network_config_loop() {
+    // xrWaitFrame requires the session to actually be running.
+    while (!session_running_) {
+        poll_events();
+    }
+
+    bool quad_pose_initialized = false;
+
+    // Defensive: if XR_EXT_hand_interaction isn't supported at all, update_network_config_input()
+    // returns immediately without ever touching fingertip_marker_pose_, which would otherwise be
+    // left at its default-constructed (invalid, all-zero-quaternion) state for the whole session
+    // -- and these are now submitted every frame regardless of tracking state.
+    fingertip_marker_pose_[0] = parked_marker_pose();
+    fingertip_marker_pose_[1] = parked_marker_pose();
+
+    while (network_config_env_->CallBooleanMethod(network_config_panel_, panel_is_finished_method_) == JNI_FALSE) {
+        poll_events();
+
+        XrFrameState frame_state = {XR_TYPE_FRAME_STATE};
+        xrWaitFrame(session_, nullptr, &frame_state);
+        xrBeginFrame(session_, nullptr);
+
+        if (!quad_pose_initialized) {
+            initialize_quad_pose(frame_state.predictedDisplayTime);
+            quad_pose_initialized = true;
+        }
+
+        int                                  layer_count = 0;
+        const XrCompositionLayerBaseHeader*   layers[3]   = {nullptr, nullptr, nullptr}; // panel + up to 2 fingertip markers
+        XrCompositionLayerQuad                quad_layer  = {XR_TYPE_COMPOSITION_LAYER_QUAD};
+        XrCompositionLayerQuad                marker_layers[2] = {{XR_TYPE_COMPOSITION_LAYER_QUAD},
+                                                                {XR_TYPE_COMPOSITION_LAYER_QUAD}};
+
+        if (frame_state.shouldRender) {
+            update_network_config_input(frame_state.predictedDisplayTime);
+
+            const jboolean redrew =
+                network_config_env_->CallBooleanMethod(network_config_panel_, panel_render_method_);
+            if (redrew) {
+                jobject bitmap =
+                    network_config_env_->CallObjectMethod(network_config_panel_, panel_get_bitmap_method_);
+                upload_bitmap_to_quad_swapchain(bitmap);
+                network_config_env_->DeleteLocalRef(bitmap);
+            }
+
+            quad_layer.space                            = local_space_;
+            quad_layer.pose                              = network_config_quad_pose_;
+            quad_layer.size                              = {network_config_quad_width_m_, network_config_quad_height_m_};
+            quad_layer.subImage.swapchain                = network_config_swapchain_.swapchain;
+            quad_layer.subImage.imageRect.offset         = {0, 0};
+            quad_layer.subImage.imageRect.extent.width   = static_cast<int32_t>(network_config_swapchain_.width);
+            quad_layer.subImage.imageRect.extent.height  = static_cast<int32_t>(network_config_swapchain_.height);
+            quad_layer.layerFlags                        = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+
+            layers[0]   = reinterpret_cast<const XrCompositionLayerBaseHeader*>(&quad_layer);
+            layer_count = 1;
+
+            constexpr float kMarkerSizeMeters = 0.015f; // was 0.02f; matches the panel's 25% reduction
+            for (int hand = 0; hand < 2; hand++) {
+                XrCompositionLayerQuad& ml = marker_layers[hand];
+                ml.space                           = local_space_;
+                ml.pose                            = fingertip_marker_pose_[hand]; // live pose if tracked, parked pose otherwise
+                ml.size                            = {kMarkerSizeMeters, kMarkerSizeMeters};
+                ml.subImage.swapchain               = fingertip_marker_swapchain_[hand].swapchain;
+                ml.subImage.imageRect.offset        = {0, 0};
+                ml.subImage.imageRect.extent.width  = static_cast<int32_t>(fingertip_marker_swapchain_[hand].width);
+                ml.subImage.imageRect.extent.height = static_cast<int32_t>(fingertip_marker_swapchain_[hand].height);
+                ml.layerFlags                       = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+
+                layers[layer_count] = reinterpret_cast<const XrCompositionLayerBaseHeader*>(&ml);
+                layer_count++;
+            }
+        }
+
+        XrFrameEndInfo end_info = {XR_TYPE_FRAME_END_INFO};
+        end_info.displayTime          = frame_state.predictedDisplayTime;
+        end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+        end_info.layerCount           = layer_count;
+        end_info.layers               = layers;
+        OXR(xrEndFrame(session_, &end_info))
+    }
+
+    const auto    result_jstr = static_cast<jstring>(
+        network_config_env_->CallObjectMethod(network_config_panel_, panel_get_result_method_));
+    const jboolean confirmed = network_config_env_->CallBooleanMethod(network_config_panel_, panel_is_confirmed_method_);
+
+    if (confirmed && result_jstr != nullptr) {
+        const char* result_cstr = network_config_env_->GetStringUTFChars(result_jstr, nullptr);
+        apply_network_config_result(std::string(result_cstr));
+        network_config_env_->ReleaseStringUTFChars(result_jstr, result_cstr);
+    } else {
+        spdlog::get("illixr")->warn(
+            "oxr_interface: network config panel cancelled; network backends will use "
+            "whatever env vars/defaults were already set");
+    }
+    if (result_jstr != nullptr) {
+        network_config_env_->DeleteLocalRef(result_jstr);
+    }
+}
+
+void oxr_interface::apply_network_config_result(const std::string& result) {
+    // Wire format, fields present only for active backends, always ending with client_ip:
+    //   [tcp_server_ip|tcp_server_port|tcp_client_port|]
+    //   [udp_server_ip|udp_server_port|udp_client_port|]
+    //   client_ip
+    // Mirrors NetworkConfigPanel.onConnect()'s wire format exactly.
+    std::vector<std::string> fields;
+    std::stringstream        ss(result);
+    std::string              field;
+    while (std::getline(ss, field, '|')) {
+        fields.push_back(field);
+    }
+
+    const size_t expected_count = (use_tcp_ ? 3 : 0) + (use_udp_ ? 3 : 0) + 1;
+    if (fields.size() != expected_count) {
+        spdlog::get("illixr")->error(
+            "oxr_interface: malformed network config result, expected {} fields, got {}",
+            expected_count, fields.size());
+        return;
+    }
+
+    size_t      idx = 0;
+    std::string client_ip;
+    if (use_tcp_) {
+        switchboard_->set_env("ILLIXR_TCP_SERVER_IP", fields[idx++]);
+        switchboard_->set_env("ILLIXR_TCP_SERVER_PORT", fields[idx++]);
+        switchboard_->set_env("ILLIXR_TCP_CLIENT_PORT", fields[idx++]);
+    }
+    if (use_udp_) {
+        switchboard_->set_env("ILLIXR_UDP_SERVER_IP", fields[idx++]);
+        switchboard_->set_env("ILLIXR_UDP_SERVER_PORT", fields[idx++]);
+        switchboard_->set_env("ILLIXR_UDP_CLIENT_PORT", fields[idx++]);
+    }
+    client_ip = fields[idx++];
+    if (use_tcp_) {
+        setenv("ILLIXR_TCP_CLIENT_IP", client_ip.c_str(), 1);
+    }
+    if (use_udp_) {
+        setenv("ILLIXR_UDP_CLIENT_IP", client_ip.c_str(), 1);
+    }
+
+    spdlog::get("illixr")->info("oxr_interface: network config applied (client_ip={})", client_ip);
+}
+
+void oxr_interface::destroy_network_config_panel() {
+    // network_config_swapchain_ and its Vulkan upload resources (cmd pool/buffer, fence,
+    // staging buffer/memory) are deliberately NOT destroyed here anymore -- they're reused by
+    // the connection log display (as a quad layer, same pose/size the config panel used) until
+    // the first valid frame ever arrives, at which point destroy_connection_log_display() frees
+    // them for good. Reusing them avoids needing a second, separately-sized Vulkan resource set
+    // for the log display, and (per the config panel phase itself, which only ever submitted
+    // quad layers and never showed a "frozen background" problem) submitting a quad with no
+    // projection layer appears to composite correctly on this runtime, unlike submitting zero
+    // layers at all, which is what caused the original freeze.
+
+    for (auto& sc : fingertip_marker_swapchain_) {
+        if (sc.swapchain != XR_NULL_HANDLE) {
+            xrDestroySwapchain(sc.swapchain);
+            sc.swapchain = XR_NULL_HANDLE;
+        }
+    }
+
+    // No action set/space teardown here: poke input reads oxr_relay_'s own action set and
+    // spaces, which oxr_relay_ owns and destroys itself.
+
+    JNIEnv* env = network_config_env_;
+    if (network_config_panel_ != nullptr) {
+        env->DeleteGlobalRef(network_config_panel_);
+        network_config_panel_ = nullptr;
+    }
+    // network_config_panel_class_ is NOT released here: it's g_network_config_panel_class,
+    // cached once for the process's lifetime in JNI_OnLoad, not owned per-instance.
+    network_config_panel_class_ = nullptr;
+    if (network_config_did_attach_) {
+        app_->activity->vm->DetachCurrentThread();
+        network_config_did_attach_ = false;
+    }
+    network_config_env_ = nullptr;
+
+    spdlog::get("illixr")->info("oxr_interface: network config panel torn down (quad swapchain kept alive for the connection log display)");
+}
+
+/// Final teardown of the (reused) quad swapchain and Vulkan upload resources, called the first
+/// time a valid frame ever arrives (see run_frame()) -- or from the destructor, if the app exits
+/// while still waiting for one. Idempotent (checks each handle before destroying and resets it
+/// to NULL/VK_NULL_HANDLE afterward), so it's safe to call from both places without double-destroying.
+void oxr_interface::destroy_connection_log_display() {
+    if (network_config_fence_ != VK_NULL_HANDLE) {
+        vkDestroyFence(vk_device_, network_config_fence_, nullptr);
+        network_config_fence_ = VK_NULL_HANDLE;
+    }
+    if (network_config_cmd_pool_ != VK_NULL_HANDLE) {
+        vkDestroyCommandPool(vk_device_, network_config_cmd_pool_, nullptr); // also frees the allocated command buffer
+        network_config_cmd_pool_   = VK_NULL_HANDLE;
+        network_config_cmd_buffer_ = VK_NULL_HANDLE;
+    }
+    if (network_config_staging_buf_ != VK_NULL_HANDLE) {
+        vkDestroyBuffer(vk_device_, network_config_staging_buf_, nullptr);
+        network_config_staging_buf_ = VK_NULL_HANDLE;
+    }
+    if (network_config_staging_mem_ != VK_NULL_HANDLE) {
+        vkFreeMemory(vk_device_, network_config_staging_mem_, nullptr);
+        network_config_staging_mem_ = VK_NULL_HANDLE;
+    }
+    if (network_config_swapchain_.swapchain != XR_NULL_HANDLE) {
+        xrDestroySwapchain(network_config_swapchain_.swapchain);
+        network_config_swapchain_.swapchain = XR_NULL_HANDLE;
+    }
+    if (log_display_panel_ != nullptr && render_thread_env_ != nullptr) {
+        render_thread_env_->DeleteGlobalRef(log_display_panel_);
+        log_display_panel_ = nullptr;
+    }
+    if (render_thread_did_attach_) {
+        app_->activity->vm->DetachCurrentThread();
+        render_thread_did_attach_ = false;
+    }
+    render_thread_env_ = nullptr;
+
+    spdlog::get("illixr")->info("oxr_interface: connection log display torn down (first valid frame received)");
+}
 
 extern "C" plugin* this_plugin_factory(phonebook* pb) {
     auto* obj = new oxr_interface("openxr_interface", pb);
@@ -1495,6 +1941,20 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*reserved*/) {
     g_network_config_panel_class = static_cast<jclass>(env->NewGlobalRef(local_class));
     env->DeleteLocalRef(local_class);
 
+    // Soft-fail only: if this specific lookup fails (e.g. LogDisplayPanel hasn't been added to
+    // the build yet), leave g_log_display_panel_class null rather than returning JNI_ERR here --
+    // init_connection_log_display() already checks for null and degrades gracefully (no log
+    // display, but real rendering once frames arrive is unaffected). Returning JNI_ERR from
+    // JNI_OnLoad itself would risk the JVM unloading the whole library, which would break the
+    // already-working NetworkConfigPanel caching above too.
+    jclass log_display_local_class =
+            env->FindClass("com/example/ILLIXR/ILLIXRNativeActivity$LogDisplayPanel");
+    if (log_display_local_class != nullptr) {
+        g_log_display_panel_class = static_cast<jclass>(env->NewGlobalRef(log_display_local_class));
+        env->DeleteLocalRef(log_display_local_class);
+    } else {
+        env->ExceptionClear(); // FindClass throws on failure; clear it so it doesn't leak into later JNI calls
+    }
 
     return JNI_VERSION_1_6;
 }
