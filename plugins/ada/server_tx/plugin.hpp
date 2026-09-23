@@ -33,7 +33,8 @@ private:
     const std::shared_ptr<switchboard>                                   switchboard_;
     sr_output_proto::CompressMeshData*                                   server_outgoing_payload;
     sr_output_proto::CompressMeshData*                                   server_outgoing_vb_payload;
-    switchboard::network_writer<switchboard::event_wrapper<std::string>> ada_writer_;
+
+    std::optional<switchboard::network_writer<switchboard::event_wrapper<std::string>>> ada_writer_;
 
     const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream     sender_time;

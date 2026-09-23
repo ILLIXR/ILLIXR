@@ -67,7 +67,7 @@ private:
     const std::shared_ptr<switchboard> switchboard_;
 
     // Network writer for sending pings (transmitted over network by tcp_network_backend)
-    switchboard::network_writer<data_format::latency_ping> ping_writer_;
+    std::optional<switchboard::network_writer<data_format::latency_ping>> ping_writer_;
 
     std::shared_ptr<network_latency_pong_rx> pong_rx_;
 

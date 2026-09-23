@@ -39,6 +39,7 @@ public:
      */
     ~network_latency_rx() override;
 
+    void start() override;
 protected:
     /**
      * @brief Determines if the iteration should be skipped.
@@ -71,7 +72,7 @@ private:
     switchboard::buffered_reader<data_format::latency_ping> ping_reader_;
 
     // Network writer for sending pongs (transmitted over network by tcp_network_backend)
-    switchboard::network_writer<data_format::latency_pong> pong_writer_;
+    std::optional<switchboard::network_writer<data_format::latency_pong>> pong_writer_;
 
     // State
     std::atomic<uint64_t>   pings_received_;

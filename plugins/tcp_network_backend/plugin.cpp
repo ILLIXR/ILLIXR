@@ -7,38 +7,74 @@ static constexpr uint32_t MAX_PACKET_BYTES = 256u * 1024u * 1024u;
 using namespace ILLIXR;
 
 tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb_)
-    : plugin(name_, pb_)
-    , switchboard_{pb_->lookup_impl<switchboard>()} {
+    : plugin(name_, pb_, TCP)
+    , switchboard_{pb_->lookup_impl<switchboard>()}
+#ifdef __ANDROID__
+    , log_writer_{switchboard_->get_writer<data_format::message_type>("oxr_log_message")}
+#endif
+{}
+
+
+void tcp_network_backend::start() {
     // read environment variables
     if (switchboard_->get_env_char("ILLIXR_SERVER_IP")) {
         server_ip_ = switchboard_->get_env_char("ILLIXR_SERVER_IP");
-        spdlog::get("illixr")->info("[tcp_network_backend] Using server IP {}", server_ip_);
+        std::string msg = "[tcp_network_backend] Using server IP " + server_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     } else if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP")) {
         server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP");
-        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP server IP {}", server_ip_);
+        std::string msg = "[tcp_network_backend] Using TCP server IP " + server_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     }
 
     if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_PORT")) {
         server_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_SERVER_PORT"));
-        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP server port {}", server_port_);
+        std::string msg = "[tcp_network_backend] Using TCP server port " + std::to_string(server_port_);
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     }
 
     if (switchboard_->get_env_char("ILLIXR_CLIENT_IP")) {
         client_ip_ = switchboard_->get_env_char("ILLIXR_CLIENT_IP");
-        spdlog::get("illixr")->info("[tcp_network_backend] Using client IP {}", client_ip_);
+        std::string msg = "[tcp_network_backend] Using client IP " + client_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     } else if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP")) {
         client_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
-        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP client IP {}", client_ip_);
+        std::string msg ="[tcp_network_backend] Using TCP client IP " + client_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     }
 
     if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT")) {
         client_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT"));
-        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP client port {}", client_port_);
+        std::string msg = "[tcp_network_backend] Using TCP client port " + std::to_string(client_port_);
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     }
 
     if (switchboard_->get_env_char("ILLIXR_IS_CLIENT")) {
         is_client_ = std::stoi(switchboard_->get_env_char("ILLIXR_IS_CLIENT"));
-        spdlog::get("illixr")->info("[tcp_network_backend] Is client {}", is_client_);
+        std::string msg = "[tcp_network_backend] Is client: ";
+        is_client_ ? msg += "true" : msg += "false";
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     } else {
         is_client_ = 0;
     }
@@ -57,15 +93,24 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
                     socket->socket_bind(client_ip_, client_port_);
                 }
 
-                spdlog::get("illixr")->info("[tcp_network_backend] Connecting to {}:{}", server_ip_, server_port_);
+                std::string msg = "[tcp_network_backend] Connecting to " + server_ip_ + " at port " + std::to_string(server_port_);
+#ifdef __ANDROID__
+                log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+                spdlog::get("illixr")->info(msg);
+
                 socket->socket_connect(server_ip_, server_port_);
                 socket->enable_no_delay();
                 peer_socket_ = socket;
-                spdlog::get("illixr")->info("[tcp_network_backend] Connected; TCP_NODELAY={}", socket->is_no_delay());
+                std::string con_msg = "[tcp_network_backend] Connected to server";
+#ifdef __ANDROID__
+                log_writer_.put(std::make_shared<data_format::message_type>(con_msg));
+#endif
+                spdlog::get("illixr")->info(con_msg);
                 break;
             } catch (const std::exception& error) {
                 delete socket;
-                spdlog::get("illixr")->warn("[tcp_network_backend] Desktop is not ready ({}); retrying", error.what());
+                spdlog::get("illixr")->warn("[tcp_network_backend] Server is not ready ({}); retrying", error.what());
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
         }
@@ -103,17 +148,16 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
         }
 #endif
     }
-}
-
-#ifdef __ANDROID__
-void tcp_network_backend::start() {
+    register_topics();
     plugin::start();
+#ifdef __ANDROID__
     io_thread_ = std::thread([this]() {
         read_loop(peer_socket_);
     });
+#endif
 }
 
-#else
+#ifndef __ANDROID__
 
 void tcp_network_backend::start_client() {
     auto* socket = new network::TCPSocket();
@@ -209,17 +253,24 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
     }
 }
 
+
+void tcp_network_backend::register_topics() {
+    for (const auto& topic_name : networked_topics_) {
+        std::string serialization;
+        if (networked_topics_configs_[topic_name].serialization_method == network::topic_config::SerializationMethod::BOOST) {
+            serialization = "BOOST";
+        } else {
+            serialization = "PROTOBUF";
+        }
+
+        std::string message = "create_topic" + topic_name + delimiter_ + serialization;
+        send_to_peer("illixr_control", std::move(message));
+    }
+}
+
 void tcp_network_backend::topic_create(std::string topic_name, network::topic_config& config) {
     networked_topics_.push_back(topic_name);
     networked_topics_configs_[topic_name] = config;
-    std::string serialization;
-    if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
-        serialization = "BOOST";
-    } else {
-        serialization = "PROTOBUF";
-    }
-    std::string message = "create_topic" + topic_name + delimiter_ + serialization;
-    send_to_peer("illixr_control", std::move(message));
 }
 
 bool tcp_network_backend::is_topic_networked(std::string topic_name) {

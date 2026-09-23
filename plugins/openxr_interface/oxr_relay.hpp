@@ -38,6 +38,8 @@ public:
 
     ~oxr_relay() override;
 
+    void start() override;
+
 #ifdef ILLIXR_ENABLE_BOBA
     /** Publish a coherent Quest controller + stereo-view sample for Boba. */
     void publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
@@ -194,13 +196,13 @@ private:
      * Sends combined_pose to the offload rendering server, which contains
      * the head pose, hand tracking data, and time conversion fields.
      */
-    switchboard::network_writer<data_format::pose::combined_pose> combined_pose_writer_;
+    std::optional<switchboard::network_writer<data_format::pose::combined_pose>> combined_pose_writer_;
 #ifdef USE_POSE_CAPTURE
-    switchboard::writer<data_format::pose::combined_pose> combined_pose_capture_writer_;
+    std::optional<switchboard::writer<data_format::pose::combined_pose>> combined_pose_capture_writer_;
 #endif
 #ifdef ILLIXR_ENABLE_BOBA
-    switchboard::network_writer<data_format::quest_controller_input> quest_controller_writer_;
-    switchboard::network_writer<data_format::openxr_view_frame>      openxr_view_writer_;
+    std::optional<switchboard::network_writer<data_format::quest_controller_input>> quest_controller_writer_;
+    std::optional<switchboard::network_writer<data_format::openxr_view_frame>>      openxr_view_writer_;
 
 #endif
 

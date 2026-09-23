@@ -26,6 +26,14 @@ struct [[maybe_unused]] connection_signal : public switchboard::event {
         : start{start_} { }
 };
 
+
+struct [[maybe_unused]] message_type : public switchboard::event {
+    std::string message;
+
+    explicit message_type(const std::string& str)
+        : message{str} {}
+};
+
 // Used to identify which graphics API is being used (for swapchain construction)
 enum class graphics_api { OPENGL, VULKAN, TBD };
 

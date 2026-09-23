@@ -3,6 +3,10 @@
 #include "illixr/network/udpsocket.hpp"
 // clang-format on
 
+#ifdef __ANDROID__
+#include "illixr/data_format/misc.hpp"
+#endif
+
 #include "illixr/network/network_backend.hpp"
 #include "illixr/network/topic_config.hpp"
 #include "illixr/plugin.hpp"
@@ -27,9 +31,8 @@ class MY_EXPORT_API udp_network_backend
 public:
     explicit udp_network_backend(const std::string& name_, phonebook* pb_);
     ~udp_network_backend() override;
-#ifdef __ANDROID__
     void start() override;
-#else
+#ifndef __ANDROID__
     void start_client() override;
     void start_server() override;
 #endif
@@ -56,12 +59,17 @@ private:
     /** Send a backend-control packet on the illixr_control topic. */
     void send_control(const std::string& message);
 
+    void register_topics();
+
     std::shared_ptr<switchboard> switchboard_;
     std::atomic<bool>            running_ = true;
 #ifndef __ANDROID__
     std::atomic<bool> ready_ = false;
 #endif
     network::UDPSocket* peer_socket_ = nullptr;
+#ifdef __ANDROID__
+    switchboard::writer<data_format::message_type> log_writer_;
+#endif
     std::thread         io_thread_;
 
     std::string server_ip_;

@@ -51,7 +51,8 @@ private:
     const std::shared_ptr<relative_clock>                                clock_;
     const std::shared_ptr<stoplight>                                     stoplight_;
     std::unique_ptr<ada_video_encoder>                                   encoder_ = nullptr;
-    switchboard::network_writer<switchboard::event_wrapper<std::string>> ada_writer_;
+
+    std::optional<switchboard::network_writer<switchboard::event_wrapper<std::string>>> ada_writer_;
 
     const std::string data_path_ = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream     sending_timestamp_;

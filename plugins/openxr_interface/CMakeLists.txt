@@ -13,12 +13,13 @@ endif()
 
 find_package(OpenXR REQUIRED)
 find_library(VULKAN_LIB vulkan)
+find_library(JNIGRAPHICS_LIBRARY jnigraphics)
 
 # Locate glslc from the NDK shader-tools package.
 find_program(GLSLC glslc
-        PATHS "${ANDROID_NDK}/shader-tools/linux-x86_64"
-        "${ANDROID_NDK}/shader-tools/windows-x86_64"
-        REQUIRED
+             PATHS "${ANDROID_NDK}/shader-tools/linux-x86_64"
+             "${ANDROID_NDK}/shader-tools/windows-x86_64"
+             REQUIRED
 )
 
 set(SPIRV_DIR "${CMAKE_CURRENT_BINARY_DIR}/shaders")
@@ -28,7 +29,7 @@ file(MAKE_DIRECTORY "${SPIRV_DIR}")
 function(compile_shader GLSL_FILE VARNAME OUT_HEADER)
     set(SPV_FILE "${SPIRV_DIR}/${VARNAME}.spv")
     add_custom_command(
-            OUTPUT  "${SPV_FILE}"
+            OUTPUT "${SPV_FILE}"
             COMMAND ${GLSLC} --target-env=vulkan1.1 -O
             "${CMAKE_CURRENT_SOURCE_DIR}/shaders/${GLSL_FILE}"
             -o "${SPV_FILE}"
@@ -36,7 +37,7 @@ function(compile_shader GLSL_FILE VARNAME OUT_HEADER)
             VERBATIM
     )
     add_custom_command(
-            OUTPUT  "${OUT_HEADER}"
+            OUTPUT "${OUT_HEADER}"
             COMMAND ${CMAKE_COMMAND}
             -DINPUT=${SPV_FILE}
             -DOUTPUT=${OUT_HEADER}
@@ -106,40 +107,41 @@ add_library(${PLUGIN_NAME} SHARED
 
 if(ILLIXR_ENABLE_BOBA)
     target_sources(${PLUGIN_NAME} PRIVATE
-        ${SPIRV_DIR}/overlay_vert_spv.h
-        ${SPIRV_DIR}/overlay_frag_spv.h
-        ${SPIRV_DIR}/modal_vert_spv.h
-        ${SPIRV_DIR}/modal_frag_spv.h
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/openxr_view_frame.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/quest_controller.hpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/openxr_view_frame.cpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/quest_controller.cpp
+                   ${SPIRV_DIR}/overlay_vert_spv.h
+                   ${SPIRV_DIR}/overlay_frag_spv.h
+                   ${SPIRV_DIR}/modal_vert_spv.h
+                   ${SPIRV_DIR}/modal_frag_spv.h
+                   ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/openxr_view_frame.hpp
+                   ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/quest_controller.hpp
+                   ${CMAKE_SOURCE_DIR}/utils/serialization/openxr_view_frame.cpp
+                   ${CMAKE_SOURCE_DIR}/utils/serialization/quest_controller.cpp
     )
 endif()
 
 target_compile_definitions(${PLUGIN_NAME} PUBLIC
-        USING_OPENXR
-        ILLIXR_VULKAN                   # enables AHardwareBuffer path throughout ILLIXR
-        XR_USE_GRAPHICS_API_VULKAN      # replaces XR_USE_GRAPHICS_API_OPENGL_ES
-        XR_USE_PLATFORM_ANDROID
-        COMBINED_ENCODING
+                           USING_OPENXR
+                           ILLIXR_VULKAN                   # enables AHardwareBuffer path throughout ILLIXR
+                           XR_USE_GRAPHICS_API_VULKAN      # replaces XR_USE_GRAPHICS_API_OPENGL_ES
+                           XR_USE_PLATFORM_ANDROID
+                           COMBINED_ENCODING
 )
 
 target_include_directories(${PLUGIN_NAME} PUBLIC
-        ${ANDROID_TOOLS_INCLUDE}
-        ${ILLIXR_SOURCE_DIR}/include
-        ${ANDROID_NDK}/sources/android/native_app_glue
-        ${SPIRV_DIR}
+                           ${ANDROID_TOOLS_INCLUDE}
+                           ${ILLIXR_SOURCE_DIR}/include
+                           ${ANDROID_NDK}/sources/android/native_app_glue
+                           ${SPIRV_DIR}
 )
 
 target_link_libraries(${PLUGIN_NAME} PUBLIC
-        Boost::serialization
-        Eigen3::Eigen
-        android
-        spdlog::spdlog_android
-        OpenXR::openxr_loader
-        ${VULKAN_LIB}          # libvulkan.so
-        mediandk                     # AImageReader
+                      Boost::serialization
+                      Eigen3::Eigen
+                      android
+                      spdlog::spdlog_android
+                      OpenXR::openxr_loader
+                      ${VULKAN_LIB}          # libvulkan.so
+                      mediandk                     # AImageReader
+                      ${JNIGRAPHICS_LIBRARY}
 )
 
 if(USE_POSE_CAPTURE)

@@ -9,11 +9,7 @@ using namespace ILLIXR::data_format;
 
 [[maybe_unused]] server_tx::server_tx(const std::string& name_, phonebook* pb_)
     : plugin{name_, pb_}
-    , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , ada_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "ada_processed",
-          network::topic_config{network::topic_config::SerializationMethod::PROTOBUF,
-                                network::topic_config::TransportMethod::TCP, std::chrono::milliseconds(0)})} {
+    , switchboard_{phonebook_->lookup_impl<switchboard>()} {
     if (!std::filesystem::exists(data_path)) {
         if (!std::filesystem::create_directory(data_path)) {
             spdlog::get("illixr")->error("Failed to create data directory.");
@@ -26,6 +22,11 @@ using namespace ILLIXR::data_format;
 }
 
 void server_tx::start() {
+    ada_writer_.emplace(switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
+            "ada_processed",
+            network::topic_config{network::topic_config::SerializationMethod::PROTOBUF,
+                                  network::topic_config::TransportMethod::TCP, std::chrono::milliseconds(0)}));
+
     plugin::start();
     switchboard_->schedule<vb_type>(id_, "unique_VB_list", [this](switchboard::ptr<const vb_type> datum, std::size_t) {
         this->send_vb_list(datum);
@@ -55,7 +56,7 @@ void server_tx::send_vb_list(switchboard::ptr<const vb_type> datum) {
 
     std::string buffer = server_outgoing_vb_payload->SerializeAsString() + delimiter;
     spdlog::get("illixr")->debug("Sending vb {} {}", buffer.size(), buffer);
-    ada_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(buffer));
+    ada_writer_->put(std::make_shared<switchboard::event_wrapper<std::string>>(buffer));
 
     delete server_outgoing_vb_payload;
 
@@ -85,7 +86,7 @@ void server_tx::send_sr_output(switchboard::ptr<const mesh_type> datum) {
 
     std::string buffer = server_outgoing_payload->SerializeAsString() + delimiter;
     spdlog::get("illixr")->debug("Sending sr {} {}", buffer.size(), buffer);
-    ada_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(buffer));
+    ada_writer_->put(std::make_shared<switchboard::event_wrapper<std::string>>(buffer));
 
     auto end         = std::chrono::high_resolution_clock::now();
     auto duration    = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();

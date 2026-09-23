@@ -8,44 +8,88 @@
 using namespace ILLIXR;
 
 udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb_)
-    : plugin(name_, pb_)
-    , switchboard_{pb_->lookup_impl<switchboard>()} {
+    : plugin(name_, pb_, UDP)
+    , switchboard_{pb_->lookup_impl<switchboard>()}
+#ifdef __ANDROID__
+    , log_writer_{switchboard_->get_writer<data_format::message_type>("oxr_log_message")}
+#endif
+{
+}
+
+void udp_network_backend::start() {
     // read environment variables
     if (switchboard_->get_env_char("ILLIXR_SERVER_IP")) {
-        server_ip_ = switchboard_->get_env_char("ILLIXR_SERVER_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using server IP {}", server_ip_);
+        server_ip_      = switchboard_->get_env_char("ILLIXR_SERVER_IP");
+        std::string msg = "[udp_network_backend] Using server IP " + server_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     } else if (switchboard_->get_env_char("ILLIXR_UDP_SERVER_IP")) {
-        server_ip_ = switchboard_->get_env_char("ILLIXR_UDP_SERVER_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using UDP server IP {}", server_ip_);
+        server_ip_      = switchboard_->get_env_char("ILLIXR_UDP_SERVER_IP");
+        std::string msg = "[udp_network_backend] Using UDP server IP " + server_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     } else if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP")) {
-        server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using TCP/UDP server IP {}", server_ip_);
+        server_ip_      = switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP");
+        std::string msg = "[udp_network_backend] Using TCP/UDP server IP " + server_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     }
 
     if (switchboard_->get_env_char("ILLIXR_UDP_SERVER_PORT")) {
-        server_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_UDP_SERVER_PORT"));
-        spdlog::get("illixr")->info("[udp_network_backend] Using UDP server port {}", server_port_);
+        server_port_    = std::stoi(switchboard_->get_env_char("ILLIXR_UDP_SERVER_PORT"));
+        std::string msg = "[udp_network_backend] Using UDP server port " + std::to_string(server_port_);
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     }
 
     if (switchboard_->get_env_char("ILLIXR_CLIENT_IP")) {
-        client_ip_ = switchboard_->get_env_char("ILLIXR_CLIENT_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using client IP {}", client_ip_);
+        client_ip_      = switchboard_->get_env_char("ILLIXR_CLIENT_IP");
+        std::string msg = "[udp_network_backend] Using client IP " + client_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     } else if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP")) {
-        client_ip_ = switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using UDP client IP {}", client_ip_);
+        client_ip_      = switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP");
+        std::string msg = "[udp_network_backend] Using UDP client IP " + client_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     } else if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP")) {
-        client_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using TCP/UDP client IP {}", client_ip_);
+        client_ip_      = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
+        std::string msg = "[udp_network_backend] Using TCP/UDP client IP " + client_ip_;
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     }
 
     if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT")) {
-        client_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT"));
-        spdlog::get("illixr")->info("[udp_network_backend] Using UDP client port {}", client_port_);
+        client_port_    = std::stoi(switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT"));
+        std::string msg = "[udp_network_backend] Using UDP client port " + std::to_string(client_port_);
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     }
 
     if (switchboard_->get_env_char("ILLIXR_IS_CLIENT")) {
-        is_client_ = std::stoi(switchboard_->get_env_char("ILLIXR_IS_CLIENT"));
-        spdlog::get("illixr")->info("[udp_network_backend] Is client {}", is_client_);
+        is_client_      = std::stoi(switchboard_->get_env_char("ILLIXR_IS_CLIENT"));
+        std::string msg = "[udp_network_backend] Is client ";
+        is_client_ ? msg += "true" : msg += "false";
+#ifdef __ANDROID__
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+#endif
+        spdlog::get("illixr")->info(msg);
     } else {
         is_client_ = 0;
     }
@@ -71,9 +115,13 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         socket->set_peer(server_ip_, server_port_);
         peer_socket_ = socket;
 
-        spdlog::get("illixr")->info("[udp_network_backend] Connecting to {}:{}", server_ip_, server_port_);
-        // UDP is connectionless � set_peer() is sufficient; no connect() needed
-        spdlog::get("illixr")->info("[udp_network_backend] Client ready");
+        std::string msg = "[udp_network_backend] Connecting to" + server_ip_ + ":" + std::to_string(server_port_);
+        log_writer_.put(std::make_shared<data_format::message_type>(msg));
+        spdlog::get("illixr")->info(msg);
+        // UDP is connectionless  set_peer() is sufficient; no connect() needed
+        std::string con_msg = "[udp_network_backend] Client ready\n\nWaiting for frames...";
+        log_writer_.put(std::make_shared<data_format::message_type>(con_msg));
+        spdlog::get("illixr")->info(con_msg);
 #else
         io_thread_ = std::thread([this]() {
             start_client();
@@ -108,16 +156,18 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
 
 #endif
     }
-}
+
+    register_topics();
+    plugin::start();
 
 #ifdef __ANDROID__
-void udp_network_backend::start() {
-    plugin::start();
     io_thread_ = std::thread([this]() {
         read_loop(peer_socket_);
     });
+#endif
 }
-#else
+
+#ifndef __ANDROID__
 
 void udp_network_backend::start_client() {
     auto* socket = new network::UDPSocket();
@@ -188,25 +238,32 @@ void udp_network_backend::read_loop(network::UDPSocket* socket) {
     }
 }
 
+void udp_network_backend::register_topics() {
+    for (auto topic_name : networked_topics_) {
+        spdlog::get("illixr")->info("[udp_network_backend] topic_create: {}", topic_name);
+        // Notify the peer of the new topic and its serialization method, mirroring
+        // the TCP backend's illixr_control handshake.  Since UDP is unreliable we
+        // send it a few times to reduce the chance of loss before data arrives.
+        if (peer_socket_ != nullptr && peer_socket_->has_peer()) {
+            std::string serialization = (networked_topics_configs_[topic_name].serialization_method ==
+                                         network::topic_config::SerializationMethod::BOOST)
+                ? "BOOST"
+                : "PROTOBUF";
+            std::string ctrl_message  = "create_topic" + topic_name + delimiter_ + serialization;
+
+            for (int i = 0; i < 3; ++i)
+                send_control(ctrl_message);
+        } else {
+            spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}",
+                                         (peer_socket_ == nullptr) ? "null" : "valid",
+                                         peer_socket_ != nullptr && peer_socket_->has_peer());
+        }
+    }
+}
+
 void udp_network_backend::topic_create(std::string topic_name, network::topic_config& config) {
     networked_topics_.push_back(topic_name);
     networked_topics_configs_[topic_name] = config;
-    spdlog::get("illixr")->info("[udp_network_backend] topic_create: {}", topic_name);
-    // Notify the peer of the new topic and its serialization method, mirroring
-    // the TCP backend's illixr_control handshake.  Since UDP is unreliable we
-    // send it a few times to reduce the chance of loss before data arrives.
-    if (peer_socket_ != nullptr && peer_socket_->has_peer()) {
-        std::string serialization =
-            (config.serialization_method == network::topic_config::SerializationMethod::BOOST) ? "BOOST" : "PROTOBUF";
-        std::string ctrl_message = "create_topic" + topic_name + delimiter_ + serialization;
-
-        for (int i = 0; i < 3; ++i)
-            send_control(ctrl_message);
-    } else {
-        spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}",
-                                     (peer_socket_ == nullptr) ? "null" : "valid",
-                                     peer_socket_ != nullptr && peer_socket_->has_peer());
-    }
 }
 
 bool udp_network_backend::is_topic_networked(std::string topic_name) {

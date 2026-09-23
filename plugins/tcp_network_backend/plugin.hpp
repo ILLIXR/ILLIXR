@@ -2,6 +2,9 @@
 // clang-format off
 #include "illixr/network/tcpsocket.hpp"
 // clang-format on
+#ifdef __ANDROID__
+#    include "illixr/data_format/misc.hpp"
+#endif
 
 #include "illixr/network/network_backend.hpp"
 #include "illixr/network/topic_config.hpp"
@@ -26,9 +29,9 @@ public:
     explicit tcp_network_backend(const std::string& name_, phonebook* pb_);
     /** Stop and join the I/O thread before releasing its peer socket. */
     ~tcp_network_backend() override;
-#ifdef __ANDROID__
+
     void start() override;
-#else
+#ifndef __ANDROID__
     void start_client() override;
     void start_server() override;
 #endif
@@ -49,10 +52,14 @@ public:
 private:
     void send_to_peer(const std::string& topic_name, std::string&& message);
 
+    void register_topics();
+
     std::shared_ptr<switchboard> switchboard_;
     std::atomic<bool>            running_ = true;
 #ifndef __ANDROID__
     std::atomic<bool> ready_ = false;
+#else
+    switchboard::writer<data_format::message_type> log_writer_;
 #endif
     network::TCPSocket* peer_socket_ = nullptr;
     // Owned network loop and stream-wide packet serialization.

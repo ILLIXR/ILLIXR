@@ -51,7 +51,8 @@ private:
 
     const std::shared_ptr<switchboard>                                    switchboard_;
     switchboard::reader<data_format::semantic_xr::voice_query>            voice_query_reader_;
-    switchboard::network_writer<data_format::semantic_xr::query_response> response_writer_;
+
+    std::optional<switchboard::network_writer<data_format::semantic_xr::query_response>> response_writer_;
 
     pybind11::scoped_interpreter                 guard_;
     pybind11::gil_scoped_release                 release_;

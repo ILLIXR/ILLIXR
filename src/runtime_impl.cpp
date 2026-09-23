@@ -89,15 +89,6 @@ public:
         std::vector<std::string> ordered_paths;
         ordered_paths.reserve(so_paths.size());
 
-        // First pass: collect network_backend plugins and record the count
-        int network_plugin_count = 0;
-        for (const auto& path : so_paths) {
-            if (path.find("network_backend") != std::string::npos) {
-                ordered_paths.push_back(path);
-                ++network_plugin_count;
-            }
-        }
-
         // Second pass: collect all remaining plugins
         for (const auto& path : so_paths) {
             if (path.find("network_backend") == std::string::npos)
@@ -132,18 +123,8 @@ public:
         RAC_ERRNO_MSG("runtime_impl after generating plugin factories");
         phonebook_.lookup_impl<relative_clock>()->start();
 
-#ifdef __ANDROID__ // on Android we have to have the network plugins up and running right away
-                   // Start network backend plugins first — they must be running before
-        // any other plugin initializes. Count was determined by the reorder above.
-        for (int i = 0; i < network_plugin_count; ++i) {
-            plugins_.push_back(std::unique_ptr<plugin>{plugin_factories[i](&phonebook_)});
-            plugins_[i]->start();
-        }
-#else
-        network_plugin_count = 0; // unused on non-Android, keeps offset logic unified#endif
-#endif
 
-        std::transform(plugin_factories.cbegin() + network_plugin_count, plugin_factories.cend(), std::back_inserter(plugins_),
+        std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins_),
                        [this](const auto& plugin_factory) {
                            RAC_ERRNO_MSG("runtime_impl before building the plugin");
                            try {
@@ -182,10 +163,30 @@ public:
             }
         }
 #endif
-        std::for_each(plugins_.cbegin() + network_plugin_count, plugins_.cend(), [](const auto& plugin) {
+        std::vector<std::shared_ptr<plugin>> special_plugins;
+        std::vector<std::shared_ptr<plugin>> normal_plugins;
+        for (const auto& plugin : plugins_) {
+            if (plugin->is_entry_point()) {
+                special_plugins.insert(special_plugins.begin(), plugin);
+            } else if (plugin->get_type() == TCP) {
+                special_plugins.push_back(plugin);
+                switchboard_->set_tcp(true);
+            } else if (plugin->get_type() == UDP) {
+                special_plugins.push_back(plugin);
+                switchboard_->set_udp(true);
+            } else {
+                normal_plugins.push_back(plugin);
+            }
+        }
+
+        for (const auto& plugin : special_plugins) {
+            plugin->start();
+        }
+
+        for (const auto& plugin : normal_plugins) {
             // Well-behaved plugins_ (any derived from threadloop) start there threads here, and then wait on the Stoplight.
             plugin->start();
-        });
+        }
 
         // This actually kicks off the plugins
         phonebook_.lookup_impl<stoplight>()->signal_ready();

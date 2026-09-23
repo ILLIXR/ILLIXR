@@ -291,7 +291,8 @@ private:
     std::shared_ptr<spdlog::logger>                            log_;
     std::shared_ptr<vulkan::display_provider>                  display_provider_;
     std::shared_ptr<switchboard>                               switchboard_;
-    switchboard::network_writer<data_format::compressed_frame> frames_topic_;
+
+    std::optional<switchboard::network_writer<data_format::compressed_frame>> frames_topic_;
 
     /**
      * @brief Cached head pose extracted from pose_with_hands
