@@ -103,17 +103,16 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
         }
 #endif
     }
-}
-
-#ifdef __ANDROID__
-void tcp_network_backend::start() {
+    register_topics();
     plugin::start();
+#ifdef __ANDROID__
     io_thread_ = std::thread([this]() {
         read_loop(peer_socket_);
     });
+#endif
 }
 
-#else
+#ifndef __ANDROID__
 
 void tcp_network_backend::start_client() {
     auto* socket = new network::TCPSocket();
@@ -209,17 +208,24 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
     }
 }
 
+
+void tcp_network_backend::register_topics() {
+    for (const auto& topic_name : networked_topics_) {
+        std::string serialization;
+        if (networked_topics_configs_[topic_name].serialization_method == network::topic_config::SerializationMethod::BOOST) {
+            serialization = "BOOST";
+        } else {
+            serialization = "PROTOBUF";
+        }
+
+        std::string message = "create_topic" + topic_name + delimiter_ + serialization;
+        send_to_peer("illixr_control", std::move(message));
+    }
+}
+
 void tcp_network_backend::topic_create(std::string topic_name, network::topic_config& config) {
     networked_topics_.push_back(topic_name);
     networked_topics_configs_[topic_name] = config;
-    std::string serialization;
-    if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
-        serialization = "BOOST";
-    } else {
-        serialization = "PROTOBUF";
-    }
-    std::string message = "create_topic" + topic_name + delimiter_ + serialization;
-    send_to_peer("illixr_control", std::move(message));
 }
 
 bool tcp_network_backend::is_topic_networked(std::string topic_name) {

@@ -27,9 +27,8 @@ class MY_EXPORT_API udp_network_backend
 public:
     explicit udp_network_backend(const std::string& name_, phonebook* pb_);
     ~udp_network_backend() override;
-#ifdef __ANDROID__
     void start() override;
-#else
+#ifndef __ANDROID__
     void start_client() override;
     void start_server() override;
 #endif
@@ -55,6 +54,8 @@ private:
 
     /** Send a backend-control packet on the illixr_control topic. */
     void send_control(const std::string& message);
+
+    void register_topics();
 
     std::shared_ptr<switchboard> switchboard_;
     std::atomic<bool>            running_ = true;

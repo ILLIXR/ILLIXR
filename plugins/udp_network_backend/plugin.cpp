@@ -108,11 +108,11 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
 
 #endif
     }
-}
+
+    register_topics();
+    plugin::start();
 
 #ifdef __ANDROID__
-void udp_network_backend::start() {
-    plugin::start();
     io_thread_ = std::thread([this]() {
         read_loop(peer_socket_);
     });
@@ -187,26 +187,30 @@ void udp_network_backend::read_loop(network::UDPSocket* socket) {
         receive_packet(std::move(packet));
     }
 }
+void udp_network_backend::register_topics() {
+    for (auto topic_name : networked_topics_) {
+        spdlog::get("illixr")->info("[udp_network_backend] topic_create: {}", topic_name);
+        // Notify the peer of the new topic and its serialization method, mirroring
+        // the TCP backend's illixr_control handshake.  Since UDP is unreliable we
+        // send it a few times to reduce the chance of loss before data arrives.
+        if (peer_socket_ != nullptr && peer_socket_->has_peer()) {
+            std::string serialization =
+                (networked_topics_configs_[topic_name].serialization_method == network::topic_config::SerializationMethod::BOOST) ? "BOOST" : "PROTOBUF";
+            std::string ctrl_message = "create_topic" + topic_name + delimiter_ + serialization;
+
+            for (int i = 0; i < 3; ++i)
+                send_control(ctrl_message);
+        } else {
+            spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}",
+                                         (peer_socket_ == nullptr) ? "null" : "valid",
+                                         peer_socket_ != nullptr && peer_socket_->has_peer());
+        }
+    }
+}
 
 void udp_network_backend::topic_create(std::string topic_name, network::topic_config& config) {
     networked_topics_.push_back(topic_name);
     networked_topics_configs_[topic_name] = config;
-    spdlog::get("illixr")->info("[udp_network_backend] topic_create: {}", topic_name);
-    // Notify the peer of the new topic and its serialization method, mirroring
-    // the TCP backend's illixr_control handshake.  Since UDP is unreliable we
-    // send it a few times to reduce the chance of loss before data arrives.
-    if (peer_socket_ != nullptr && peer_socket_->has_peer()) {
-        std::string serialization =
-            (config.serialization_method == network::topic_config::SerializationMethod::BOOST) ? "BOOST" : "PROTOBUF";
-        std::string ctrl_message = "create_topic" + topic_name + delimiter_ + serialization;
-
-        for (int i = 0; i < 3; ++i)
-            send_control(ctrl_message);
-    } else {
-        spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}",
-                                     (peer_socket_ == nullptr) ? "null" : "valid",
-                                     peer_socket_ != nullptr && peer_socket_->has_peer());
-    }
 }
 
 bool udp_network_backend::is_topic_networked(std::string topic_name) {
