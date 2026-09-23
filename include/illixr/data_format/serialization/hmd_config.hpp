@@ -8,8 +8,7 @@
 namespace boost::serialization {
 
 template<class Archive>
-void serialize(Archive& ar, hmd_config& data, const unsigned int version) {
-    (void) version;
+void serialize(Archive& ar, hmd_config& data, const unsigned int) {
     ar & data.recommended_image_width;
     ar & data.recommended_image_height;
     ar & data.fov_angle_left[0];
@@ -23,10 +22,10 @@ void serialize(Archive& ar, hmd_config& data, const unsigned int version) {
 }
 
 template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::hmd_config_data& data, const unsigned int version) {
-    (void) version;
+void serialize(Archive& ar, ILLIXR::data_format::hmd_config_data& data, const unsigned int) {
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(data);
     ar & data.config;
+    ar & data.ipd;
 }
 } // namespace boost::serialization
 

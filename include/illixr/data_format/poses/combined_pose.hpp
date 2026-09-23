@@ -17,6 +17,7 @@ struct combined_pose : public switchboard::event {
     hand_joint_poses_pair       hand_poses;
     palm_poses_pair             palm_poses;
     hand_interaction_poses_pair hand_interactions;
+    float                       ipd        = 64.f;
     uint8_t                     valid_data = 0;
     uint64_t                    id         = 0;
 
@@ -53,11 +54,12 @@ struct combined_pose : public switchboard::event {
     combined_pose(fast_head_pose_type& head, hand_joint_poses_pair& hands, palm_poses_pair& palms,
                   hand_interaction_poses_pair& hand_interactions, uint64_t fid, int64_t pose_xr_time = 0,
                   int64_t xr_to_monotonic_offset = 0, int64_t monotonic_to_system_offset = 0, double smoothed_clock_offset = 0.,
-                  double smoothed_rtt = 0.)
+                  double smoothed_rtt = 0., float ip_dist = 64.f)
         : head_pose{head}
         , hand_poses{hands}
         , palm_poses{palms}
         , hand_interactions{hand_interactions}
+        , ipd{ip_dist}
         , id{fid}
         , pose_xr_time_ns{pose_xr_time}
         , xr_to_monotonic_offset_ns{xr_to_monotonic_offset}
