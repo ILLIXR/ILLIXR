@@ -12,6 +12,9 @@
 #    include <GL/glu.h>
 #endif
 
+#define RUNNING 1
+#define AWAITING_CONFIG 10
+
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
 
@@ -177,16 +180,16 @@ struct semaphore_handle : public switchboard::event {
         : vk_handle{vk_handle_}
         , usage{usage_} { }
 };
+#endif
 
 struct [[maybe_unused]] illixr_signal : public switchboard::event {
-    int illixr_ready;
+    int signal_;
 
     illixr_signal()
-        : illixr_ready(false) { }
+        : signal_(false) { }
 
-    explicit illixr_signal(int illixr_ready_)
-        : illixr_ready(illixr_ready_) { }
+    explicit illixr_signal(int signal)
+        : signal_(signal) { }
 };
-#endif
 
 } // namespace ILLIXR::data_format

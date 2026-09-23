@@ -1,5 +1,6 @@
 #pragma once
 
+#include "illixr/data_format/misc.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -43,6 +44,12 @@ template<class Archive>
         tp = ILLIXR::time_point(std::chrono::nanoseconds(ns_since_epoch));
     }
 }
+
+template<class Archive>
+void serialize(Archive& ar, ILLIXR::data_format::illixr_signal& sig, const unsigned int) {
+    ar& boost::serialization::base_object<ILLIXR::switchboard::event>(sig);
+    ar & sig.signal_;
+}
 } // namespace boost::serialization
 
-BOOST_CLASS_EXPORT_KEY(ILLIXR::switchboard::event)
+BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::illixr_signal)
