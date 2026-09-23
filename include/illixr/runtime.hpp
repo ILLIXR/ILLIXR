@@ -43,9 +43,14 @@ public:
 
     virtual ~runtime() = default;
 
+    [[nodiscard]] std::shared_ptr<plugin> get_last_plugin() const {
+        return plugins_.back();
+    }
+
 protected:
-    bool                         enable_monado_ = false;
-    std::shared_ptr<switchboard> switchboard_;
+    bool                                 enable_monado_ = false;
+    std::shared_ptr<switchboard>         switchboard_;
+    std::vector<std::shared_ptr<plugin>> plugins_;
 };
 
 extern "C" MY_EXPORT_API runtime* runtime_factory();

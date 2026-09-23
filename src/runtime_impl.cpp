@@ -264,7 +264,6 @@ private:
     // I have to keep the dynamic libraries in scope until the program is dead
     std::vector<dynamic_lib>             libraries_;
     phonebook                            phonebook_;
-    std::vector<std::shared_ptr<plugin>> plugins_;
     std::once_flag                       stop_once_;
 };
 
