@@ -105,9 +105,6 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     , modal_texture_reader_{switchboard_->get_buffered_reader<boba_modal_texture>("boba_modal_texture")}
 #endif
 #ifndef USING_OPENXR
-    , pose_writer_{switchboard_->get_network_writer<pose::fast_head_pose_type>("render_pose", {})}
-#endif
-#ifndef USING_OPENXR
     , pose_prediction_{pb->lookup_impl<pose_prediction>()}
 #endif
     , clock_{pb->lookup_impl<relative_clock>()}
@@ -140,6 +137,17 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
 #endif
     log_->debug(use_depth_ ? "Encoding depth images for the client" : "Not encoding depth images for the client");
+}
+
+void offload_rendering_client::start() {
+#ifndef USING_OPENXR
+    pose_writer_.emplace(switchboard_->get_network_writer<pose::fast_head_pose_type>("render_pose", {}));
+#endif
+#ifndef __ANDROID__
+    ffmpeg_init_device();
+    ffmpeg_init_cuda_device();
+#endif
+    threadloop::start();
 }
 
 #ifdef __ANDROID__
@@ -506,12 +514,6 @@ void offload_rendering_client::receiver_loop() {
     }
 }
 #else
-
-void offload_rendering_client::start() {
-    ffmpeg_init_device();
-    ffmpeg_init_cuda_device();
-    threadloop::start();
-}
 
 void offload_rendering_client::setup(VkRenderPass render_pass, uint32_t subpass,
                                      std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool) {
@@ -1169,7 +1171,7 @@ void offload_rendering_client::push_pose() {
                    current_pose.pose.position.y(), current_pose.pose.position.z(), current_pose.pose.orientation.x(),
                    current_pose.pose.orientation.y(), current_pose.pose.orientation.z(), current_pose.pose.orientation.w());
     }
-    pose_writer_.put(std::make_shared<pose::fast_head_pose_type>(current_pose));
+    pose_writer_->put(std::make_shared<pose::fast_head_pose_type>(current_pose));
 }
 #endif
 

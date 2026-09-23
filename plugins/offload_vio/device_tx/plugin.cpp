@@ -17,13 +17,14 @@ using namespace ILLIXR::data_format;
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , cam_{switchboard_->get_buffered_reader<binocular_cam_type>("cam")}
-    , imu_cam_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "compressed_imu_cam", network::topic_config{network::topic_config::SerializationMethod::PROTOBUF})}
     , log_(spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"))) {
     std::srand(std::time(0));
 }
 
 void offload_writer::start() {
+    imu_cam_writer_.emplace(switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
+            "compressed_imu_cam", network::topic_config{network::topic_config::SerializationMethod::PROTOBUF}));
+
     threadloop::start();
 
     encoder_ = std::make_unique<vio_video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
@@ -65,7 +66,7 @@ void offload_writer::send_imu_cam_data(std::optional<time_point>& cam_time) {
     log_->info("{},{}", cam_time.value().time_since_epoch().count(),
                (double) (clock_->now().time_since_epoch().count() - cam_time.value().time_since_epoch().count()) / 1e6);
     // socket.write(data_to_be_sent + delimitter);
-    imu_cam_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimiter));
+    imu_cam_writer_->put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimiter));
 
     frame_id_++;
     delete data_buffer_;

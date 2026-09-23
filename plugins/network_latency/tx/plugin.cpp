@@ -15,7 +15,6 @@ static constexpr int DEFAULT_PING_INTERVAL_MS = 100;
 [[maybe_unused]] network_latency_tx::network_latency_tx(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , switchboard_{pb->lookup_impl<switchboard>()}
-    , ping_writer_{switchboard_->get_network_writer<latency_ping>("latency_ping")}
     , pong_rx_{std::make_shared<network_latency_pong_rx>(name, pb)}
     , sequence_number_{0}
     , last_ping_time_{std::chrono::steady_clock::now()} {
@@ -27,6 +26,8 @@ static constexpr int DEFAULT_PING_INTERVAL_MS = 100;
 }
 
 void network_latency_tx::start() {
+    ping_writer_.emplace(switchboard_->get_network_writer<latency_ping>("latency_ping"));
+
     threadloop::start();
     pong_rx_->start();
 }
@@ -51,7 +52,7 @@ void network_latency_tx::_p_one_iteration() {
     uint64_t seq       = sequence_number_.fetch_add(1);
     uint64_t timestamp = get_timestamp_ns();
 
-    ping_writer_.put(ping_writer_.allocate<latency_ping>(latency_ping{seq, timestamp}));
+    ping_writer_->put(ping_writer_->allocate<latency_ping>(latency_ping{seq, timestamp}));
 
     last_ping_time_ = std::chrono::steady_clock::now();
 

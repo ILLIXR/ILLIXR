@@ -62,11 +62,7 @@ void boba_streaming_server::mapped_file::reset() {
 boba_streaming_server::boba_streaming_server(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , switchboard_{pb->lookup_impl<switchboard>()}
-    , stereo_reader_{switchboard_->get_reader<data_format::stereo_frame>("stereo_frame")}
-    , frames_writer_{switchboard_->get_network_writer<data_format::compressed_frame>(
-          "compressed_frames", network::topic_config{network::topic_config::BOOST, network::topic_config::TCP})}
-    , modal_writer_{switchboard_->get_network_writer<data_format::boba_modal_texture>(
-          "boba_modal_texture", network::topic_config{network::topic_config::BOOST, network::topic_config::TCP})} {
+    , stereo_reader_{switchboard_->get_reader<data_format::stereo_frame>("stereo_frame")} {
     spdlogger(switchboard_->get_env_char("BOBA_STREAMING_SERVER_LOG_LEVEL", "info"));
     bitrate_   = std::max<std::int64_t>(1, switchboard_->get_env_int("BOBA_STREAM_BITRATE", 30'000'000));
     framerate_ = std::max(1, switchboard_->get_env_int("BOBA_STREAM_FRAMERATE", 72));
@@ -76,6 +72,13 @@ boba_streaming_server::boba_streaming_server(const std::string& name, phonebook*
 
 boba_streaming_server::~boba_streaming_server() = default;
 
+void boba_streaming_server::start() {
+    frames_writer_.emplace(switchboard_->get_network_writer<data_format::compressed_frame>(
+          "compressed_frames", network::topic_config{network::topic_config::BOOST, network::topic_config::TCP}));
+    modal_writer_.emplace(switchboard_->get_network_writer<data_format::boba_modal_texture>(
+            "boba_modal_texture", network::topic_config{network::topic_config::BOOST, network::topic_config::TCP}));
+
+}
 // The threadloop polls switchboard state but yields when no new producer
 // generation is available, avoiding a busy spin at the desktop frame rate.
 threadloop::skip_option boba_streaming_server::_p_should_skip() {
@@ -223,12 +226,12 @@ void boba_streaming_server::publish_modal_texture_if_needed(const data_format::b
     const bool changed = modal.texture_id != last_modal_texture_id_;
     const bool resend  = changed || !last_modal_visible_ || modal_visible_frame_count_ % kModalTextureResendFrames == 0;
     if (resend) {
-        auto update        = modal_writer_.allocate();
+        auto update        = modal_writer_->allocate();
         update->texture_id = modal.texture_id;
         update->width      = modal.width;
         update->height     = modal.height;
         update->rgba       = rgba;
-        modal_writer_.put(std::move(update));
+        modal_writer_->put(std::move(update));
         plugin_logger_->info("Published Boba modal texture id={} size={}x{} bytes={}", modal.texture_id, modal.width,
                              modal.height, rgba.size());
     }
@@ -277,7 +280,7 @@ void boba_streaming_server::publish_encoded(const data_format::stereo_frame& fra
     output->magic                = 0xdeadbeef;
 
     metrics_bytes_ += output->left_color.size();
-    frames_writer_.put(std::move(output));
+    frames_writer_->put(std::move(output));
 }
 
 void boba_streaming_server::_p_one_iteration() {

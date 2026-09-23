@@ -353,15 +353,6 @@ boba_immersive::boba_immersive(const std::string& name, phonebook* pb)
     , stereo_writer_{switchboard_->get_writer<stereo_frame>("stereo_frame")}
     , boba_launcher_{resolve_boba_launcher(switchboard_)} {
     spdlogger(switchboard_->get_env_char("BOBA_IMMERSIVE_LOG_LEVEL", "info"));
-    // Only the native/offload profile has a remote Quest process to stop. The
-    // desktop OpenXR compatibility profile shuts down in this same process.
-    if (switchboard_->get_env_bool("BOBA_NATIVE_QUEST_STREAM", "false")) {
-        network::topic_config control_config{};
-        control_config.serialization_method = network::topic_config::SerializationMethod::PROTOBUF;
-        control_config.transport_method     = network::topic_config::TransportMethod::TCP;
-        native_client_control_writer_.emplace(
-            switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>("boba_client_control", control_config));
-    }
 }
 
 boba_immersive::~boba_immersive() {
@@ -374,6 +365,16 @@ boba_immersive::~boba_immersive() {
 // ---- Plugin and child-process lifecycle -----------------------------------
 
 void boba_immersive::start() {
+    // Only the native/offload profile has a remote Quest process to stop. The
+    // desktop OpenXR compatibility profile shuts down in this same process.
+    if (switchboard_->get_env_bool("BOBA_NATIVE_QUEST_STREAM", "false")) {
+        network::topic_config control_config{};
+        control_config.serialization_method = network::topic_config::SerializationMethod::PROTOBUF;
+        control_config.transport_method     = network::topic_config::TransportMethod::TCP;
+        native_client_control_writer_.emplace(
+            switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>("boba_client_control", control_config));
+    }
+
     plugin::start();
     stop_requested_.store(false);
     worker_ = std::thread([this]() {

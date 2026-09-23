@@ -31,6 +31,7 @@ public:
     /** Release the encoder and any mapped producer rings. */
     ~boba_streaming_server() override;
 
+    void start() override;
 protected:
     /** Sleep until Boba publishes a source frame newer than the last handled ID. */
     skip_option _p_should_skip() override;
@@ -96,8 +97,9 @@ private:
     // Local input and network transports.
     const std::shared_ptr<switchboard>                           switchboard_;
     switchboard::reader<data_format::stereo_frame>               stereo_reader_;
-    switchboard::network_writer<data_format::compressed_frame>   frames_writer_;
-    switchboard::network_writer<data_format::boba_modal_texture> modal_writer_;
+
+    std::optional<switchboard::network_writer<data_format::compressed_frame>>   frames_writer_;
+    std::optional<switchboard::network_writer<data_format::boba_modal_texture>> modal_writer_;
 
     // Shared rings and the lazily initialized hardware encoder.
     mapped_file                    frame_mapping_;

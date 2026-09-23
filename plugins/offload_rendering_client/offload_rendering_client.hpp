@@ -83,10 +83,6 @@ public:
 #ifdef __ANDROID__
     ~offload_rendering_client() override;
 #else
-    /**
-     * @brief Start the client thread and initialize FFmpeg/CUDA resources
-     */
-    void start() override;
 
     /**
      * @brief Set up Vulkan resources and initialize frame buffers
@@ -128,6 +124,7 @@ public:
     void destroy() override;
 #endif // __ANDROID__
 
+    void start() override;
 protected:
     /**
      * @brief Thread setup (no-op in this implementation)
@@ -322,7 +319,8 @@ private:
 
 #ifndef USING_OPENXR
     // Pose transmission to server
-    switchboard::network_writer<data_format::pose::fast_head_pose_type> pose_writer_;
+    std::optional<switchboard::network_writer<data_format::pose::fast_head_pose_type>> pose_writer_;
+
     std::shared_ptr<data_format::pose_prediction>                       pose_prediction_;
 #endif
     std::atomic<bool>               ready_ = false;

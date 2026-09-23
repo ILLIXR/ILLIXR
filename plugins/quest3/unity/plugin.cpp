@@ -193,8 +193,7 @@ static void pose_to_matrix(const XrPosef& pose, float out[16]) {
 
 [[maybe_unused]] xr_sensor_capture::xr_sensor_capture(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
-    , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , writer_{switchboard_->get_network_writer<semantic_frame>("semantic_frame", {})} {
+    , switchboard_{phonebook_->lookup_impl<switchboard>()} {
     uint8_t capture_fps = switchboard_->get_env_int("ILLIXR_CAPTURE_FPS", 2);
     int32_t bitrate_bps = switchboard_->get_env_int("ILLIXR_ENCODER_BITRATE_BPS", 5'000'000);
     max_depth_m_        = switchboard_->get_env_float("ILLIXR_CAPTURE_MAX_DEPTH", 0.f);
@@ -272,6 +271,11 @@ static void pose_to_matrix(const XrPosef& pose, float out[16]) {
 
     // Register instance pointer for C-linkage functions and render event callback.
     g_sensor_capture_instance = this;
+}
+
+void xr_sensor_capture::start() {
+    writer_.emplace(switchboard_->get_network_writer<semantic_frame>("semantic_frame", {}));
+    threadloop::start();
 }
 
 xr_sensor_capture::~xr_sensor_capture() {
@@ -1135,7 +1139,7 @@ void xr_sensor_capture::_p_one_iteration() {
         spdlog::get("illixr")->info("[publish] frame={} image={}B depth={}B depth_delta={}ms near_z={:.3f}", frame.frame_number,
                                     frame.image.size(), frame.depth.size(), delta_ns / 1'000'000LL, frame.depth_near_z);
 
-        writer_.put(writer_.allocate<semantic_frame>(std::move(frame)));
+        writer_->put(writer_->allocate<semantic_frame>(std::move(frame)));
     }
 
     encoder_->pending_frames_.clear();

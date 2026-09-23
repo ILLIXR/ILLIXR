@@ -10,11 +10,7 @@ using namespace ILLIXR::data_format;
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()} // make sure you have the right IP address
-    , stoplight_{phonebook_->lookup_impl<stoplight>()}
-    , ada_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "ada_data",
-          network::topic_config{network::topic_config::SerializationMethod::PROTOBUF,
-                                network::topic_config::TransportMethod::TCP, std::chrono::milliseconds(0)})} {
+    , stoplight_{phonebook_->lookup_impl<stoplight>()} {
     if (!std::filesystem::exists(data_path_)) {
         if (!std::filesystem::create_directory(data_path_)) {
             spdlog::get("illixr")->error("Failed to create data directory.");
@@ -46,6 +42,11 @@ using namespace ILLIXR::data_format;
 }
 
 void device_tx::start() {
+    ada_writer_.emplace(switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
+            "ada_data",
+            network::topic_config{network::topic_config::SerializationMethod::PROTOBUF,
+                                  network::topic_config::TransportMethod::TCP, std::chrono::milliseconds(0)}));
+
     threadloop::start();
 
     encoder_ = std::make_unique<ada_video_encoder>(
@@ -147,7 +148,7 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
     send_buf_ = outgoing_payload->SerializeAsString();
 
     // send
-    ada_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(send_buf_ + delimiter));
+    ada_writer_->put(std::make_shared<switchboard::event_wrapper<std::string>>(send_buf_ + delimiter));
     spdlog::get("illixr")->debug(
         "Pose of frame {}: {}, {}, {}; {}, {}, {}, {}", frame_id_, outgoing_payload->input_pose().p_x(),
         outgoing_payload->input_pose().p_y(), outgoing_payload->input_pose().p_z(), outgoing_payload->input_pose().o_w(),

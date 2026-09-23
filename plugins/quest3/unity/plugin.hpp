@@ -83,6 +83,8 @@ public:
     [[maybe_unused]] xr_sensor_capture(const std::string& name, phonebook* pb);
     ~xr_sensor_capture() override;
 
+    void start() override;
+
     // Called from Unity's LateUpdate() via illixr_acquire_depth() in ILLIXRBridge.
     // Must be called between xrBeginFrame and xrEndFrame (i.e. during Unity's frame).
     // Also samples the current head pose via xrLocateSpace(VIEW, LOCAL) and stores
@@ -275,10 +277,10 @@ private:
     bool                           rgb_intrinsics_valid_ = false;
 
     // ---- Switchboard output ----
-    const std::shared_ptr<switchboard>                       switchboard_;
-    switchboard::network_writer<data_format::semantic_frame> writer_;
-    int32_t                                                  frame_number_ = 0;
-    float                                                    max_depth_m_  = 0.f;
+    const std::shared_ptr<switchboard>                                      switchboard_;
+    std::optional<switchboard::network_writer<data_format::semantic_frame>> writer_;
+    int32_t                                                                 frame_number_ = 0;
+    float                                                                   max_depth_m_  = 0.f;
 
     std::unique_ptr<ndk_encoder> encoder_;
 };

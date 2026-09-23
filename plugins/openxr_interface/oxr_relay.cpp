@@ -44,15 +44,6 @@ oxr_relay::oxr_relay(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
-    , combined_pose_writer_{switchboard_->get_network_writer<data_format::pose::combined_pose>(
-          "combined_pose", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
-#ifdef ILLIXR_ENABLE_BOBA
-    , quest_controller_writer_{switchboard_->get_network_writer<data_format::quest_controller_input>(
-          "quest_controller", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
-    , openxr_view_writer_{switchboard_->get_network_writer<data_format::openxr_view_frame>(
-          "openxr_view", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
-#endif
-
     , latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")} {
 }
 
@@ -65,6 +56,18 @@ void oxr_relay::destroy() {
 
 oxr_relay::~oxr_relay() {
     destroy();
+}
+
+void oxr_relay::start() {
+    combined_pose_writer_.emplace(switchboard_->get_network_writer<data_format::pose::combined_pose>(
+            "combined_pose", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP}));
+#ifdef ILLIXR_ENABLE_BOBA
+    quest_controller_writer_.emplace(switchboard_->get_network_writer<data_format::quest_controller_input>(
+          "quest_controller", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP}));
+    openxr_view_writer_.emplace{switchboard_->get_network_writer<data_format::openxr_view_frame>(
+            "openxr_view", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP}));
+#endif
+    threadloop::start();
 }
 
 void oxr_relay::initialize(XrInstance instance, XrSession session, XrSpace local, XrSpace view) {
@@ -481,7 +484,7 @@ void oxr_relay::push_poses(XrTime predicted_time) {
         smoothed_rtt    = latency_data->smoothed_rtt_ms * 1'000'000.0;
     }
     // spdlog::get("illixr")->debug("[oxr_relay] pushing pose {}", pose_id);
-    combined_pose_writer_.put(std::make_shared<pose::combined_pose>(
+    combined_pose_writer_->put(std::make_shared<pose::combined_pose>(
         current_pose, current_hand_poses_, current_palm_poses_, current_hand_interactions_, pose_id, predicted_time,
         xr_to_monotonic_offset_ns_, monotonic_to_system_offset_ns_, smoothed_offset, smoothed_rtt));
 }
@@ -1272,8 +1275,8 @@ void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_p
 
     // Publish only after both objects are complete; consumers reject a sample
     // until the matching sequence has arrived on both UDP topics.
-    quest_controller_writer_.put(std::make_shared<quest_controller_input>(std::move(controller)));
-    openxr_view_writer_.put(std::make_shared<openxr_view_frame>(std::move(frame)));
+    quest_controller_writer_->put(std::make_shared<quest_controller_input>(std::move(controller)));
+    openxr_view_writer_->put(std::make_shared<openxr_view_frame>(std::move(frame)));
 }
 
 #endif

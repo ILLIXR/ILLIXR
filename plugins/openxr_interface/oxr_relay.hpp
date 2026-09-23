@@ -55,6 +55,7 @@ public:
 
     ~oxr_relay() override;
 
+    void start() override;
     /// Look up a pose history entry by combined_pose id.
     /// Returns true and populates out_entry if found, false otherwise.
     /// Thread-safe.
@@ -220,10 +221,10 @@ private:
      * Sends combined_pose to the offload rendering server, which contains
      * the head pose, hand tracking data, and time conversion fields.
      */
-    switchboard::network_writer<data_format::pose::combined_pose> combined_pose_writer_;
+    std::optional<switchboard::network_writer<data_format::pose::combined_pose>> combined_pose_writer_;
 #ifdef ILLIXR_ENABLE_BOBA
-    switchboard::network_writer<data_format::quest_controller_input> quest_controller_writer_;
-    switchboard::network_writer<data_format::openxr_view_frame>      openxr_view_writer_;
+    std::optional<switchboard::network_writer<data_format::quest_controller_input>> quest_controller_writer_;
+    std::optional<switchboard::network_writer<data_format::openxr_view_frame>>      openxr_view_writer_;
 
 #endif
 

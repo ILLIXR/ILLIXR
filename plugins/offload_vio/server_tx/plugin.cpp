@@ -20,15 +20,16 @@ using namespace ILLIXR::data_format;
 [[maybe_unused]] server_writer::server_writer(const std::string& name, phonebook* pb)
     : plugin{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , imu_int_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")}
-    , vio_pose_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "vio_pose", network::topic_config{network::topic_config::SerializationMethod::PROTOBUF})} {
+    , imu_int_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")} {
     spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
 }
 
 // This schedule function cant go in the constructor because there seems to be an issue with
 // the call being triggered before any data is written to slow_pose. This needs debugging.
 void server_writer::start() {
+    vio_pose_writer_.emplace(switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
+            "vio_pose", network::topic_config{network::topic_config::SerializationMethod::PROTOBUF}));
+
     plugin::start();
 
     switchboard_->schedule<pose::head_pose_type>(
@@ -119,7 +120,7 @@ void server_writer::send_vio_output(const switchboard::ptr<const pose::head_pose
     std::string       data_to_be_sent = vio_output_params->SerializeAsString();
     const std::string delimiter       = "END!";
 
-    vio_pose_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimiter));
+    vio_pose_writer_->put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimiter));
 
     delete vio_output_params;
 }
