@@ -117,7 +117,7 @@ public:
 
         std::vector<plugin_factory> plugin_factories;
         std::transform(libraries_.cbegin(), libraries_.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
-            return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
+            return lib.template get<plugin* (*)(phonebook*)>("this_plugin_factory");
         });
 
 #ifndef __ANDROID__
@@ -193,7 +193,7 @@ public:
 
     void load_so(const std::string_view& so) override {
         auto lib                 = dynamic_lib::create(so);
-        auto this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
+        auto this_plugin_factory = lib.get<plugin* (*)(phonebook*)>("this_plugin_factory");
         load_plugin_factory(this_plugin_factory);
         libraries_.push_back(std::move(lib));
     }

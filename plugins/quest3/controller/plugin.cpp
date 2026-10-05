@@ -1538,9 +1538,9 @@ bool openxr_quest_controller::render_eye(std::size_t eye_index, GLuint swapchain
         if (active_presentation_mode_ == data_format::stereo_presentation_mode::mono_panel) {
             if (!world_panel_initialized_) {
                 const mat4 initial_head_pose = pose_matrix(located_views_[0].pose);
-                panel_model                  = multiply(initial_head_pose,
-                                                        multiply(translation_matrix(0.0F, kPanelYOffsetMeters, -kPanelDistanceMeters),
-                                                                 scale_matrix(kPanelWidthMeters, panel_height, 1.0F)));
+                panel_model = multiply(initial_head_pose,
+                                       multiply(translation_matrix(0.0F, kPanelYOffsetMeters, -kPanelDistanceMeters),
+                                                scale_matrix(kPanelWidthMeters, panel_height, 1.0F)));
                 std::copy(std::begin(panel_model.values), std::end(panel_model.values), world_panel_model_.begin());
                 world_panel_initialized_ = true;
             } else {

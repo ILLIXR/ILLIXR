@@ -770,7 +770,7 @@ bool oxr_relay::suggest_controller_bindings() {
         const XrResult path_result = xrStringToPath(instance_, path_string.c_str(), &path);
         if (XR_FAILED(path_result)) {
             spdlog::get("illixr")->error("Could not create controller binding path {}: {}", path_string,
-                                                                    static_cast<int>(path_result));
+                                         static_cast<int>(path_result));
             return false;
         }
         bindings.push_back({action, path});

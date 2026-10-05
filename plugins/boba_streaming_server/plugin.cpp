@@ -163,8 +163,8 @@ bool boba_streaming_server::modal_range_valid(const data_format::stereo_modal_ov
     }
     const std::uint64_t tight_row_bytes = static_cast<std::uint64_t>(modal.width) * 4U;
     const std::uint64_t required_bytes  = modal.height == 0
-         ? 0
-         : static_cast<std::uint64_t>(modal.source_row_stride_bytes) * (modal.height - 1U) + tight_row_bytes;
+        ? 0
+        : static_cast<std::uint64_t>(modal.source_row_stride_bytes) * (modal.height - 1U) + tight_row_bytes;
     return modal.width > 0 && modal.height > 0 && modal.width <= 8192 && modal.height <= 8192 &&
         modal.source_row_stride_bytes >= tight_row_bytes && modal.byte_offset <= modal_mapping_.size &&
         required_bytes <= modal_mapping_.size - modal.byte_offset;
