@@ -103,9 +103,9 @@ void realsense::callback(const rs2::frame& frame) {
             cv::Mat depth = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void*) depth_frame.get_data());
             cv::Mat converted_depth;
             float   depth_scale = pipeline_.get_active_profile()
-                                    .get_device()
-                                    .first<rs2::depth_sensor>()
-                                    .get_depth_scale(); // for converting measurements into millimeters
+                                      .get_device()
+                                      .first<rs2::depth_sensor>()
+                                      .get_depth_scale(); // for converting measurements into millimeters
             depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
             cam_.put(cam_.allocate<binocular_cam_type>({cam_time_point, ir_left, ir_right}));
             rgb_depth_.put(rgb_depth_.allocate<rgb_depth_type>({cam_time_point, rgb, depth}));

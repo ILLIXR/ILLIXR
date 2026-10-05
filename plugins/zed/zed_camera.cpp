@@ -25,8 +25,8 @@ sl::ERROR_CODE zed_camera::open(const sl::InitParameters& params) {
         cam_conf.fps,
         cam_conf.calibration_parameters.getCameraBaseline(),
         {{data_format::pose::LEFT, {left_cam.cx, left_cam.cy, left_cam.v_fov * (M_PI / 180.), left_cam.h_fov * (M_PI / 180.)}},
-                                {data_format::pose::RIGHT,
-                                 {right_cam.cx, right_cam.cy, right_cam.v_fov * (M_PI / 180.), right_cam.h_fov * (M_PI / 180.)}}}};
+         {data_format::pose::RIGHT,
+          {right_cam.cx, right_cam.cy, right_cam.v_fov * (M_PI / 180.), right_cam.h_fov * (M_PI / 180.)}}}};
 
     sl::PositionalTrackingParameters tracking_params(initial_position_);
     err = enablePositionalTracking(tracking_params);

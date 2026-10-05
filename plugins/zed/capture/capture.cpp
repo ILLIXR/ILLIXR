@@ -168,9 +168,9 @@ capture::capture(const int fp, const data_format::pose::head_pose_data& wcf)
     //                                         true);  // remove saturated
     data_of_.open(files::data_file_, std::ofstream::out);
     data_of_ << "#timestamp[ns],tx,ty,tx,w,x,y,z" << std::endl;
-    camL_of_.open(files::camL_file_, std::ofstream ::out);
+    camL_of_.open(files::camL_file_, std::ofstream::out);
     camL_of_ << "#timestamp[ns],filename" << std::endl;
-    camR_of_.open(files::camR_file_, std::ofstream ::out);
+    camR_of_.open(files::camR_file_, std::ofstream::out);
     camR_of_ << "#timestamp[ns],filename" << std::endl;
     // depth_of.open(files::depth_file, std::ofstream ::out);
     // depth_of << "#timestamp[ns],filename" << std::endl;

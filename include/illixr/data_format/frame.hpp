@@ -189,7 +189,7 @@ struct compressed_frame : public switchboard::event {
     uint64_t frame_number{0};
     uint64_t pose_id{0}; ///< ID of the combined_pose used to generate this frame,
                          ///< used to correlate rendered frames with headset pose measurements
-    double encode_time = 0.;
+    double   encode_time = 0.;
     // True if the color bitstream for this frame is a keyframe (IDR / AV1 KEY_FRAME).
     // Set by the server from nvenc_encoder::last_frame_was_keyframe() immediately
     // after encoding, so the client never needs to parse OBU or NAL headers.
