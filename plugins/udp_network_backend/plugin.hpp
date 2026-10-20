@@ -36,8 +36,9 @@ public:
     void read_loop(network::UDPSocket* socket);
     void topic_create(std::string topic_name, network::topic_config& config) override;
     bool is_topic_networked(std::string topic_name) override;
-    void topic_send(std::string topic_name, std::string&& message) override;
-    void topic_receive(const std::string& topic_name, std::vector<char>& message);
+    void topic_send(std::string topic_name, std::string&& message, uint64_t identifier) override;
+    void topic_receive(const std::string& topic_name, std::vector<char>& message, uint32_t msg_length,
+                       long long time);
     void stop() override;
 
     network::topic_config::TransportMethod transport_method() const override {
@@ -51,12 +52,13 @@ private:
     void send_packet(std::string&& packet);
 
     /** Validate and dispatch a received topic packet. */
-    void receive_packet(std::string&& packet);
+    void receive_packet(std::string&& packet, uint32_t length);
 
     /** Send a backend-control packet on the illixr_control topic. */
     void send_control(const std::string& message);
 
     std::shared_ptr<switchboard> switchboard_;
+    std::shared_ptr<relative_clock> clock_;
     std::atomic<bool>            running_ = true;
 #ifndef __ANDROID__
     std::atomic<bool> ready_ = false;
@@ -75,6 +77,9 @@ private:
 
     // To delimit the topic_name and the serialization method when creating a topic
     std::string delimiter_ = "|";
+#ifdef RECORD_NETWORK_TRAFFIC
+    traffic_recorder traffic_capture_;
+#endif
 
     std::mutex send_mutex_;
 };

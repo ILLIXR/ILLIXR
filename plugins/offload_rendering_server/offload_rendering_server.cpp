@@ -30,7 +30,10 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     , switchboard_{pb->lookup_impl<switchboard>()}
     , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames",
                                                                        network::topic_config{network::topic_config::BOOST})}
-    , pose_relay_{std::make_shared<pose_relay>(name, pb)} {
+    , pose_relay_{std::make_shared<pose_relay>(name, pb)}
+    , ecode_record_{record_root_dir + "encode_timings.csv"}{
+    if (!ecode_record_.is_open())
+        throw std::runtime_error("Cannot open encode recorder");
     // Only encode and pass depth if requested - otherwise skip it.
     use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
         std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
@@ -506,15 +509,17 @@ void offload_rendering_server::_p_one_iteration() {
     auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
     // Catch transient stalls that disappear in one-second averages (both eyes;
     // includes the input GPU transfer on the FFmpeg path).
-    if (encode_time >= 10000) {
-        size_t queued_frames;
-        {
-            std::lock_guard<std::mutex> lock(send_queue_mutex_);
-            queued_frames = send_queue_.size();
-        }
-        log_->warn("[OFFLOAD_SLOW_ENCODE] frame={} encode_ms={:.2f} send_queue={}", frame_number_, encode_time / 1000.0,
-                   queued_frames);
-    }
+    ecode_record_ << frame_number_ << "," << frame_pose_id << "," << encode_time / 1000.0 << std::endl;
+    //log_->debug("[ENCODER TIMING] frame={}  encode_ms={:.2f}", frame_number_, encode_time / 1000.0);
+    //if (encode_time >= 10000) {
+    //    size_t queued_frames;
+    //    {
+    //        std::lock_guard<std::mutex> lock(send_queue_mutex_);
+    //        queued_frames = send_queue_.size();
+    //    }
+    //    log_->warn("[OFFLOAD_SLOW_ENCODE] frame={} encode_ms={:.2f} send_queue={}", frame_number_, encode_time / 1000.0,
+    //               queued_frames);
+    //}
     auto acquire_image_time =
         std::chrono::duration_cast<std::chrono::microseconds>(acquire_image_end_time - acquire_image_start_time).count();
 
@@ -642,6 +647,7 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
 #    endif
 #    ifdef USING_OPENXR
     frame->pose_id = pose_id;
+    frame->unique_identifier = pose_id;
 #    endif
     frame->is_keyframe = color_frame_is_keyframe_;
     frame->encode_time = current_encode_time_;

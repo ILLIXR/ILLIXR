@@ -189,10 +189,42 @@ void pose_relay::_p_one_iteration() {
     // a reader access from within the mutex
     smoothed_rtt_ns_.store(pose_data->smoothed_rtt_ns);
 
+    // Diagnostic: dump every term of the time conversion chain and compare the
+    // result against the local Monado clock at the moment of receipt.
+    static uint64_t time_diag_counter = 0;
+    if (++time_diag_counter % 500 == 1) {
+        auto mono_now_ns = static_cast<int64_t>(os_monotonic_get_ns());
+        log_->info("[pose_relay] time chain: xr={} xr_to_mono={} mono_to_sys={} clock_off={} epoch_off={} -> monado={} "
+                   "now={} (pose - now = {:.3f} ms)",
+                   static_cast<int64_t>(pose_data->pose_xr_time_ns), static_cast<int64_t>(pose_data->xr_to_monotonic_offset_ns),
+                   static_cast<int64_t>(pose_data->monotonic_to_system_offset_ns),
+                   static_cast<int64_t>(pose_data->smoothed_clock_offset_ns), windows_epoch_offset_ns_, monado_time_ns,
+                   mono_now_ns, static_cast<double>(monado_time_ns - mono_now_ns) / 1'000'000.0);
+    }
+
+    // The headset can publish the same head sample more than once (new id, same
+    // sample time). Only add a pose to the history if its headset timestamp is
+    // newer than the last one stored. Compare the raw headset time rather than
+    // monado_time_ns, since the converted value moves whenever the clock offsets
+    // are updated. A large backwards jump (headset restart, playback loop) resets
+    // the history.
+    constexpr int64_t TIME_RESET_THRESHOLD_NS = 1'000'000'000;
+    const int64_t     pose_xr_time_ns         = static_cast<int64_t>(pose_data->pose_xr_time_ns);
+    const bool        time_reset              = last_pose_xr_time_ns_ - pose_xr_time_ns > TIME_RESET_THRESHOLD_NS;
+    const bool        new_head_sample         = pose_xr_time_ns > last_pose_xr_time_ns_ || time_reset;
+    if (new_head_sample) {
+        last_pose_xr_time_ns_ = pose_xr_time_ns;
+    }
+
     // Store in bounded pose history, oldest to newest
     constexpr size_t MAX_POSE_HISTORY = 10;
-    {
+    if (new_head_sample) {
         std::lock_guard<std::mutex> lock(pose_mutex_);
+        if (time_reset) {
+            log_->warn("[pose_relay] headset pose time jumped backwards, clearing pose history");
+            current_poses_.clear();
+            pose_map_.clear();
+        }
         pose_point                  pp;
         pp.time = static_cast<XrTime>(monado_time_ns);
         pp.id   = pose_data->id;
@@ -409,8 +441,10 @@ xrt_space_relation pose_relay::get_pose(XrTime future_time) const {
         if (++warn_counter % 100 == 1) {
             log_->warn("[pose_relay] get_pose: dt={:.3f}ms out of range "
                        "(future_time={:.3f}ms best_pose_time={:.3f}ms "
-                       "pipeline={:.3f}ms)",
-                       dt * 1000.0, future_time / 1'000'000.0, best->time / 1'000'000.0, pipeline_ns / 1'000'000.0);
+                       "newest_pose_time={:.3f}ms now={:.3f}ms pipeline={:.3f}ms)",
+                       dt * 1000.0, future_time / 1'000'000.0, best->time / 1'000'000.0,
+                       current_poses_.back().time / 1'000'000.0, os_monotonic_get_ns() / 1'000'000.0,
+                       pipeline_ns / 1'000'000.0);
         }
         // Cache and return the best pose without extrapolation
         pose_map_[future_time] = {best->id, best->pose};

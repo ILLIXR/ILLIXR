@@ -35,7 +35,7 @@ public:
      * @param topic_name The name of the topic.
      * @param message The message to send.
      */
-    virtual void topic_send(std::string topic_name, std::string&& message) = 0;
+    virtual void topic_send(std::string topic_name, std::string&& message, uint64_t identifier = 0) = 0;
 
 #ifndef __ANDROID__
     virtual void start_client() = 0;

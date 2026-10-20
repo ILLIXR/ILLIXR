@@ -91,6 +91,7 @@ set(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/traffic_recorder.hpp
 )
 
 if(USE_NVENC_ENCODER)

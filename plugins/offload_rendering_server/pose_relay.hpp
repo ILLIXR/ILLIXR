@@ -127,6 +127,7 @@ private:
 #ifdef USING_OPENXR
     std::vector<pose_point> current_poses_;
     uint64_t                last_pose_id_ = 0;
+    int64_t last_pose_xr_time_ns_;
 #else
     POSE_TYPE current_pose_;
 #endif

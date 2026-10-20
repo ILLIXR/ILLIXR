@@ -13,7 +13,7 @@ network_latency_rx::network_latency_rx(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{pb_->lookup_impl<switchboard>()}
     , ping_reader_{switchboard_->get_buffered_reader<latency_ping>("latency_ping")}
-    , pong_writer_{switchboard_->get_network_writer<latency_pong>("latency_pong")}
+    , pong_writer_{switchboard_->get_network_writer<latency_pong>("latency_pong",network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
     , pings_received_{0}
     , last_received_seq_{std::nullopt} {
     spdlog::get("illixr")->info("[network_latency_rx] Initialized");

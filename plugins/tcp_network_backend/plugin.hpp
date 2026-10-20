@@ -35,9 +35,9 @@ public:
     void read_loop(network::TCPSocket* socket);
     void topic_create(std::string topic_name, network::topic_config& config) override;
     bool is_topic_networked(std::string topic_name) override;
-    void topic_send(std::string topic_name, std::string&& message) override;
-    void topic_receive(const std::string& topic_name, std::vector<char>& message);
-    /** Interrupt blocking socket I/O, join the worker, and release the peer. */
+    void topic_send(std::string topic_name, std::string&& message, uint64_t identifier) override;
+    void topic_receive(const std::string& topic_name, std::vector<char>& message, uint32_t msg_length,
+                       long long time);
     void stop() override;
 
     network::topic_config::TransportMethod transport_method() const override {
@@ -47,9 +47,10 @@ public:
     bool client;
 
 private:
-    void send_to_peer(const std::string& topic_name, std::string&& message);
+    void send_to_peer(const std::string& topic_name, std::string&& message, uint64_t identifier = 0);
 
     std::shared_ptr<switchboard> switchboard_;
+        std::shared_ptr<relative_clock> clock_;
     std::atomic<bool>            running_ = true;
 #ifndef __ANDROID__
     std::atomic<bool> ready_ = false;
@@ -77,6 +78,10 @@ private:
 
     // Hold across the entire packet, including partial socket writes.
     std::mutex send_mutex_;
+#ifdef RECORD_NETWORK_TRAFFIC
+    traffic_recorder traffic_capture_;
+#endif
+
 };
 
 } // namespace ILLIXR

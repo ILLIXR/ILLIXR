@@ -9,7 +9,14 @@ using namespace ILLIXR;
 
 udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb_)
     : plugin(name_, pb_)
-    , switchboard_{pb_->lookup_impl<switchboard>()} {
+    , switchboard_{pb_->lookup_impl<switchboard>()}
+    , clock_{pb_->lookup_impl<relative_clock>()}
+#ifdef RECORD_NETWORK_TRAFFIC
+    , traffic_capture_{record_root_dir + "server_udp.tx.csv"} {
+    traffic_capture_.record("# message type, id, time, size(bytes)");
+#else
+{
+#endif
     // read environment variables
     if (switchboard_->get_env_char("ILLIXR_SERVER_IP")) {
         server_ip_ = switchboard_->get_env_char("ILLIXR_SERVER_IP");
@@ -183,8 +190,7 @@ void udp_network_backend::read_loop(network::UDPSocket* socket) {
         // somewhere to reply to.
         if (!socket->has_peer())
             socket->set_peer(src_addr);
-
-        receive_packet(std::move(packet));
+        receive_packet(std::move(packet), packet.size());
     }
 }
 
@@ -213,7 +219,7 @@ bool udp_network_backend::is_topic_networked(std::string topic_name) {
     return std::find(networked_topics_.begin(), networked_topics_.end(), topic_name) != networked_topics_.end();
 }
 
-void udp_network_backend::topic_send(std::string topic_name, std::string&& message) {
+void udp_network_backend::topic_send(std::string topic_name, std::string&& message, uint64_t identifier) {
     if (!is_topic_networked(topic_name)) {
         spdlog::get("illixr")->warn("[udp_network_backend] topic_send: {} not networked", topic_name);
         return;
@@ -228,6 +234,10 @@ void udp_network_backend::topic_send(std::string topic_name, std::string&& messa
     packet.append(reinterpret_cast<const char*>(&topic_name_length), 4);
     packet.append(topic_name);
     packet.append(message);
+#ifdef RECORD_NETWORK_TRAFFIC
+    traffic_capture_.record(topic_name + "," + std::to_string(identifier) + "," + std::to_string(clock_->now().time_since_epoch().count())
+                                                                                  + "," + std::to_string(packet.size()));
+#endif
 
     send_packet(std::move(packet));
 }
@@ -252,7 +262,7 @@ void udp_network_backend::send_packet(std::string&& packet) {
 
 // Keep wire-length validation separate from socket/lifecycle handling. This helper
 // decodes one complete datagram with the original topic envelope.
-void udp_network_backend::receive_packet(std::string&& packet) {
+void udp_network_backend::receive_packet(std::string&& packet, uint32_t total_length) {
     network::udp_packet_view decoded;
     if (!network::decode_udp_packet(packet, decoded)) {
         spdlog::get("illixr")->warn("[udp_network_backend] Invalid UDP envelope ({} bytes), dropping", packet.size());
@@ -260,11 +270,12 @@ void udp_network_backend::receive_packet(std::string&& packet) {
     }
     const std::string topic_name{decoded.topic};
     std::vector<char> message(decoded.payload.begin(), decoded.payload.end());
-    topic_receive(topic_name, message);
+    topic_receive(topic_name, message, total_length, clock_->now().time_since_epoch().count());
 }
 
 // Helper function to queue a received message into the corresponding topic
-void udp_network_backend::topic_receive(const std::string& topic_name, std::vector<char>& message) {
+void udp_network_backend::topic_receive(const std::string& topic_name, std::vector<char>& message, uint32_t msg_length,
+                                        long long time) {
     if (topic_name == "illixr_control") {
         std::string message_str(message.begin(), message.end());
         if (message_str.find("create_topic") == 0) {
@@ -300,7 +311,8 @@ void udp_network_backend::topic_receive(const std::string& topic_name, std::vect
         }
         spdlog::get("illixr")->info("[udp_network_backend] Inferred Boost/UDP configuration for {}", topic_name);
     }
-    switchboard_->get_topic(topic_name).deserialize_and_put(message, config->second);
+    switchboard_->get_topic(topic_name).deserialize_and_put(message, networked_topics_configs_[topic_name], msg_length,
+                                                            time);
 }
 
 void udp_network_backend::stop() {

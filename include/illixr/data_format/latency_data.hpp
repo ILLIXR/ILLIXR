@@ -22,7 +22,9 @@ struct latency_ping : public switchboard::event {
 
     latency_ping(uint64_t seq, uint64_t ts)
         : sequence_number{seq}
-        , client_timestamp_ns{ts} { }
+        , client_timestamp_ns{ts} { 
+        unique_identifier = seq;
+    }
 };
 
 /**
@@ -43,7 +45,9 @@ struct latency_pong : public switchboard::event {
     latency_pong(uint64_t seq, uint64_t client_ts, uint64_t server_ts)
         : sequence_number{seq}
         , client_timestamp_ns{client_ts}
-        , server_timestamp_ns{server_ts} { }
+        , server_timestamp_ns{server_ts} {
+        unique_identifier = seq;
+    }
 };
 
 /**
@@ -92,6 +96,8 @@ struct network_latency_result : public switchboard::event {
         , estimated_clock_offset_ms{clock_offset_ms}
         , smoothed_clock_offset_ms{smoothed_offset}
         , smoothed_rtt_ms{smoothed_rtt}
-        , measurement_timestamp_ns{ts} { }
+        , measurement_timestamp_ns{ts} {
+        unique_identifier = seq;
+    }
 };
 } // namespace ILLIXR::data_format

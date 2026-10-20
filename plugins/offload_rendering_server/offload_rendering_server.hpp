@@ -25,6 +25,8 @@
 #include "illixr/vk/vulkan_utils.hpp"
 #include "pose_relay.hpp"
 
+#include <fstream>
+
 #ifdef NVENC_ENCODER
 #    include "nvenc/nvenc_encoder.hpp"
 #    define OFFLOAD_RENDERING_BITRATE 100000000
@@ -433,5 +435,6 @@ private:
 #ifdef OPENXR_CLIENT
     float overscan_ = 1.f;
 #endif
+    std::ofstream ecode_record_;
 };
 } // namespace ILLIXR

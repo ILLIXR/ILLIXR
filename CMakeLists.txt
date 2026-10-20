@@ -71,7 +71,7 @@ elseif(NOT UNIX)
 else()
     set(DEPENDENCY_BUILD_TYPE Release)
 endif()
-
+add_compile_definitions(RECORD_NETWORK_TRAFFIC)
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
 set(LGPL_LICENSED_CODE "audio_pipeline")
 

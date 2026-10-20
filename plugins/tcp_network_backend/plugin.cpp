@@ -8,8 +8,15 @@ using namespace ILLIXR;
 
 tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb_)
     : plugin(name_, pb_)
-    , switchboard_{pb_->lookup_impl<switchboard>()} {
-    // read environment variables
+    , switchboard_{pb_->lookup_impl<switchboard>()}
+    , clock_{pb_->lookup_impl<relative_clock>()}
+#ifdef RECORD_NETWORK_TRAFFIC
+    , traffic_capture_{record_root_dir + "server_tcp.tx.csv"} {
+      traffic_capture_.record("# message type, id, time, size(bytes)");
+#else
+{
+#endif
+
     if (switchboard_->get_env_char("ILLIXR_SERVER_IP")) {
         server_ip_ = switchboard_->get_env_char("ILLIXR_SERVER_IP");
         spdlog::get("illixr")->info("[tcp_network_backend] Using server IP {}", server_ip_);
@@ -192,7 +199,7 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
                 std::string       topic_name(buffer.data() + 8, topic_name_length);
                 std::vector<char> message(buffer.begin() + 8 + topic_name_length, buffer.begin() + total_length);
                 try {
-                    topic_receive(topic_name, message);
+                    topic_receive(topic_name, message, total_length, clock_->now().time_since_epoch().count());
                 } catch (const std::exception& error) {
                     spdlog::get("illixr")->error(
                         "[tcp_network_backend] Failed to deserialize topic={} bytes={}: {}; restart the session", topic_name,
@@ -226,16 +233,17 @@ bool tcp_network_backend::is_topic_networked(std::string topic_name) {
     return std::find(networked_topics_.begin(), networked_topics_.end(), topic_name) != networked_topics_.end();
 }
 
-void tcp_network_backend::topic_send(std::string topic_name, std::string&& message) {
+void tcp_network_backend::topic_send(std::string topic_name, std::string&& message, uint64_t identifier) {
     if (!is_topic_networked(topic_name)) {
         std::cout << "Topic not networked" << std::endl;
         return;
     }
-    send_to_peer(topic_name, std::move(message));
+    send_to_peer(topic_name, std::move(message), identifier);
 }
 
 // Helper function to queue a received message into the corresponding topic
-void tcp_network_backend::topic_receive(const std::string& topic_name, std::vector<char>& message) {
+void tcp_network_backend::topic_receive(const std::string& topic_name, std::vector<char>& message, uint32_t msg_length,
+                                        long long time) {
     if (topic_name == "illixr_control") {
         std::string message_str(message.begin(), message.end());
         // check if message starts with "create_topic"
@@ -260,7 +268,9 @@ void tcp_network_backend::topic_receive(const std::string& topic_name, std::vect
     if (!switchboard_->topic_exists(topic_name)) {
         return;
     }
-    switchboard_->get_topic(topic_name).deserialize_and_put(message, networked_topics_configs_[topic_name]);
+
+    switchboard_->get_topic(topic_name).deserialize_and_put(message, networked_topics_configs_[topic_name], msg_length,
+                                                            time);
 }
 
 void tcp_network_backend::stop() {
@@ -284,7 +294,7 @@ tcp_network_backend::~tcp_network_backend() {
     stop();
 }
 
-void tcp_network_backend::send_to_peer(const std::string& topic_name, std::string&& message) {
+void tcp_network_backend::send_to_peer(const std::string& topic_name, std::string&& message, uint64_t identifier) {
     // packet are in the format
     // total_length:4bytes|topic_name_length:4bytes|topic_name|message
     uint32_t    total_length = 8 + topic_name.size() + message.size();
@@ -297,6 +307,11 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
     if (!running_)
         return;
     try {
+#ifdef RECORD_NETWORK_TRAFFIC
+        traffic_capture_.record(topic_name + "," + std::to_string(identifier) + ","  + std::to_string(clock_->now().time_since_epoch().count())
+                                                                                       + "," + std::to_string(total_length));
+#endif
+
         std::lock_guard<std::mutex> lock{send_mutex_};
         peer_socket_->write_data(packet);
     } catch (const std::exception& error) {

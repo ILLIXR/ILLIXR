@@ -10,6 +10,7 @@
 #include "network/topic_config.hpp"
 #include "phonebook.hpp"
 #include "record_logger.hpp"
+#include "traffic_recorder.hpp"
 
 #ifdef Success
 #    undef Success // For 'Success' conflict
@@ -22,11 +23,16 @@
 #    include <eigen3/Eigen/Core>
 #    include <eigen3/Eigen/Geometry>
 #endif
+#include <cstdint>
 #include <iostream>
 #include <list>
 #include <mutex>
 #include <shared_mutex>
 #include <utility>
+
+//#ifdef RECORD_NETWORK_TRAFFIC
+//#    include <fstream>
+//#endif
 
 #ifdef __ANDROID__
 #    include <android_native_app_glue.h>
@@ -49,8 +55,11 @@ static std::chrono::nanoseconds thread_cpu_time() {
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/version.hpp>
 
 namespace ILLIXR {
+
+const std::string record_root_dir = "C:/devel/";
 
 using plugin_id_t = std::size_t;
 
@@ -154,10 +163,10 @@ public:
     public:
         template<typename Archive>
         [[maybe_unused]] void serialize(Archive& ar, const unsigned int version) {
-            (void) ar;
-            (void) version;
+            if (version >= 1)
+                ar & unique_identifier;
         }
-
+        uint64_t unique_identifier = 0;
         virtual ~event() = default;
     };
 
@@ -384,7 +393,14 @@ private:
             : name_{std::move(name)}
             , type_info_{ty}
             , record_logger_{std::move(record_logger_)}
-            , latest_index_{0} { }
+            , latest_index_{0} 
+#ifdef RECORD_NETWORK_TRAFFIC
+            , msg_log_{(record_root_dir + "server_" + name_ + ".rx.csv")} {
+                msg_log_.record("# message type, id, time, size(bytes)");
+#else
+        {
+#endif
+        }
 
         const std::string& name() {
             return name_;
@@ -453,7 +469,7 @@ private:
             // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
 
-        [[maybe_unused]] void deserialize_and_put(std::vector<char>& buffer, network::topic_config& config) {
+        [[maybe_unused]] void deserialize_and_put(std::vector<char>& buffer, network::topic_config& config, uint32_t length, long long time) {
             if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
                 // TODO: Need to differentiate and support protobuf deserialization
                 try {
@@ -462,6 +478,13 @@ private:
                     boost::archive::binary_iarchive ia{stream, boost::archive::no_header};
                     ptr<event>                      this_event;
                     ia >> this_event;
+#ifdef RECORD_NETWORK_TRAFFIC
+                //msg_log_ << name_ << "," << this_event->unique_identifier << "," << time << "," << length << std::endl;
+                    msg_log_.record(name_ + "," + std::to_string(this_event->unique_identifier) + "," + std::to_string(time)
+                + "," + std::to_string(length));
+
+#endif
+
                     put(std::move(this_event));
                 } catch (const std::exception& e) {
                     std::cerr << "[switchboard] dropping undeserializable message on topic '" << name() << "' ("
@@ -517,6 +540,10 @@ private:
         std::list<topic_subscription>                     subscriptions_;
         std::list<topic_buffer>                           buffers_;
         std::shared_mutex                                 subscriptions_lock_;
+#ifdef RECORD_NETWORK_TRAFFIC
+        traffic_recorder msg_log_;
+        //std::ofstream msg_log_;
+#endif
     };
 
 public:
@@ -690,7 +717,7 @@ public:
                     oa << base_event;
                     // flush
                     stream.pubsync();
-                    backend_->topic_send(this->topic_.name(), std::move(std::string(buffer.begin(), buffer.end())));
+                    backend_->topic_send(this->topic_.name(), std::move(std::string(buffer.begin(), buffer.end())), base_event->unique_identifier);
                 } else {
                     // PROTOBUF - this_specific_event will be a string
                     auto        message_ptr = std::dynamic_pointer_cast<event_wrapper<std::string>>(this_specific_event);
@@ -1094,3 +1121,5 @@ public:
 };
 
 } // namespace ILLIXR
+
+BOOST_CLASS_VERSION(ILLIXR::switchboard::event, 1)
