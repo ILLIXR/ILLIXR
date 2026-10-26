@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: tcp_network_backend,udp_network_backend,network_latency.rx,offload_rendering_server
+plugins: tcp_network_backend,udp_network_backend,network_latency.rx,offload_rendering_server,test_oxr
 env_vars:
   ENABLE_OFFLOAD: false
   ENABLE_ALIGNMENT: false
