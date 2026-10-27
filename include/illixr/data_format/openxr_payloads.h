@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 // Topic id's
-// When adding new topics always increment from the last number used, do not reuse any numbers
+// When adding new topics always increment from the last number used, these values are used as indexes and must start from 0
 #define IXR_TOPIC_FOO   0
 #define IXR_TOPIC_FOO_ECHO   1
 #define IXR_TOPIC_COUNT 2

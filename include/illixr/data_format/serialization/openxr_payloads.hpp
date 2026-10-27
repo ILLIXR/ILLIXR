@@ -23,4 +23,5 @@ template<class Archive, class Payload>
 }
 } // namespace boost::serialization
 
+// Add lines below for new data types
 IXR_EVENT_EXPORT_KEY(ixr_foo_data)
