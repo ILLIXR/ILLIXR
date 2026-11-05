@@ -1,0 +1,3 @@
+# Disable formatting completely for this directory and its subdirectories
+DisableFormat: true
+SortIncludes: false

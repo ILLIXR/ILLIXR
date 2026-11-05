@@ -186,3 +186,7 @@ if(USE_ADA.DEVICE_TX OR USE_ADA.SERVER_RX OR USE_OFFLOAD_VIO.SERVER_RX OR USE_OF
         target_compile_definitions(video_decoder_vio PUBLIC VIO)
     endif()
 endif()
+
+#if(USE_AUDIO_INPUT OR USE_AUDIO_CAPTURE)
+    add_subdirectory(audio/miniaudio)
+#endif()
