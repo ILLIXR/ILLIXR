@@ -5,6 +5,7 @@
 
 // Add lines below for new data types
 IXR_EVENT_EXPORT_IMPLEMENT(ixr_foo_data)
+IXR_EVENT_EXPORT_IMPLEMENT(ixr_audio_chunk)
 
 // empty function, used to ensure the linker does not drop this obj when creating a static library
 namespace ILLIXR {

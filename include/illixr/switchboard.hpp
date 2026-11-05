@@ -50,6 +50,7 @@ static std::chrono::nanoseconds thread_cpu_time() {
 }
 #endif
 
+#include <boost/archive/archive_exception.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
