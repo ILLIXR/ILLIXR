@@ -488,7 +488,7 @@ void oxr_interface::run_frame() {
         if (latest != nullptr) {
             current_frames_ = latest; // current_frames_ is now ptr<const dual_frames>
             // int x = static_cast<int>(current_frames_->pose_id);
-            spdlog::get("illixr")->debug("  Got new frame {}", current_frames_->frame_number);
+            //spdlog::get("illixr")->debug("  Got new frame {}", current_frames_->frame_number);
             // Resolve the correlation
         }
         // current_frames_ retains last valid frame if nothing new arrived
@@ -516,7 +516,7 @@ void oxr_interface::run_frame() {
                         XrSpaceLocation loc = {XR_TYPE_SPACE_LOCATION};
 
                         OXR(xrLocateSpace(view_space_, local_space_, frame_state.predictedDisplayTime, &loc))
-                        spdlog::get("illixr")->info(
+                        /*spdlog::get("illixr")->info(
                             "[pose_tracking] frame pose_id={} frame_id={} "
                             "initial_pose=({:.3f},{:.3f},{:.3f};{:.3f},{:.3f},{:.3f},{:.3f};{:.3f},{:.3f},{:.3f};{:.3f},{:.3f},"
                             "{:.3f}) "
@@ -542,11 +542,11 @@ void oxr_interface::run_frame() {
                             loc.pose.position.y, loc.pose.position.z, loc.pose.orientation.w, loc.pose.orientation.x,
                             loc.pose.orientation.y, loc.pose.orientation.z, history_entry.xr_time, now_xr,
                             static_cast<double>(now_xr - static_cast<int64_t>(history_entry.xr_time)) / 1'000'000.0,
-                            static_cast<double>(age_ns) / 1'000'000.0, current_frames_->encode_time);
+                            static_cast<double>(age_ns) / 1'000'000.0, current_frames_->encode_time);*/
                     } else {
-                        spdlog::get("illixr")->debug("[pose_tracking] frame pose_id={} not found in history "
-                                                     "(may have been pruned)",
-                                                     current_frames_->pose_id);
+                        //spdlog::get("illixr")->debug("[pose_tracking] frame pose_id={} not found in history "
+                        //                             "(may have been pruned)",
+                        //                             current_frames_->pose_id);
                     }
                 } else {
                     spdlog::get("illixr")->debug("[pose_tracker]  No current pose");
@@ -736,7 +736,7 @@ void oxr_interface::run_frame() {
     endInfo.layers               = layers;
     auto    now_ns               = std::chrono::steady_clock::now().time_since_epoch().count();
     int64_t margin_ms            = (frame_state.predictedDisplayTime - now_ns) / 1'000'000;
-    spdlog::get("illixr")->debug("xrEndFrame margin: {}ms", margin_ms);
+    //spdlog::get("illixr")->debug("xrEndFrame margin: {}ms", margin_ms);
     OXR(xrEndFrame(session_, &endInfo))
 
     frame_counter_++;
