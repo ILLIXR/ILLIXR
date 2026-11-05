@@ -50,7 +50,7 @@ private:
     void send_to_peer(const std::string& topic_name, std::string&& message, uint64_t identifier = 0);
 
     std::shared_ptr<switchboard> switchboard_;
-        std::shared_ptr<relative_clock> clock_;
+    std::shared_ptr<relative_clock> clock_;
     std::atomic<bool>            running_ = true;
 #ifndef __ANDROID__
     std::atomic<bool> ready_ = false;
