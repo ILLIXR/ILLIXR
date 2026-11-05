@@ -115,7 +115,8 @@ int main(int argc, const char* argv[]) {
 #    ifdef __ANDROID__
     if (cmd == APP_CMD_INIT_WINDOW && !runtime_thread_.joinable()) {
         const std::vector<std::string> plugins = {"tcp_network_backend", "udp_network_backend", "network_latency.tx",
-                                                  "offload_rendering_client", "openxr_interface"};
+                                                  "offload_rendering_client", "openxr_interface", "audio_input",
+        "audio_capture"};
 
         // EuRoC
         setenv("ILLIXR_DATA", "/sdcard/Android/data/com.example.native_activity/mav0", true);
